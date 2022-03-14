@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import React, { useEffect, useState, useContext } from 'react';
 import { PdrContext } from '../../context/PdrContext';
 import { TownContext } from '../../context/TownContext';
+import { WeightContext } from "../../context/WeightContext";
 import {conf} from '../../configuration'
 import { BUCKET_NAME } from "./google";
 
@@ -9,6 +10,7 @@ function UploadFile(props) {
 
   const { pdr, setPdr } = useContext(PdrContext);
   const {town, setTown} = useContext(TownContext)
+  const {weight, setWeight} = useContext(WeightContext)
   
   function uploadFunction() {
 
@@ -17,7 +19,7 @@ function UploadFile(props) {
     const delimiter = "\r\n--" + boundary + "\r\n";
     const close_delim = "\r\n--" + boundary + "--";
     var fileName=conf[town].file;
-    var fileData=JSON.stringify(pdr);
+    var fileData=JSON.stringify({"pdr": pdr, "weight": weight});
     var contentType='text/plain'
     var metadata = {
       'name': fileName,
@@ -58,7 +60,7 @@ function UploadFile(props) {
   }
 
     return (
-        <Button id="upload-btn" style={{"marginRight": '10px'}} component="a" variant="contained" color="primary" onClick={uploadFunction}>Guardar</Button>
+        <Button id="upload-btn" component="a" variant="contained" color="primary" onClick={uploadFunction}>Guardar</Button>
     )
 }
 

@@ -27,6 +27,7 @@ import Link from 'next/link';
 import { TownContext } from '../context/TownContext';
 import { FormControl, InputLabel, MenuItem, NativeSelect } from '@mui/material';
 import Button from '@mui/material/Button';
+import ScaleIcon from '@mui/icons-material/Scale';
 
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -60,7 +61,7 @@ function Layout({children, ...props}) {
     <div>
       <Toolbar />
       <Divider />
-      <List>
+      <List  sx={{ml:2}}>
         <Link href="/list">
           <ListItem button key="Lista">
             <ListItemIcon>
@@ -69,7 +70,6 @@ function Layout({children, ...props}) {
             <ListItemText primary="Lista" />
           </ListItem>
         </Link>
-
         <Link href="/map">
         <ListItem button onClick={handleClick} key="Mapa">
           <ListItemIcon>
@@ -89,8 +89,6 @@ function Layout({children, ...props}) {
             </ListItem>
           </Link>
         </Collapse>
-      
-
         <Link href="/newPdr">
           <ListItem button key="Nuevo Punto">
             <ListItemIcon>
@@ -107,6 +105,14 @@ function Layout({children, ...props}) {
             <ListItemText primary="Pasar Puntos" />
           </ListItem>
         </Link>
+        <Link href="/pesada">
+          <ListItem button key="Pesada">
+            <ListItemIcon>
+              <ScaleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Pesada" />
+          </ListItem>
+        </Link>
         <Link href="/stats">
           <ListItem button key="Estadísticas">
             <ListItemIcon>
@@ -115,9 +121,10 @@ function Layout({children, ...props}) {
             <ListItemText primary="Estadísticas" />
           </ListItem>
         </Link>
-
       </List>
+
       <Divider />
+      
       <List>
         <ListItem>
             <SignIn googleauth={GoogleAuth} setgoogleauth={setGoogleAuth}/>
