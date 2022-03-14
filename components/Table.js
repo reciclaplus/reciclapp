@@ -24,6 +24,7 @@ import { useContext } from 'react';
 import { PdrContext } from '../context/PdrContext';
 import { TownContext } from '../context/TownContext';
 import {conf} from '../configuration'
+import { pdrExists } from '../utils/PdrManagement'
 
 export function getDateOfWeek(w, y) {
   var simple = new Date(y, 0, 1 + (w - 1) * 7);
@@ -184,10 +185,16 @@ export default function Table(props) {
               const dataUpdate = [...pdr];
               const index = oldData.tableData.id;
               dataUpdate[index] = newData;
-              setPdr([...dataUpdate]);
+              if (pdrExists(newData.barrio, newData.id, pdr)){
+                alert("Esta id ya existe")
+              }
+              else{
+                setPdr([...dataUpdate]);
+              }
+              
 
               resolve();
-            }, 1000)
+            }, 5000)
           }),
         onRowDelete: oldData =>
           new Promise((resolve, reject) => {

@@ -85,7 +85,7 @@ export default function PasarPuntos(){
         event.preventDefault();
         window.confirm("Recuerda guardar todos los cambios")
         setPdr(recogida)
-        console.log(recogida)
+        
         return false;
       }
 

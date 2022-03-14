@@ -11,6 +11,7 @@ import NewPdrMap from './NewPdrMap';
 import { TownContext } from '../context/TownContext';
 import { PdrContext } from '../context/PdrContext';
 import { conf } from '../configuration';
+import { pdrExists } from '../utils/PdrManagement'
 
 export default function NewPdr(props) {
   
@@ -56,14 +57,21 @@ export default function NewPdr(props) {
     if (name == "barrio"){
       setState({...state, ["id"]: setNewId(value), ["barrio"]: value})
     }
+    if (name == "id"){
+      pdrExists(state.barrio, value, pdr)
+    }
 
   }
 
   function handleSubmit(event) {
 
     event.preventDefault();
-    alert(`Nuevo punto: ${state.nombre} en ${state.barrio}` );
     
+    if (pdrExists(state.barrio, state.id, pdr)){
+      alert("Id incorrecto")
+      return
+    }
+
     var newPdrs = pdr
     newPdrs.push({"nombre": state.nombre, "lat": newMarker.getPosition().lat(), "lng": newMarker.getPosition().lng(), "barrio": state.barrio, "zafacon": state.zafacon, "id": (state.id > 0) ? state.id : setNewId(state.barrio), "descripcion": state.descripcion, "recogida": []})
     setPdr(newPdrs)
@@ -77,7 +85,7 @@ export default function NewPdr(props) {
     })
 
     setNewMarker("")
-
+    alert(`Nuevo punto: ${state.nombre} en ${state.barrio}` );
     return false;
   }
 
@@ -116,6 +124,7 @@ export default function NewPdr(props) {
 
       <div>
       <TextField
+          required={true}
           id="id"
           label="Id"
           type="number"
@@ -125,6 +134,8 @@ export default function NewPdr(props) {
           }}
           onChange={handleInputChange}
           value={state.id}
+          error={pdrExists(state.barrio, state.id, pdr)}
+          helperText={pdrExists(state.barrio, state.id, pdr) ? `Esta id ya existe en ${state.barrio}` : ""}
         />
       </div>
       <br/>
