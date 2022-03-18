@@ -31,8 +31,6 @@ export default function Pesada(){
     }
 
     function dateExists(obj){
-        console.log(obj)
-        console.log(fecha.toLocaleDateString())
         return obj.date == getMonday(fecha).toLocaleDateString()
     }
 
@@ -40,21 +38,19 @@ export default function Pesada(){
         event.preventDefault();
         window.confirm("Recuerda guardar todos los cambios")
         
-        
         if (weight.some(dateExists)){
-            console.log("hey")
             for (let i = 0; i < weight.length; i++) {
-                if (weight[i].date == getMonday(fecha)) {
+                if (weight[i].date == getMonday(fecha).toLocaleDateString()) {
                     weight[i][material] += Number(peso)
                 }
             }
         }
         else{
-            var newWeight = {"date": getMonday(fecha), pet: 0, galones: 0, plasticoduro: 0, carton: 0}
+            var newWeight = {"date": getMonday(fecha).toLocaleDateString(), pet: 0, galones: 0, plasticoduro: 0, carton: 0}
             newWeight[material] += Number(peso)
             weight.push(newWeight)
         }
-
+        
         return false;
     }
 
