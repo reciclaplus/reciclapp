@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import TimeSeries from './stats/TimeSeries';
 import MyPieChart from './stats/PieChart';
+import WeeklyWeight from './stats/WeeklyWeight';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -21,13 +22,19 @@ export default function Dashboard() {
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Item><TimeSeries/></Item>
+          <Item>
+            <h2>Recogida semanal</h2>
+            <TimeSeries/>
+          </Item>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Item><MyPieChart/></Item>
+          <Item>
+            <h2>Distribución de barrios</h2>
+            <MyPieChart/>
+          </Item>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Item>xs=6 md=4</Item>
+          <Item><WeeklyWeight/></Item>
         </Grid>
         <Grid item xs={12} md={6}>
           <Item>xs=6 md=8</Item>

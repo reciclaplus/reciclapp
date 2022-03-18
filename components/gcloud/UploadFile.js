@@ -11,10 +11,18 @@ function UploadFile(props) {
   const { pdr, setPdr } = useContext(PdrContext);
   const {town, setTown} = useContext(TownContext)
   const {weight, setWeight} = useContext(WeightContext)
-  
-  function uploadFunction() {
 
-    console.log(pdr)
+  function upload() {
+    if (pdr.length > 0) {
+      uploadFunction()
+    }
+    else {
+      alert("No hay puntos en el archivo actual.")
+    }
+  }
+
+  function uploadFunction() {
+    
     const boundary='foo_bar_baz'
     const delimiter = "\r\n--" + boundary + "\r\n";
     const close_delim = "\r\n--" + boundary + "--";
@@ -60,7 +68,7 @@ function UploadFile(props) {
   }
 
     return (
-        <Button id="upload-btn" component="a" variant="contained" color="primary" onClick={uploadFunction}>Guardar</Button>
+        <Button id="upload-btn" component="a" variant="contained" color="primary" onClick={upload}>Guardar</Button>
     )
 }
 

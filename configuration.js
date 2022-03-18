@@ -2,7 +2,7 @@ export const conf =
 {
     sabanayegua: {
         nombre: "Sabana Yegua",
-        file: "Puntos_SY.json",
+        file: "peso.json",
         map_center: {"lat": 18.4606607, "lng": -70.8405734},
         barrios: [
             {"nombre": "Barrio Blanco", "color": "#FF95C5", "center": "18.4562141,-70.829"}, 
