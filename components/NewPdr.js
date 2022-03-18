@@ -11,7 +11,7 @@ import NewPdrMap from './NewPdrMap';
 import { TownContext } from '../context/TownContext';
 import { PdrContext } from '../context/PdrContext';
 import { conf } from '../configuration';
-import { pdrExists } from '../utils/PdrManagement'
+import { pdrExists } from '../utils/pdr-management'
 
 export default function NewPdr(props) {
   

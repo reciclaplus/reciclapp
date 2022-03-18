@@ -18,25 +18,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { getWeekNumber } from './PasarPuntos';
+import { getWeekNumber } from '../utils/dates';
 import Button from '@material-ui/core/Button';
 import { useContext } from 'react';
 import { PdrContext } from '../context/PdrContext';
 import { TownContext } from '../context/TownContext';
 import {conf} from '../configuration'
-import { pdrExists } from '../utils/PdrManagement'
-
-export function getDateOfWeek(w, y) {
-  var simple = new Date(y, 0, 1 + (w - 1) * 7);
-  var dow = simple.getDay();
-  var ISOweekStart = simple;
-  if (dow <= 4)
-      ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-  else
-      ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
-  return ISOweekStart;
-}
-
+import { pdrExists } from '../utils/pdr-management'
+import { getDateOfWeek } from '../utils/dates';
 
 
 export default function Table(props) {

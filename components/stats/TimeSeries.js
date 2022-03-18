@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import {getWeekNumber} from '../PasarPuntos';
-import {getDateOfWeek} from '../Table'
+import {getWeekNumber} from '../../utils/dates';
+import { getDateOfWeek } from '../../utils/dates';
 import { PdrContext } from '../../context/PdrContext';
 import { TownContext } from '../../context/TownContext';
 import { conf } from '../../configuration';
 
-export default function BarChart2(props){
+export default function TimeSeries(props){
 
   const [barData, setBarData] = useState()
   const { pdr, setPdr } = useContext(PdrContext);
@@ -20,8 +20,6 @@ export default function BarChart2(props){
   useEffect(() => {
     var result = []
     var currentDate = new Date()
-    console.log(currentDate)
-    console.log(barriosList)
     for (var i = 0; i < 52; i++) {
         var date = currentDate - i*7*24*60*60*1000
         var week = getWeekNumber(date)
