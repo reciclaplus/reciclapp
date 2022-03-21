@@ -30,7 +30,7 @@ function OpenFile(props) {
           
           if (JSON.parse(rawResponse).gapiRequest.data.status === 200) {
             setPdr(file.pdr)
-            setWeight(file.weight)
+            setWeight(file.peso)
             router.push("/list")
           }
           else {

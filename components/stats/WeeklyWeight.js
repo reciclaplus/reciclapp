@@ -6,11 +6,11 @@ import { WeightContext } from '../../context/WeightContext';
 export default function WeeklyWeight(props){
 
   const {weight, setWeight} = useContext(WeightContext)
-
+  console.log(weight)
     return (
     <ResponsiveContainer width="100%" height={300} id="chart">
       <BarChart
-        data={weight.reverse()}
+        data={weight}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date"/>

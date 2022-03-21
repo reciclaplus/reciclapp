@@ -36,7 +36,6 @@ export default function Pesada(){
 
     function handleSubmit(event) {
         event.preventDefault();
-        window.confirm("Recuerda guardar todos los cambios")
         
         if (weight.some(dateExists)){
             for (let i = 0; i < weight.length; i++) {
@@ -46,7 +45,7 @@ export default function Pesada(){
             }
         }
         else{
-            var newWeight = {"date": getMonday(fecha).toLocaleDateString(), pet: 0, galones: 0, plasticoduro: 0, carton: 0}
+            var newWeight = {"dateStr": getMonday(fecha).toLocaleDateString(), "date": getMonday(fecha), pet: 0, galones: 0, plasticoduro: 0, carton: 0}
             newWeight[material] += Number(peso)
             weight.push(newWeight)
         }

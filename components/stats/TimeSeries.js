@@ -37,11 +37,11 @@ export default function TimeSeries(props){
                 
               for (let i = 0; i < barriosList.length; i++) {
                 res[week][barriosList[i]] = 0;
-                console.log(barriosList[i])
+                
                 
               }
               result.push(res[week])
-              console.log(res[week])
+              
             }
             if(data.recogida.some(weeks => weeks.year === year && weeks.week === week && weeks.wasCollected==="si")){
               res[week][data.barrio] += 1;
