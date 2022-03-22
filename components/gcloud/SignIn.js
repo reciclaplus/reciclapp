@@ -18,11 +18,9 @@ function SignIn(props) {
     // Load the API's client and auth2 modules.
     // Call the initClient function after the modules load.
     gapi.load('client:auth2', initClient);
-    console.log("loaded")
   }
 
   function initClient() {
-    console.log("hello")
     // Initialize the gapi.client object, which app uses to make API requests.
     // Get API key and client ID from API Console.
     // 'scope' field specifies space-delimited list of access scopes.
@@ -35,7 +33,6 @@ function SignIn(props) {
     }).then(() => {
       // GoogleAuth = gapi.auth2.getAuthInstance();
       props.setgoogleauth(gapi.auth2.getAuthInstance())
-      console.log(props.googleauth)
     }
     )}
     catch(e){
