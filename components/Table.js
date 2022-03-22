@@ -174,13 +174,12 @@ export default function Table(props) {
               const dataUpdate = [...pdr];
               const index = oldData.tableData.id;
               dataUpdate[index] = newData;
-              if (pdrExists(newData.barrio, newData.id, pdr)){
-                alert("Esta id ya existe")
+              if (newData.id !== oldData.id && pdrExists(newData.barrio, newData.id, pdr)){
+                  alert("Esta id ya existe")
               }
               else{
                 setPdr([...dataUpdate]);
               }
-              
 
               resolve();
             }, 5000)
