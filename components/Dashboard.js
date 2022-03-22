@@ -34,7 +34,10 @@ export default function Dashboard() {
           </Item>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Item><WeeklyWeight/></Item>
+          <Item>
+            <h2>Libras recogidas por semana</h2>
+            <WeeklyWeight/>
+          </Item>
         </Grid>
         <Grid item xs={12} md={6}>
           <Item>xs=6 md=8</Item>

@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 import Layout from '../components/Layout'
 import Pesada from '../components/Pesada'
-
+import WeightTable from '../components/WeightTable'
 export default function List() {
 
   return (
@@ -19,7 +19,8 @@ export default function List() {
         <link rel="icon" type="image/png" href="/logo.png" />
       </Head>
       <Layout>
-        <Pesada/>
+        {/* <Pesada/> */}
+        <WeightTable/>
       </Layout>
     </div>
   )

@@ -6,7 +6,7 @@ import { WeightContext } from '../../context/WeightContext';
 export default function WeeklyWeight(props){
 
   const {weight, setWeight} = useContext(WeightContext)
-  console.log(weight)
+
     return (
     <ResponsiveContainer width="100%" height={300} id="chart">
       <BarChart
@@ -19,6 +19,8 @@ export default function WeeklyWeight(props){
         <Legend />
         <Bar dataKey="pet" fill="#8884d8" />
           <Bar dataKey="galones" fill="#82ca9d" />
+          <Bar dataKey="plasticoduro" fill="#FFC898" />
+          <Bar dataKey="basura" fill="#FF5C58" />
 
       </BarChart>
       
