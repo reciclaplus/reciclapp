@@ -38,10 +38,34 @@ export default function WeightTable(props) {
   return (
     <div style={{ maxWidth: "100%", display:"block"}}>
     <MaterialTable 
-    components={{
-        Container: props => <Paper {...props} elevation={0}/>
-   }}
-      localization={{toolbar:{searchTooltip:"Buscar", searchPlaceholder:"Buscar"}}}
+      components={{
+          Container: props => <Paper {...props} elevation={0}/>
+    }}
+    localization={{
+      toolbar: {
+        searchTooltip:"Buscar", 
+        searchPlaceholder:"Buscar",
+        exportTitle: "Descargar",
+        exportName: "Descargar como CSV",
+        exportAriaLabel: "Hello"
+      },
+      body:{
+        deleteTooltip: "Eliminar",
+        editTooltip: "Editar",
+        editRow: {
+          deleteText: "¿Seguro que quieres eliminar esta fila?",
+          cancelTooltip: "Cancelar",
+          saveTooltip: "Aceptar",
+        },
+        addTooltip: "Añadir"
+      },
+      pagination:{
+        labelRowsSelect: "filas",
+        labelDisplayedRows: "{from}-{to} de {count}",
+        labelRowsPerPage: "Filas por página",
+
+      }
+      }}
       icons={{Add: AddCircleOutlineIcon,Search: SearchIcon, Clear: ClearIcon, Filter: FilterListIcon, FirstPage: FirstPageIcon, 
       LastPage: LastPageIcon, NextPage: NavigateNextIcon, PreviousPage: NavigateBeforeIcon, ResetSearch: ClearIcon, 
       Delete: DeleteForeverIcon, Edit: EditIcon, Check:CheckIcon, Export: GetAppIcon, SortArrow: ArrowDropDownIcon}}
@@ -49,14 +73,12 @@ export default function WeightTable(props) {
       data={tableData}
       columns={[
       { title: 'Date', field: 'date', type: "date"},
-      { title: 'Pet', field: 'pet', type: 'numeric'},
-      { title: 'Galones', field: 'galones', type: 'numeric'},
-      { title: 'Plástico Duro', field: 'plasticoduro', type: 'numeric'},
-      { title: 'Basura', field: 'basura', type: 'numeric'}
+      { title: 'Pet (lb)', field: 'pet', type: 'numeric'},
+      { title: 'Galones (lb)', field: 'galones', type: 'numeric'},
+      { title: 'Plástico Duro (lb)', field: 'plasticoduro', type: 'numeric'},
+      { title: 'Basura (lb)', field: 'basura', type: 'numeric'}
             ]}
       editable={{
-        // onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-        // onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
         onRowAdd: newData =>
             new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -88,7 +110,7 @@ export default function WeightTable(props) {
               resolve()
             }, 1000)
           }),
-      }}
+        }}
     />
     </div>
   )

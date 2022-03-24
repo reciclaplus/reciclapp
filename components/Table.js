@@ -103,7 +103,25 @@ export default function Table(props) {
     components={{
         Container: props => <Paper {...props} elevation={0}/>
    }}
-      localization={{toolbar:{searchTooltip:"Buscar", searchPlaceholder:"Buscar"}}}
+    localization={{
+      toolbar: {
+        searchTooltip:"Buscar", 
+        searchPlaceholder:"Buscar",
+        exportTitle: "Descargar",
+        exportName: "Descargar como CSV",
+        exportAriaLabel: "Hello"
+      },
+      body:{
+        deleteTooltip: "Eliminar",
+        editTooltip: "Editar",
+        editRow: {
+          deleteText: "¿Seguro que quieres eliminar esta fila?",
+          cancelTooltip: "Cancelar",
+          saveTooltip: "Aceptar",
+        },
+        addTooltip: "Añadir"
+      },
+      }}
       icons={{Search: SearchIcon, Clear: ClearIcon, Filter: FilterListIcon, FirstPage: FirstPageIcon, 
       LastPage: LastPageIcon, NextPage: NavigateNextIcon, PreviousPage: NavigateBeforeIcon, ResetSearch: ClearIcon, 
       Delete: DeleteForeverIcon, Edit: EditIcon, Check:CheckIcon, Export: GetAppIcon, SortArrow: ArrowDropDownIcon}}
@@ -159,7 +177,7 @@ export default function Table(props) {
       detailPanel={[
         {
           icon: DetailsIcon,
-          tooltip: 'Show Name',
+          tooltip: 'Muestra más',
           render: rowData => {
             
             return (
