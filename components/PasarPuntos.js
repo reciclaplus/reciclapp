@@ -42,8 +42,6 @@ export default function PasarPuntos(){
                     if (diaDeRecogida.year === year && diaDeRecogida.week === week) {
                         diaDeRecogida.wasCollected = value
                         alreadyChanged = true
-                        console.log("changing existing value")
-                        console.log(alreadyChanged)
                     }
                 })
                     
@@ -98,11 +96,14 @@ export default function PasarPuntos(){
         <FormControl component="fieldset">
             {pdr.map((element, index) => 
             { 
+                const recogida = element.recogida.filter(weeks => weeks.year == fecha.getFullYear() && weeks.week == semana)
+                const initialValue = recogida.length > 0 ? recogida[0].wasCollected : "" 
+                
                 if (element.barrio === barrio){
                 return (
                 <div key={index} className={classes.radioButtonGroup}>
                     <FormLabel component="legend">{element.nombre} - {element.descripcion}</FormLabel>
-                    <RadioButtonsGroup onChange={pasarPunto} barrio={element.barrio} id={element.id} year={fecha.getFullYear()} week={semana} />
+                    <RadioButtonsGroup onChange={pasarPunto} barrio={element.barrio} id={element.id} year={fecha.getFullYear()} week={semana} initialValue={initialValue}/>
                 </div>)
                 }
                 else{

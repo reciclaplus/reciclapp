@@ -5,7 +5,7 @@ import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons';
 
 
 export default function RadioButtonsGroup(props) {
-  const [selectedValue, setSelectedValue] = React.useState('');
+  const [selectedValue, setSelectedValue] = React.useState(props.initialValue);
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
