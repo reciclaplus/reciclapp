@@ -84,7 +84,15 @@ function newPolygon(coordinates, color) {
           { lat: 18.461953, lng: -70.826984 },
           { lat: 18.461103, lng: -70.827147 }
         ];
+
+        const lasMercedesCoords = [
+          { lat: 18.4667331, lng: -70.8300597 },
+          { lat: 18.4636991, lng: -70.8363537 },
+          { lat: 18.4679081, lng: -70.8373717 },
+          { lat: 18.4695071, lng: -70.8310287 }
+        ]
     
+        
         const barrioBlanco = newPolygon(barrioBlancoCoords, "#ff8da1")
         const barrioNuevo = newPolygon(barrioNuevoCoords, "#90ee90")
         const barrioPintado = newPolygon(barrioPintadoCoords, "#1e90ff")
@@ -94,6 +102,7 @@ function newPolygon(coordinates, color) {
         const cartones = newPolygon(cartonesCoords, "#ff8080")
         const barrioTranquilo = newPolygon(barrioTranquiloCoords, "#d3d3d3")
         const cubaLinda = newPolygon(cubaLindaCoords, "#8b4513")
+        const lasMercedes = newPolygon(lasMercedesCoords, "#5D5B5B")
     
         barrioBlanco.setMap(map);
         barrioNuevo.setMap(map);
@@ -104,4 +113,5 @@ function newPolygon(coordinates, color) {
         cartones.setMap(map);
         barrioTranquilo.setMap(map);
         cubaLinda.setMap(map);
+        lasMercedes.setMap(map);
       }
