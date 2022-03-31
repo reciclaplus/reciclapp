@@ -23,11 +23,11 @@ export default function Home() {
       <Layout>
 
         <Typography variant="h4" component="div" gutterBottom>
-          Bienvenido a ReciclApp
+          Bienvenido/a a ReciclApp
         </Typography>
         <Typography variant="body1" paragraph>
           Si tienes acceso a los datos de Recicla+, conéctate y abre el archivo. 
-          En caso contrario, puedes utilizar el documento de muestra para explorar la funcionalidad.
+          En caso contrario, puedes utilizar el documento de ejemplo para explorar la funcionalidad.
         </Typography>
 
         <Typography variant="h5" gutterBottom>
