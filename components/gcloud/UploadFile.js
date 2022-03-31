@@ -12,6 +12,9 @@ function UploadFile(props) {
   const {town, setTown} = useContext(TownContext)
   const {weight, setWeight} = useContext(WeightContext)
 
+  
+  const bucket = town === "sample" ? "reciclaplus-public" : BUCKET_NAME
+
   function upload() {
     if (pdr.length > 0) {
       uploadFunction()
@@ -46,7 +49,7 @@ function UploadFile(props) {
 
 
     var request = gapi.client.request({
-      'path': `https://storage.googleapis.com/upload/storage/v1/b/${BUCKET_NAME}/o/`,
+      'path': `https://storage.googleapis.com/upload/storage/v1/b/${bucket}/o/`,
       'method': 'POST',
       'params': {'uploadType': 'multipart'},
       'headers': {
