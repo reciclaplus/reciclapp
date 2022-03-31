@@ -5,22 +5,26 @@ import { getDateOfWeek } from '../../utils/dates';
 import { PdrContext } from '../../context/PdrContext';
 import { TownContext } from '../../context/TownContext';
 import { conf } from '../../configuration';
+import SelectWeeks from './SelectWeeks'
+import { Box, ThemeProvider } from '@mui/system';
+import { Grid, Button } from "@material-ui/core";
+import CustomTooltip from './CustomTooltip';
 
 export default function TimeSeries(props){
 
   const [barData, setBarData] = useState()
   const { pdr, setPdr } = useContext(PdrContext);
   const {town, setTown} = useContext(TownContext)
-
+  const [nWeeks, setNWeeks] = useState(52)
   var barriosList = []
   const barrios = conf[town].barrios
   
   barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
-
+  
   useEffect(() => {
     var result = []
     var currentDate = new Date()
-    for (var i = 0; i < 52; i++) {
+    for (var i = 0; i < Number(nWeeks); i++) {
         var date = currentDate - i*7*24*60*60*1000
         var week = getWeekNumber(date)
         var year = new Date(date).getFullYear()
@@ -32,6 +36,7 @@ export default function TimeSeries(props){
                 "week": week, 
                 "year": year,
                 "date": getDateOfWeek(week, year).toLocaleDateString(),
+                "total": 50
                 };
 
                 
@@ -54,9 +59,18 @@ export default function TimeSeries(props){
         
       }    
       setBarData(result.reverse())
-  },[])
+  }, [nWeeks])
+
+  function renderTooltip(payload){
+    console.log(payload)
+    return payload
+  }
 
     return (
+      <div>
+        <Grid container justify="flex-end">
+        <SelectWeeks nWeeks={nWeeks} setNWeeks={setNWeeks}></SelectWeeks>
+    </Grid>
     <ResponsiveContainer width="100%" height={300} id="chart">
       <BarChart
         data={barData}
@@ -64,14 +78,16 @@ export default function TimeSeries(props){
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date" />
         <YAxis />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip/>} />
         <Legend />
         {barrios.map(item => {
                 return (<Bar dataKey={item.nombre} stackId="a" fill={item.color} key={item.nombre}>{item.nombre}</Bar>);
               })}
-
+        <Bar dataKey="total" hide={true} stackId="b" key="Total">Total</Bar>
       </BarChart>
       
     </ResponsiveContainer>
+    
+    </div>
   );
 }  
