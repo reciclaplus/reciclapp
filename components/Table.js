@@ -19,7 +19,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { getWeekNumber } from '../utils/dates';
-import Button from '@material-ui/core/Button';
+import { Button } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { useContext } from 'react';
 import { PdrContext } from '../context/PdrContext';
 import { TownContext } from '../context/TownContext';
@@ -137,7 +138,8 @@ export default function Table(props) {
       
       { title: 'Ubicación', 
       render: rowData => 
-      <>
+      <Grid container spacing={1}>
+        <Grid item>
       <Link href={{
         pathname: '/map',
         query: {  lat: rowData.lat,
@@ -145,11 +147,14 @@ export default function Table(props) {
                   zoom: 17,
                   editable: false
                 },
-      }}>
-        <Button variant="outlined" color="primary">
+      }}
+      >
+        <Button variant="outlined" color="primary" sx={{m: 1}}>
           Ver
         </Button>
       </Link>
+      </Grid>
+      <Grid item>
       <Link href={{
         pathname: '/map',
         query: {  lat: rowData.lat,
@@ -158,11 +163,12 @@ export default function Table(props) {
                   editable: true
                 },
       }}>
-        <Button variant="outlined" color="primary">
+        <Button variant="outlined" color="primary" sx={{m: 1}}>
           Editar
         </Button>
       </Link>
-      </>
+      </Grid>
+      </Grid>
       },
       { title: 'Descripción', field: 'descripcion'},
       { title: 'Zafacón', field: 'zafacon', lookup: { true: 'Sí', false: 'No'}},
