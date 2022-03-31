@@ -23,8 +23,8 @@ export function geoLocation(map){
             };
 
             const image = {
-                url: `https://storage.cloud.google.com/${BUCKET_NAME}/location.png`,
-                scaledSize : new google.maps.Size(30, 30)
+                url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                scaledSize : new google.maps.Size(40, 40)
               };
             addCustomMarker(pos, map, image)
      

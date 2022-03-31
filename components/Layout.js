@@ -49,7 +49,7 @@ function Layout({children, ...props}) {
     setOpen(!open);
   };
 
-  const handleChange = (event) => {
+  const handleTownChange = (event) => {
     setTown(event.target.value);
   };
 
@@ -145,10 +145,11 @@ function Layout({children, ...props}) {
                 id: 'uncontrolled-native',
               }}
               value={town}
-              onChange={handleChange}
+              onChange={handleTownChange}
             >
               <option value={"sabanayegua"}>Sabana Yegua</option>
               <option value={"proyecto4"}>Proyecto 4</option>
+              <option value={"sample"}>Ejemplo</option>
               
             </NativeSelect>
           </FormControl>
