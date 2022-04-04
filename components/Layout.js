@@ -33,7 +33,8 @@ import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import StarBorder from '@mui/icons-material/StarBorder';
-
+import Script from 'next/script';
+import {GOOGLE_API_KEY, CLIENT_ID} from './gcloud/google'
 
 
 const drawerWidth = 240;
@@ -57,6 +58,34 @@ function Layout({children, ...props}) {
     setMobileOpen(!mobileOpen);
   };
   
+  function handleClientLoad() {
+    // Load the API's client and auth2 modules.
+    // Call the initClient function after the modules load.
+    gapi.load('client:auth2', initClient);
+  }
+  
+  function initClient() {
+    var SCOPE = 'https://www.googleapis.com/auth/devstorage.full_control';
+    // Initialize the gapi.client object, which app uses to make API requests.
+    // Get API key and client ID from API Console.
+    // 'scope' field specifies space-delimited list of access scopes.
+    try{
+      gapi.client.init({
+        'apiKey': GOOGLE_API_KEY,
+        'clientId': CLIENT_ID,
+        'scope': SCOPE,
+        'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+    }).then(() => {
+      // GoogleAuth = gapi.auth2.getAuthInstance();
+      setGoogleAuth(gapi.auth2.getAuthInstance())
+      console.log(GoogleAuth)
+    }
+    )}
+    catch(e){
+        console.log(e);}
+  }
+
+
   const drawer = (
     <div>
       <Toolbar />
@@ -161,6 +190,7 @@ function Layout({children, ...props}) {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
+    <>
     <Box sx={{ display: {xs: 'block', sm: 'flex'} }}>
       <CssBaseline />
       <AppBar
@@ -230,6 +260,9 @@ function Layout({children, ...props}) {
         {children}
       </Box>
     </Box>
+    <Script src='https://apis.google.com/js/api.js' onLoad={handleClientLoad}></Script>
+    <Script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></Script>
+    </>
   );
 }
 
