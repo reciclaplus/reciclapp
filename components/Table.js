@@ -9,8 +9,9 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import React, { useEffect } from 'react';
-import Radio from '@material-ui/core/Radio';
-import { FormControlLabel } from '@material-ui/core';
+import Radio from '@mui/material/Radio';
+
+import { FormControlLabel } from '@mui/material';
 import DetailsIcon from '@mui/icons-material/Details';
 import { RedRadio, YellowRadio, GreenRadio } from './RadioButtons';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -19,7 +20,9 @@ import CheckIcon from '@mui/icons-material/Check';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { getWeekNumber } from '../utils/dates';
-import { Button } from '@mui/material';
+
+import Button from '@mui/material/Button';
+
 import Grid from '@mui/material/Grid';
 import { useContext } from 'react';
 import { PdrContext } from '../context/PdrContext';
@@ -31,8 +34,6 @@ import { getDateOfWeek } from '../utils/dates';
 
 export default function Table(props) {
   
-  
-//   JSON.parse(barriosList).forEach((barrio) => { barrios.push(barrio.nombre) })
   const { pdr, setPdr } = useContext(PdrContext);
   const {town, setTown} = useContext(TownContext)
 
