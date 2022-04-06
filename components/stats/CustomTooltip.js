@@ -12,12 +12,10 @@ const CustomTooltip = ({ active, payload, label }) => {
           {
             payload.map(payloadi => {
             
-            return (<p style={{"color": payloadi.fill, margin: 3, paddingLeft: 10, paddingRight:10}}>
+            return (<p key={payloadi.dataKey} style={{"color": payloadi.fill, margin: 3, paddingLeft: 10, paddingRight:10}}>
               {`${payloadi.dataKey}: ${payloadi.value}`}
             </p>)})
           }
-         
-         
         </div>
       )
      }
