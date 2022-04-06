@@ -13,7 +13,7 @@ export const conf =
             {"nombre": "El Abanico", "color": "#ffff94", "center": "18.4629935,-70.8337693"}, 
             {"nombre": "Los Cartones", "color": "#C8C6C6", "center": "18.4604671,-70.8372607"}, 
             {"nombre": "Barrio Tranquilo", "color": "#FF5C58", "center": "18.4649761,-70.8411297"},
-            {"nombre": "Las Mercedes", "color": "#5D5B5B", "center": "18.4671271,-70.8351217"}]
+            {"nombre": "Las Mercedes", "color": "#5D5B5B", "center": "18.4671061,-70.8334927"}]
     },
     proyecto4: {
         nombre: "Proyecto 4",
@@ -37,6 +37,6 @@ export const conf =
             {"nombre": "El Abanico", "color": "#ffff94", "center": "18.4629935,-70.8337693"}, 
             {"nombre": "Los Cartones", "color": "#C8C6C6", "center": "18.4604671,-70.8372607"}, 
             {"nombre": "Barrio Tranquilo", "color": "#FF5C58", "center": "18.4649761,-70.8411297"},
-            {"nombre": "Las Mercedes", "color": "#5D5B5B", "center": "18.4671271,-70.8351217"}]
+            {"nombre": "Las Mercedes", "color": "#5D5B5B", "center": "18.4671061,-70.8334927"}]
     }
 }
