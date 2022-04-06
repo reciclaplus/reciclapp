@@ -54,7 +54,7 @@ function UploadFile(props) {
       'params': {'uploadType': 'multipart'},
       'headers': {
         'Content-Type': 'multipart/related; boundary=' + boundary + '',
-        "Authorization": "Bearer " + props.googleauth.currentUser.Nb.wc.access_token
+        // "Authorization": "Bearer " + props.googleauth.currentUser.Nb.wc.access_token
       },
       'body': multipartRequestBody});
       return request.execute(function(file, rawResponse) {
