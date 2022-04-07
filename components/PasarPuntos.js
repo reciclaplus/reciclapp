@@ -9,11 +9,12 @@ import DatePicker from "./DatePicker";
 import RadioButtonsGroup from "./RadioButtonsGroup";
 import { conf } from "../configuration";
 import { getWeekNumber } from "../utils/dates";
+import { getActivePdr } from "../utils/pdr-management";
 
 const useStyles = makeStyles((theme) => ({
 
     radioButtonGroup: {
-        marginBottom: theme.spacing(3)
+        // marginBottom: theme.spacing(3)
     }
   
   }));
@@ -29,7 +30,7 @@ export default function PasarPuntos(){
     const [barrio, setBarrio] = useState("")
     const [fecha, setFecha] = useState(currentDate)
     const [semana, setSemana] = useState(getWeekNumber(currentDate))
-    const recogida = pdr
+    const recogida = getActivePdr(pdr)
     var barrios = []
     conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
     
@@ -94,7 +95,7 @@ export default function PasarPuntos(){
             </div>
         <br/>
         <FormControl component="fieldset">
-            {pdr.map((element, index) => 
+            {getActivePdr(pdr).map((element, index) => 
             { 
                 const recogida = element.recogida.filter(weeks => weeks.year == fecha.getFullYear() && weeks.week == semana)
                 const initialValue = recogida.length > 0 ? recogida[0].wasCollected : "" 
