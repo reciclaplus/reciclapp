@@ -6,13 +6,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import { ListItemButton, ListItem } from '@mui/material';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
+
 import Typography from '@mui/material/Typography';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PlaylistAddCheckCircleIcon from '@mui/icons-material/PlaylistAddCheckCircle';
@@ -20,13 +20,13 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import SignIn from './gcloud/SignIn'
-import GCloud from './gcloud/GCloud';
 import OpenFile from './gcloud/OpenFile';
 import UploadFile from './gcloud/UploadFile';
 import Link from 'next/link';
 import { TownContext } from '../context/TownContext';
 import { FormControl, InputLabel, MenuItem, NativeSelect } from '@mui/material';
-import Button from '@mui/material/Button';
+import Button from '@material-ui/core/Button';
+// import Button from '@mui/material/Button';
 import ScaleIcon from '@mui/icons-material/Scale';
 
 import Collapse from '@mui/material/Collapse';
@@ -91,63 +91,79 @@ function Layout({children, ...props}) {
       <Toolbar />
       <Divider />
       <List  sx={{ml:2}}>
-        <Link href="/list">
-          <ListItem button key="Lista">
-            <ListItemIcon>
-              <ListAltIcon />
-            </ListItemIcon>
-            <ListItemText primary="Lista" />
+      <Link href="/list">
+          <ListItem disablePadding>
+          
+            <ListItemButton key="Lista">
+              <ListItemIcon>
+                <ListAltIcon />
+              </ListItemIcon>
+              <ListItemText primary="Lista" />
+            </ListItemButton>
+            
           </ListItem>
-        </Link>
+          </Link>
         <Link href="/map">
-        <ListItem button onClick={handleClick} key="Mapa">
+        <ListItem disablePadding>
+        <ListItemButton onClick={handleClick} key="Mapa">
           <ListItemIcon>
             <MyLocationIcon/>
           </ListItemIcon>
           <ListItemText primary="Mapa" />
           {open ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
         </ListItem>
         </Link>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Link href="/downloadMap">
-            <ListItem button key="Descargar Mapa">
+          <ListItem disablePadding>
+            <ListItemButton key="Descargar Mapa">
               <ListItemIcon>
                 <StarBorder />
               </ListItemIcon>
               <ListItemText primary="Descargar Mapa" />
+            </ListItemButton>
             </ListItem>
           </Link>
         </Collapse>
         <Link href="/newPdr">
-          <ListItem button key="Nuevo Punto">
+        <ListItem disablePadding>
+          <ListItemButton key="Nuevo Punto">
             <ListItemIcon>
               <AddCircleOutlineIcon />
             </ListItemIcon>
             <ListItemText primary="Nuevo Punto" />
+          </ListItemButton>
           </ListItem>
         </Link>
         <Link href="/pasarPuntos">
-          <ListItem button key="Pasar Puntos">
+        <ListItem disablePadding>
+          <ListItemButton key="Pasar Puntos">
             <ListItemIcon>
               <PlaylistAddCheckCircleIcon />
             </ListItemIcon>
             <ListItemText primary="Pasar Puntos" />
+          </ListItemButton>
           </ListItem>
         </Link>
         <Link href="/pesada">
-          <ListItem button key="Pesada">
+        <ListItem disablePadding>
+          <ListItemButton key="Pesada">
             <ListItemIcon>
               <ScaleIcon />
             </ListItemIcon>
             <ListItemText primary="Pesada" />
+          </ListItemButton>
           </ListItem>
         </Link>
         <Link href="/stats">
-          <ListItem button key="Estadísticas">
+        <ListItem disablePadding>
+          <ListItemButton  key="Estadísticas">
             <ListItemIcon>
               <AnalyticsIcon />
             </ListItemIcon>
             <ListItemText primary="Estadísticas" />
+          </ListItemButton>
           </ListItem>
         </Link>
       </List>
@@ -211,7 +227,7 @@ function Layout({children, ...props}) {
             <MenuIcon />
           </IconButton>
           <Link href="/">
-            <Button style={{"color": "white"}}>
+            <Button style={{color: "#FFF"}}>
               <Typography variant="h6" noWrap component="div">
                 Recicla+
               </Typography>
