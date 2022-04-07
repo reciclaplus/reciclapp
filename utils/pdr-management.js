@@ -7,3 +7,16 @@ export function pdrExists(barrio, id, listofpdr) {
     }
     
 }
+
+export function getActivePdr(pdr) {
+    const a = pdr.filter(activeFilter)
+
+    function activeFilter(e){
+            
+            if (e.active == true){
+                return e
+            
+        }
+    }
+    return a
+}

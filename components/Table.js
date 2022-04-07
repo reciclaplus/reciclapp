@@ -20,7 +20,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { getWeekNumber } from '../utils/dates';
-
+import { getActivePdr } from '../utils/pdr-management';
 import Button from '@mui/material/Button';
 
 import Grid from '@mui/material/Grid';
@@ -41,7 +41,8 @@ export default function Table(props) {
   const barriosList = conf[town].barrios
   barriosList.forEach((barrio) => { barrios.push(barrio.nombre) })
 
-  var tableData = pdr
+  var tableData = getActivePdr(pdr)
+  
 
   useEffect(() => {
     const today = new Date()
@@ -173,6 +174,7 @@ export default function Table(props) {
       },
       { title: 'Descripción', field: 'descripcion'},
       { title: 'Zafacón', field: 'zafacon', lookup: { true: 'Sí', false: 'No'}},
+      // { title: 'Activo', field: 'active', lookup: { true: 'Sí', false: 'No'}},
       { title: 'Alerta', field: 'alerta', lookup: { true: 'Sí', false: 'No'}}]}
       data={tableData}
       options={{
@@ -214,7 +216,8 @@ export default function Table(props) {
             setTimeout(() => {
               const dataDelete = [...pdr];
               const index = oldData.tableData.id;
-              dataDelete.splice(index, 1);
+              dataDelete[index].active = false
+              // dataDelete.splice(index, 1);
               setPdr([...dataDelete]);
               
               resolve()
