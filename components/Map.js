@@ -7,6 +7,7 @@ import {useRouter} from 'next/router';
 import { initGoogleMap } from './BaseMap';
 import { TownContext } from '../context/TownContext';
 import { conf } from '../configuration';
+import { getActivePdr } from '../utils/pdr-management';
 
 const MyMap = (props) => {
     const googleMapRef = useRef(null);
@@ -37,7 +38,7 @@ const MyMap = (props) => {
         googleMap = initGoogleMap(googleMapRef, mapCenter, zoomMap);
 
         if (pdr.length > 1) {
-        pdr.forEach(position => {
+        getActivePdr(pdr).forEach(position => {
             var marker = addMarker(position, googleMap, position.nombre)
             var infowindow = new google.maps.InfoWindow({
             content: position.nombre,

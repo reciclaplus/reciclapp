@@ -1,3 +1,5 @@
+import { getActivePdr } from "../utils/pdr-management";
+
 export function download(e) {
     
     fetch(e, {
@@ -25,7 +27,7 @@ export function createMapURL(pdr, barrio, center){
     const startURL = "https://maps.googleapis.com/maps/api/staticmap"
     const zoom = "17"
     var markersString = ""
-    pdr.forEach(marker => 
+    getActivePdr(pdr).forEach(marker => 
         {
             if (marker.barrio === barrio) {
 

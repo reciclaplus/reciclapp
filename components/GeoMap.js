@@ -4,7 +4,6 @@
 // locate you.
 let infoWindow;
 import { addCustomMarker } from "./BaseMap";
-import { BUCKET_NAME } from "./gcloud/google";
 
 export function geoLocation(map){
     const locationButton = document.createElement("button");

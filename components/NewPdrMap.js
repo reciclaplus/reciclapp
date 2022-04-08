@@ -3,6 +3,7 @@ import { initGoogleMap, addMarker } from './BaseMap';
 import { PdrContext } from '../context/PdrContext';
 import { TownContext } from '../context/TownContext';
 import { conf } from '../configuration';
+import { getActivePdr } from '../utils/pdr-management';
 
 function NewPdrMap(props){
   const googleMapRef = useRef(null);
@@ -16,7 +17,7 @@ function NewPdrMap(props){
     googleMap = initGoogleMap(googleMapRef, mapCenter, 14);
     
     addEventListener()
-    pdr.forEach(position => {
+    getActivePdr(pdr).forEach(position => {
       var marker = addMarker(position, googleMap)
       var infowindow = new window.google.maps.InfoWindow({
         content: position.nombre,
