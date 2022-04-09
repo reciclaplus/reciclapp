@@ -13,9 +13,8 @@ export function getActivePdr(pdr) {
 
     function activeFilter(e){
             
-            if (e.active == true){
-                return e
-            
+            if (Boolean(e.active) == true){
+                return e   
         }
     }
     return a
