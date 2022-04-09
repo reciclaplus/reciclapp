@@ -73,7 +73,7 @@ export default function NewPdr(props) {
     }
 
     var newPdrs = pdr
-    newPdrs.push({"nombre": state.nombre, "lat": newMarker.getPosition().lat(), "lng": newMarker.getPosition().lng(), "barrio": state.barrio, "zafacon": state.zafacon, "id": (state.id > 0) ? state.id : setNewId(state.barrio), "descripcion": state.descripcion, "recogida": []})
+    newPdrs.push({"nombre": state.nombre, "lat": newMarker.getPosition().lat(), "lng": newMarker.getPosition().lng(), "barrio": state.barrio, "zafacon": state.zafacon, "id": (state.id > 0) ? state.id : setNewId(state.barrio), "descripcion": state.descripcion, "recogida": [], "active": true})
     setPdr(newPdrs)
 
     setState({
