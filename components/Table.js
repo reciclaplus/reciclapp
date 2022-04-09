@@ -41,8 +41,7 @@ export default function Table(props) {
   const barriosList = conf[town].barrios
   barriosList.forEach((barrio) => { barrios.push(barrio.nombre) })
 
-  var tableData = getActivePdr(pdr)
-  
+  var tableData = pdr
 
   useEffect(() => {
     const today = new Date()
@@ -174,8 +173,8 @@ export default function Table(props) {
       },
       { title: 'Descripción', field: 'descripcion'},
       { title: 'Zafacón', field: 'zafacon', lookup: { true: 'Sí', false: 'No'}},
-      // { title: 'Activo', field: 'active', lookup: { true: 'Sí', false: 'No'}},
-      { title: 'Alerta', field: 'alerta', lookup: { true: 'Sí', false: 'No'}}]}
+      { title: 'Alerta', field: 'alerta', lookup: { true: 'Sí', false: 'No'}},
+      { title: 'Activo', field: 'active', lookup: { true: 'Sí', false: 'No'}, defaultFilter: ["true"]}]}
       data={tableData}
       options={{
         filtering: true,
