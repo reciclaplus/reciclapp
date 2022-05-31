@@ -35,7 +35,8 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import StarBorder from '@mui/icons-material/StarBorder';
 import Script from 'next/script';
 import {GOOGLE_API_KEY, CLIENT_ID} from './gcloud/google'
-
+import { signIn, signOut, useSession } from "next-auth/react"
+import { PdrContext } from '../context/PdrContext';
 
 const drawerWidth = 240;
 
@@ -43,8 +44,10 @@ function Layout({children, ...props}) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [GoogleAuth, setGoogleAuth] = React.useState();
+  const {pdr, setPdr} = React.useContext(PdrContext)
   const {town, setTown} = React.useContext(TownContext)
   const [open, setOpen] = React.useState(false);
+  const { data: session, status } = useSession()
 
   const handleClick = () => {
     setOpen(!open);
@@ -175,10 +178,46 @@ function Layout({children, ...props}) {
             <SignIn googleauth={GoogleAuth} setgoogleauth={setGoogleAuth}/>
         </ListItem>
         <ListItem>
-            <OpenFile googleauth={GoogleAuth}/>
+            <OpenFile googleauth={GoogleAuth} accessToken={session ? session.accessToken: ""}/>
         </ListItem>
         <ListItem>
             <UploadFile googleauth={GoogleAuth}/>
+        </ListItem>
+
+        <ListItem>
+            <button onClick={()=> fetch('./api/db/insert-pdr',{
+            method: "POST",
+            body: JSON.stringify({pdr:pdr})
+          }).then(function(response){
+            return response;
+          })}>
+              Insert PDR
+              </button>
+        </ListItem>
+
+        <ListItem>
+            <button onClick={()=> fetch('./api/db/insert-recogida',{
+            method: "POST",
+            body: JSON.stringify({pdr:pdr})
+          }).then(function(response){
+            return response;
+          })}>
+              Insert Recogida
+              </button>
+        </ListItem>
+
+        <ListItem>
+            <button onClick={()=> fetch('./api/db/get-all-pdr',{
+            method: "GET"
+          }).then(response => response.json()).then(data => {
+            console.log(data)})
+            }>
+              Get all PDR
+              </button>
+        </ListItem>
+
+        <ListItem>
+            {!session ? <p>Access Denied</p> : <p>{session.user.name} {session.accessToken}</p>}
         </ListItem>
         <Divider />
         <ListItem>
