@@ -35,7 +35,6 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import StarBorder from '@mui/icons-material/StarBorder';
 import Script from 'next/script';
 import {GOOGLE_API_KEY, CLIENT_ID} from './gcloud/google'
-import { signIn, signOut, useSession } from "next-auth/react"
 import { PdrContext } from '../context/PdrContext';
 
 const drawerWidth = 240;
@@ -47,7 +46,6 @@ function Layout({children, ...props}) {
   const {pdr, setPdr} = React.useContext(PdrContext)
   const {town, setTown} = React.useContext(TownContext)
   const [open, setOpen] = React.useState(false);
-  const { data: session, status } = useSession()
 
   const handleClick = () => {
     setOpen(!open);
@@ -178,7 +176,7 @@ function Layout({children, ...props}) {
             <SignIn googleauth={GoogleAuth} setgoogleauth={setGoogleAuth}/>
         </ListItem>
         <ListItem>
-            <OpenFile googleauth={GoogleAuth} accessToken={session ? session.accessToken: ""}/>
+            <OpenFile googleauth={GoogleAuth}/>
         </ListItem>
         <ListItem>
             <UploadFile googleauth={GoogleAuth}/>
@@ -216,9 +214,6 @@ function Layout({children, ...props}) {
               </button>
         </ListItem>
 
-        <ListItem>
-            {!session ? <p>Access Denied</p> : <p>{session.user.name} {session.accessToken}</p>}
-        </ListItem>
         <Divider />
         <ListItem>
             <FormControl variant="standard">
