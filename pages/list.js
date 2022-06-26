@@ -7,7 +7,7 @@ import { Button } from "@material-ui/core";
 import React, { useEffect, useState } from 'react';
 
 import Layout from '../components/Layout'
-import Table from '../components/Table'
+import Table from '../components/TableDB'
 
 export default function List() {
 

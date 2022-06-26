@@ -3,7 +3,8 @@ import conn from '../../../lib/db'
 export default async (req, res) => {
 
         try {
-            const query = 'SELECT * FROM pdr'
+            const query = `SELECT * FROM pdr`
+
             console.log("Querying...")
             const result = await conn.query(
                 query

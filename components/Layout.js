@@ -37,6 +37,7 @@ import Script from 'next/script';
 import {GOOGLE_API_KEY, CLIENT_ID} from './gcloud/google'
 import { PdrContext } from '../context/PdrContext';
 
+
 const drawerWidth = 240;
 
 function Layout({children, ...props}) {
@@ -208,9 +209,20 @@ function Layout({children, ...props}) {
             <button onClick={()=> fetch('./api/db/get-all-pdr',{
             method: "GET"
           }).then(response => response.json()).then(data => {
-            console.log(data)})
+            console.log(data)
+            setPdr(data)})
             }>
               Get all PDR
+              </button>
+        </ListItem>
+
+        <ListItem>
+            <button onClick={()=> fetch('./api/db/get-recogida',{
+            method: "GET"
+          }).then(response => response.json()).then(data => {
+            console.log(data)})
+            }>
+              Get Last 3
               </button>
         </ListItem>
 
