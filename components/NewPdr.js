@@ -23,7 +23,8 @@ export default function NewPdr(props) {
     barrio: "",
     nombre: "",
     descripcion:"",
-    id: ""
+    id: "",
+    categoria: ""
   })
 
   const [newMarker, setNewMarker] = useState("")
@@ -73,7 +74,7 @@ export default function NewPdr(props) {
     }
 
     var newPdrs = pdr
-    newPdrs.push({"nombre": state.nombre, "lat": newMarker.getPosition().lat(), "lng": newMarker.getPosition().lng(), "barrio": state.barrio, "zafacon": state.zafacon, "id": (state.id > 0) ? state.id : setNewId(state.barrio), "descripcion": state.descripcion, "recogida": [], "active": true})
+    newPdrs.push({"nombre": state.nombre, "lat": newMarker.getPosition().lat(), "lng": newMarker.getPosition().lng(), "barrio": state.barrio, "zafacon": state.zafacon, "id": (state.id > 0) ? state.id : setNewId(state.barrio), "descripcion": state.descripcion, "categoria": state.categoria,"recogida": [], "active": true})
     setPdr(newPdrs)
 
     setState({
@@ -139,6 +140,24 @@ export default function NewPdr(props) {
         />
       </div>
       <br/>
+      <FormControl required={true}>
+        <InputLabel>Categoría</InputLabel>
+        <NativeSelect
+        inputProps={{
+          name: 'categoria',
+          id: 'categoria',
+        }}
+          id="categoria"
+          value={state.categoria}
+          onChange={handleInputChange}
+        >
+          <option value=""></option>
+          <option value="casa">Casa Particular</option>
+          <option value="escuela">Escuela</option>
+          <option value="negocio">Negocio</option>
+        </NativeSelect>
+      </FormControl>
+      <br />
       <div>
       <FormControlLabel
         required={true}

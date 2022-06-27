@@ -172,6 +172,7 @@ export default function Table(props) {
       </Grid>
       },
       { title: 'Descripción', field: 'descripcion'},
+      { title: 'Categoría', field: 'categoria', lookup: { casa: 'Casa Particular', escuela: 'Escuela', negocio: "Negocio"}},
       { title: 'Zafacón', field: 'zafacon', lookup: { true: 'Sí', false: 'No'}},
       { title: 'Alerta', field: 'alerta', lookup: { true: 'Sí', false: 'No'}},
       { title: 'Activo', field: 'active', lookup: { true: 'Sí', false: 'No'}, defaultFilter: ["true"]}]}
@@ -222,6 +223,20 @@ export default function Table(props) {
               resolve()
             }, 1000)
           }),
+          onBulkUpdate: changes =>
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              const selectedRows = Object.values(changes)
+              const updatedRows = [...pdr]
+              let index
+              selectedRows.map(row => {
+                index = row.oldData.tableData.id
+                updatedRows[index] = row.newData
+              })
+              setPdr(updatedRows)
+              resolve();
+            }, 1000);
+          }), 
       }}
     />
     </div>
