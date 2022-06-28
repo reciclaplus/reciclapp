@@ -18,7 +18,7 @@ export default function TimeSeries(props){
   const [nWeeks, setNWeeks] = useState(52)
   var barriosList = []
   const barrios = conf[town].barrios
-  
+
   barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
   
   useEffect(() => {
@@ -36,18 +36,15 @@ export default function TimeSeries(props){
                 "week": week, 
                 "year": year,
                 "date": getDateOfWeek(week, year).toLocaleDateString(),
-                "total": 50
                 };
 
-                
               for (let i = 0; i < barriosList.length; i++) {
                 res[week][barriosList[i]] = 0;
-                
-                
               }
+
               result.push(res[week])
-              
             }
+            
             if(data.recogida.some(weeks => weeks.year === year && weeks.week === week && weeks.wasCollected==="si")){
               res[week][data.barrio] += 1;
               
@@ -57,7 +54,7 @@ export default function TimeSeries(props){
         },{})
         
         
-      }    
+      } 
       setBarData(result.reverse())
   }, [nWeeks])
 

@@ -1,6 +1,5 @@
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
-      console.log(payload)
       const total = payload.reduce(function (s, a) {
         return s + a.value;
       }, 0);
