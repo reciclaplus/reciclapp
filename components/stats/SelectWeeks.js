@@ -1,25 +1,21 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import NativeSelect from '@mui/material/NativeSelect';
+import * as React from 'react'
+import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl'
+import NativeSelect from '@mui/material/NativeSelect'
 
-export default function SelectWeeks(props) {
-
+export default function SelectWeeks (props) {
   const handleChange = (event) => {
-    props.setNWeeks(event.target.value);
-  };
+    props.setNWeeks(event.target.value)
+  }
 
   return (
-    
+
     <FormControl>
       <InputLabel>Plazo</InputLabel>
       <NativeSelect
       inputProps={{
         name: 'plazo',
-        id: 'plazo-native-simple',
+        id: 'plazo-native-simple'
       }}
         id="demo-simple-select"
         value={props.nWeeks}
@@ -30,9 +26,9 @@ export default function SelectWeeks(props) {
           <option value={12}> Últimos 3 meses </option>
           <option value={52}> Último año </option>
           <option value={78}> Último año y medio </option>
-        
+
       </NativeSelect>
     </FormControl>
-          
-    );
+
+  )
 }

@@ -1,68 +1,61 @@
-import { Button, FormControl, FormLabel } from "@mui/material";
-import InputLabel from '@mui/material/InputLabel';
-import NativeSelect from '@mui/material/NativeSelect';
-import { makeStyles } from '@mui/styles';
-import { useState, useContext } from "react";
-import { PdrContext } from '../context/PdrContext';
-import { WeightContext } from "../context/WeightContext";
-import { TownContext } from "../context/TownContext";
-import DatePicker from "./DatePicker";
-import { conf } from "../configuration";
-import { TextField } from "@mui/material";
-import { getMonday } from "../utils/dates"
+import { Button, FormControl, TextField } from '@mui/material'
+import InputLabel from '@mui/material/InputLabel'
+import NativeSelect from '@mui/material/NativeSelect'
+import { useContext, useState } from 'react'
+import { WeightContext } from '../context/WeightContext'
+import DatePicker from './DatePicker'
 
+import { getMonday } from '../utils/dates'
 
-export default function Pesada(){
+export default function Pesada () {
+  const { weight } = useContext(WeightContext)
 
-    const {weight, setWeight} = useContext(WeightContext)
+  const currentDate = new Date()
 
-    const currentDate = new Date();
+  const [material, setMaterial] = useState('')
+  const [fecha, setFecha] = useState(currentDate)
+  const [peso, setPeso] = useState(0)
 
-    const [material, setMaterial] = useState("")
-    const [fecha, setFecha] = useState(currentDate)
-    const [peso, setPeso] = useState(0)
+  const materiales = ['pet', 'galones', 'plastico duro', 'carton']
 
-    var materiales = ["pet", "galones", "plastico duro", "carton"]
-    
-    function datePickerDate(event) {
-        var dateString = event.target.value
-        var d = new Date(+dateString.substring(0,4), +dateString.substring(5,7)-1, +dateString.substring(8,10))        
-        return d
-    }
+  function datePickerDate (event) {
+    const dateString = event.target.value
+    const d = new Date(+dateString.substring(0, 4), +dateString.substring(5, 7) - 1, +dateString.substring(8, 10))
+    return d
+  }
 
-    function dateExists(obj){
-        return obj.date == getMonday(fecha).toLocaleDateString()
-    }
+  function dateExists (obj) {
+    return obj.date === getMonday(fecha).toLocaleDateString()
+  }
 
-    function handleSubmit(event) {
-        event.preventDefault();
-        
-        if (weight.some(dateExists)){
-            for (let i = 0; i < weight.length; i++) {
-                if (weight[i].date == getMonday(fecha).toLocaleDateString()) {
-                    weight[i][material] += Number(peso)
-                }
-            }
+  function handleSubmit (event) {
+    event.preventDefault()
+
+    if (weight.some(dateExists)) {
+      for (let i = 0; i < weight.length; i++) {
+        if (weight[i].date === getMonday(fecha).toLocaleDateString()) {
+          weight[i][material] += Number(peso)
         }
-        else{
-            var newWeight = {"dateStr": getMonday(fecha).toLocaleDateString(), "date": getMonday(fecha), pet: 0, galones: 0, plasticoduro: 0, carton: 0}
-            newWeight[material] += Number(peso)
-            weight.push(newWeight)
-        }
-        
-        return false;
+      }
+    } else {
+      const newWeight = { dateStr: getMonday(fecha).toLocaleDateString(), date: getMonday(fecha), pet: 0, galones: 0, plasticoduro: 0, carton: 0 }
+      newWeight[material] += Number(peso)
+      weight.push(newWeight)
     }
 
-    return (
+    return false
+  }
+
+  return (
         <form onSubmit={handleSubmit}>
-            <DatePicker defaultDate={fecha} onChange={(event) => {setFecha(datePickerDate(event))}}/>
+            <DatePicker defaultDate={fecha} onChange={(event) => { setFecha(datePickerDate(event)) }}/>
             <div>
-                <FormControl sx={{my:1}}>
+                <FormControl sx={{ my: 1 }}>
                     <InputLabel>Material</InputLabel>
                     <NativeSelect
                     inputProps={{
-                    name: 'material',
-                    id: 'material',
+                      name: 'material',
+                      id: 'material'
                     }}
                     id="material-select"
                     value={material}
@@ -70,7 +63,7 @@ export default function Pesada(){
                     >
                     <option value=""></option>
                     {materiales.map(item => {
-                        return (<option value={item} key={item}>{item}</option>);
+                      return (<option value={item} key={item}>{item}</option>)
                     })}
                     </NativeSelect>
                 </FormControl>
@@ -81,9 +74,9 @@ export default function Pesada(){
                 label="Peso (lb)"
                 type="number"
                 name="peso"
-                sx={{my:1}}
-                onChange={(event) => setPeso(event.target.value)}>                
-            
+                sx={{ my: 1 }}
+                onChange={(event) => setPeso(event.target.value)}>
+
         </TextField>
         <br/>
       <div>
@@ -92,5 +85,5 @@ export default function Pesada(){
       </Button>
       </div>
         </form>
-    )
+  )
 }

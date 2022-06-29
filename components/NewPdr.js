@@ -1,101 +1,94 @@
-import React, { useState, useContext } from 'react';
-// import SYmap from './SYmap';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
-import Switch from '@mui/material/Switch';
-import NativeSelect from '@mui/material/NativeSelect';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import InputLabel from '@mui/material/InputLabel';
-import NewPdrMap from './NewPdrMap';
-import { TownContext } from '../context/TownContext';
-import { PdrContext } from '../context/PdrContext';
-import { conf } from '../configuration';
+import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import InputLabel from '@mui/material/InputLabel'
+import NativeSelect from '@mui/material/NativeSelect'
+import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+import { useContext, useState } from 'react'
+import { conf } from '../configuration'
+import { PdrContext } from '../context/PdrContext'
+import { TownContext } from '../context/TownContext'
 import { pdrExists } from '../utils/pdr-management'
+import NewPdrMap from './NewPdrMap'
 
-export default function NewPdr(props) {
-  
-  const {town, setTown} = useContext(TownContext)
-  const { pdr, setPdr } = useContext(PdrContext);
+export default function NewPdr (props) {
+  const { town } = useContext(TownContext)
+  const { pdr, setPdr } = useContext(PdrContext)
 
   const [state, setState] = useState({
     zafacon: false,
-    barrio: "",
-    nombre: "",
-    descripcion:"",
-    id: "",
-    categoria: ""
+    barrio: '',
+    nombre: '',
+    descripcion: '',
+    id: '',
+    categoria: ''
   })
 
-  const [newMarker, setNewMarker] = useState("")
-  var barrios = []  
+  const [newMarker, setNewMarker] = useState('')
+  const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
 
-
-  function setNewId(barrio) {
-    var allIds = []
+  function setNewId (barrio) {
+    const allIds = []
     pdr.map((e) => {
       if (e.barrio === barrio) {
         return allIds.push(+e.id)
-      }
-      else{return allIds}
+      } else { return allIds }
     })
 
     if (allIds.length > 0) {
       return (Math.max(...allIds) + 1)
     }
-    
+
     return 1
   }
 
-  function handleInputChange(event) {
-    
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
+  function handleInputChange (event) {
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
 
-    setState({...state, [name]: value})
-    if (name == "barrio"){
-      setState({...state, ["id"]: setNewId(value), ["barrio"]: value})
+    setState({ ...state, [name]: value })
+    if (name === 'barrio') {
+      setState({ ...state, id: setNewId(value), barrio: value })
     }
-    if (name == "id"){
+    if (name === 'id') {
       pdrExists(state.barrio, value, pdr)
     }
-
   }
 
-  function handleSubmit(event) {
+  function handleSubmit (event) {
+    event.preventDefault()
 
-    event.preventDefault();
-    
-    if (pdrExists(state.barrio, state.id, pdr)){
-      alert("Id incorrecto")
+    if (pdrExists(state.barrio, state.id, pdr)) {
+      alert('Id incorrecto')
       return
     }
 
-    var newPdrs = pdr
-    newPdrs.push({"nombre": state.nombre, "lat": newMarker.getPosition().lat(), "lng": newMarker.getPosition().lng(), "barrio": state.barrio, "zafacon": state.zafacon, "id": (state.id > 0) ? state.id : setNewId(state.barrio), "descripcion": state.descripcion, "categoria": state.categoria,"recogida": [], "active": true})
+    const newPdrs = pdr
+    newPdrs.push({ nombre: state.nombre, lat: newMarker.getPosition().lat(), lng: newMarker.getPosition().lng(), barrio: state.barrio, zafacon: state.zafacon, id: (state.id > 0) ? state.id : setNewId(state.barrio), descripcion: state.descripcion, categoria: state.categoria, recogida: [], active: true })
     setPdr(newPdrs)
 
     setState({
       zafacon: false,
-      barrio: "",
-      nombre: "",
-      descripcion:"",
-      id: ""
+      barrio: '',
+      nombre: '',
+      descripcion: '',
+      id: ''
     })
 
-    setNewMarker("")
-    alert(`Nuevo punto: ${state.nombre} en ${state.barrio}` );
-    return false;
+    setNewMarker('')
+    alert(`Nuevo punto: ${state.nombre} en ${state.barrio}`)
+    return false
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <div>
-      
+
       <TextField required={true} id="nombre" label="Nombre" name="nombre" onChange={handleInputChange} value={state.nombre}/>
-      
+
       </div>
       <br/>
       <div>
@@ -108,7 +101,7 @@ export default function NewPdr(props) {
         <NativeSelect
         inputProps={{
           name: 'barrio',
-          id: 'age-native-simple',
+          id: 'age-native-simple'
         }}
           id="demo-simple-select"
           value={state.barrio}
@@ -116,8 +109,8 @@ export default function NewPdr(props) {
         >
           <option value=""></option>
           {barrios.map(item => {
-                return (<option value={item} key={item}>{item}</option>);
-              })}
+            return (<option value={item} key={item}>{item}</option>)
+          })}
         </NativeSelect>
       </FormControl>
       </div>
@@ -131,12 +124,12 @@ export default function NewPdr(props) {
           type="number"
           name="id"
           InputLabelProps={{
-            shrink: true,
+            shrink: true
           }}
           onChange={handleInputChange}
           value={state.id}
           error={pdrExists(state.barrio, state.id, pdr)}
-          helperText={pdrExists(state.barrio, state.id, pdr) ? `Esta id ya existe en ${state.barrio}` : ""}
+          helperText={pdrExists(state.barrio, state.id, pdr) ? `Esta id ya existe en ${state.barrio}` : ''}
         />
       </div>
       <br/>
@@ -145,7 +138,7 @@ export default function NewPdr(props) {
         <NativeSelect
         inputProps={{
           name: 'categoria',
-          id: 'categoria',
+          id: 'categoria'
         }}
           id="categoria"
           value={state.categoria}
@@ -179,22 +172,22 @@ export default function NewPdr(props) {
         id="outlined-name"
         name="ubicacion"
         label="Ubicación"
-        value={(newMarker !== "") ? 'OK' : ''}
+        value={(newMarker !== '') ? 'OK' : ''}
         onChange={handleInputChange}
         helperText="Selecciona la ubicación en el mapa"
       />
       </div>
       <div>
-        
-        <NewPdrMap containerStyle={{width:'100%', height:'60%'}} setNewMarker={setNewMarker}/>
-      
+
+        <NewPdrMap containerStyle={{ width: '100%', height: '60%' }} setNewMarker={setNewMarker}/>
+
       </div>
       <br/>
       <div>
-      <Button variant="contained" color="primary" type="submit" style={{"marginBottom": '20px'}}>
+      <Button variant="contained" color="primary" type="submit" style={{ marginBottom: '20px' }}>
         Añadir punto
       </Button>
       </div>
     </form>
-  );
+  )
 }

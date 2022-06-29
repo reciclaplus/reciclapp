@@ -1,19 +1,18 @@
-import { FormControlLabel, RadioGroup } from '@mui/material';
-import Radio from '@mui/material/Radio';
-import React from 'react';
-import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons';
+import { FormControlLabel, RadioGroup } from '@mui/material'
+import Radio from '@mui/material/Radio'
+import React from 'react'
+import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons'
 
-
-export default function RadioButtonsGroup(props) {
-  const [selectedValue, setSelectedValue] = React.useState(props.initialValue);
+export default function RadioButtonsGroup (props) {
+  const [selectedValue, setSelectedValue] = React.useState(props.initialValue)
 
   const handleChange = (event) => {
-    setSelectedValue(event.target.value);
+    setSelectedValue(event.target.value)
     props.onChange(props.barrio, props.id, props.year, props.week, event.target.value)
-  };
+  }
 
   return (
-    
+
     <RadioGroup onChange={handleChange}>
       <FormControlLabel
           value="si"
@@ -50,14 +49,14 @@ export default function RadioButtonsGroup(props) {
         <FormControlLabel
           value="nada"
           control={<YellowRadio
-            checked={selectedValue === "nada"}
+            checked={selectedValue === 'nada'}
             value="nada"
             name="pasar-puntos-radio-button-nada"
             inputProps={{ 'aria-label': null }}
           />}
           label="No disponible"
         />
-      
+
       </RadioGroup>
-  );
+  )
 }

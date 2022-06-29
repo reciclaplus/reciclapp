@@ -1,27 +1,24 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { WeightContext } from '../../context/WeightContext';
+import React, { useEffect, useState } from 'react'
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
+export default function WeeklyWeightSample (props) {
+  const [data, setData] = useState([])
 
-export default function WeeklyWeightSample(props){
-
-    const [data, setData] = useState([])
-
-    useEffect(()=>{
-        fetch('./api/sample-data/weekly-weight',{
-        headers : { 
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-        }).then(function(response){
-        return response.json();
-        })
-        .then(function(myJson) {
+  useEffect(() => {
+    fetch('./api/sample-data/weekly-weight', {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    }).then(function (response) {
+      return response.json()
+    })
+      .then(function (myJson) {
         setData(myJson.reverse())
-        })
-        }
-        )
-    return (
+      })
+  }
+  )
+  return (
     <ResponsiveContainer width="100%" height={300} id="chart">
       <BarChart
         data={data}
@@ -37,7 +34,7 @@ export default function WeeklyWeightSample(props){
         <Bar dataKey="basura" fill="#FF5C58" />
 
       </BarChart>
-      
+
     </ResponsiveContainer>
-  );
-}  
+  )
+}

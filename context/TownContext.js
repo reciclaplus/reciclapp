@@ -1,6 +1,6 @@
-import { createContext } from "react";
+import { createContext } from 'react'
 
 export const TownContext = createContext({
-    town: "sabanayegua",
-    setTown: () => {}
-  });
+  town: 'sabanayegua',
+  setTown: () => {}
+})
