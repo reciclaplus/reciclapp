@@ -1,6 +1,5 @@
-import * as React from 'react'
-import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
 import NativeSelect from '@mui/material/NativeSelect'
 
 export default function SelectCategoria (props) {
@@ -18,13 +17,13 @@ export default function SelectCategoria (props) {
         id: 'categoria'
       }}
         id='categoria-simple-select'
-        value={props.nWeeks}
+        value={props.categoria}
         onChange={handleChange}
       >
 
-          <option value="casa"> Casa Particular </option>
-          <option value="escuela"> Escuela </option>
-          <option value="negocio"> Negocio </option>
+          <option value='casa'> Casa Particular </option>
+          <option value='escuela'> Escuela </option>
+          <option value='negocio'> Negocio </option>
           <option value='all'> Todo </option>
       </NativeSelect>
     </FormControl>

@@ -1,21 +1,21 @@
-import React, { useEffect, useState, useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { getWeekNumber, getDateOfWeek } from '../../utils/dates'
+import { getDateOfWeek, getWeekNumber } from '../../utils/dates'
 
+import { Grid } from '@material-ui/core'
+import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { TownContext } from '../../context/TownContext'
-import { conf } from '../../configuration'
-import SelectWeeks from './SelectWeeks'
-import SelectCategoria from './SelectCategoria'
-import { Grid } from '@material-ui/core'
 import CustomTooltip from './CustomTooltip'
+import SelectCategoria from './SelectCategoria'
+import SelectWeeks from './SelectWeeks'
 
 export default function TimeSeries (props) {
   const [barData, setBarData] = useState()
   const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
+  const [categoria, setCategoria] = useState('all')
   const [nWeeks, setNWeeks] = useState(52)
-  const [categoria, setCategoria] = useState('casa')
   const barriosList = []
   const barrios = conf[town].barrios
 
@@ -40,10 +40,8 @@ export default function TimeSeries (props) {
           for (let i = 0; i < barriosList.length; i++) {
             res[week][barriosList[i]] = 0
           }
-
           result.push(res[week])
         }
-
         if ((data.categoria === categoria || categoria === 'all') && data.recogida.some(weeks => weeks.year === year && weeks.week === week && weeks.wasCollected === 'si')) {
           res[week][data.barrio] += 1
         }
@@ -52,31 +50,29 @@ export default function TimeSeries (props) {
       }, {})
     }
     setBarData(result.reverse())
-  }, [nWeeks, categoria, pdr, barriosList])
+  }, [nWeeks, categoria])
 
   return (
       <div>
         <Grid container justify="flex-end">
-        <SelectWeeks nWeeks={nWeeks} setNWeeks={setNWeeks}></SelectWeeks>
-        <SelectCategoria categoria={categoria} setCategoria={setCategoria}></SelectCategoria>
-    </Grid>
-    <ResponsiveContainer width="100%" height={300} id="chart">
-      <BarChart
-        data={barData}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
-        <YAxis />
-        <Tooltip content={<CustomTooltip/>} />
-        <Legend />
-        {barrios.map(item => {
-          return (<Bar dataKey={item.nombre} stackId="a" fill={item.color} key={item.nombre}>{item.nombre}</Bar>)
-        })}
-        <Bar dataKey="total" hide={true} stackId="b" key="Total">Total</Bar>
-      </BarChart>
-
-    </ResponsiveContainer>
-
-    </div>
+          <SelectCategoria categoria={categoria} setCategoria={setCategoria}></SelectCategoria>
+          <SelectWeeks nWeeks={nWeeks} setNWeeks={setNWeeks}></SelectWeeks>
+        </Grid>
+        <ResponsiveContainer width="100%" height={300} id="chart">
+          <BarChart
+            data={barData}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip content={<CustomTooltip/>} />
+            <Legend />
+            {barrios.map(item => {
+              return (<Bar dataKey={item.nombre} stackId="a" fill={item.color} key={item.nombre}>{item.nombre}</Bar>)
+            })}
+            <Bar dataKey="total" hide={true} stackId="b" key="Total">Total</Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
   )
 }
