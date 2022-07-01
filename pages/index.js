@@ -1,18 +1,12 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import Link from 'next/link'
-import Script from 'next/script'
-import { Button } from "@material-ui/core";
-import React, { useEffect, useState } from 'react';
 
-import Layout from '../components/Layout'
-import Typography from '@mui/material/Typography';
-import { GreenRadio, RedRadio, YellowRadio } from '../components/RadioButtons'
 import { Radio } from '@mui/material'
+import Typography from '@mui/material/Typography'
+import Layout from '../components/Layout'
+import { GreenRadio, RedRadio, YellowRadio } from '../components/RadioButtons'
 
-export default function Home() {
-
+export default function Home () {
   return (
     <div className={styles.container}>
       <Head>
@@ -26,7 +20,7 @@ export default function Home() {
           Bienvenido/a a ReciclApp
         </Typography>
         <Typography variant="body1" paragraph>
-          Si tienes acceso a los datos de Recicla+, conéctate y abre el archivo. 
+          Si tienes acceso a los datos de Recicla+, conéctate y abre el archivo.
           En caso contrario, puedes utilizar el documento de ejemplo para explorar la funcionalidad.
         </Typography>
 
@@ -54,15 +48,15 @@ export default function Home() {
         <Typography variant="h5" gutterBottom>
           Pasar Puntos
         </Typography>
-        
+
         <Typography variant="body1" whiteSpace="pre-line" gutterBottom paragraph>
           Para recoger los datos de la recogida, indica qué puntos tenían plástico cuando pasaste. Los posibles valores son:
-        </Typography>  
+        </Typography>
 
         <Typography variant="body1" >
           <GreenRadio checked={true} /> Sí: pasé por la casa y sí había plástico
         </Typography>
-        
+
         <Typography variant="body1" >
           <RedRadio checked={true} /> No: pasé por la casa pero no había plástico
         </Typography>

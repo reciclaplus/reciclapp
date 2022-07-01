@@ -1,13 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { WeightContext } from '../../context/WeightContext';
+import React, { useContext } from 'react'
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { WeightContext } from '../../context/WeightContext'
 
+export default function WeeklyWeight (props) {
+  const { weight } = useContext(WeightContext)
 
-export default function WeeklyWeight(props){
-
-  const {weight, setWeight} = useContext(WeightContext)
-
-    return (
+  return (
     <ResponsiveContainer width="100%" height={300} id="chart">
       <BarChart
         data={weight}
@@ -23,7 +21,7 @@ export default function WeeklyWeight(props){
           <Bar dataKey="basura" fill="#FF5C58" />
 
       </BarChart>
-      
+
     </ResponsiveContainer>
-  );
-}  
+  )
+}

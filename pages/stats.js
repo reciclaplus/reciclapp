@@ -1,16 +1,15 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-import React, { useEffect, useState } from 'react';
+import { useContext } from 'react'
+import Dashboard from '../components/Dashboard'
 import Layout from '../components/Layout'
-import Dashboard from '../components/Dashboard';
-import DashboardSample from '../components/sample/DashboardSample';
-import { useContext } from 'react';
-import { TownContext } from '../context/TownContext';
+import DashboardSample from '../components/sample/DashboardSample'
+import styles from '../styles/Home.module.css'
 
-export default function Stats() {
+import { TownContext } from '../context/TownContext'
 
-  const {town, setTown} = useContext(TownContext)
-  
+export default function Stats () {
+  const { town } = useContext(TownContext)
+
   return (
     <div className={styles.container}>
       <Head>
@@ -19,7 +18,7 @@ export default function Stats() {
         <link rel="icon" type="image/png" href="/logo.png" />
       </Head>
       <Layout>
-        {town == "sample" ? <DashboardSample /> : <Dashboard />}
+        {town === 'sample' ? <DashboardSample /> : <Dashboard />}
       </Layout>
     </div>
   )
