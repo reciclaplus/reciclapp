@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import DownloadMap from '../components/DownloadMap'
-import Layout from '../components/Layout'
+import Layout from '../components/layout/Layout'
 import styles from '../styles/Home.module.css'
 
 export default function Map () {

@@ -97,7 +97,7 @@ const MyMap = (props) => {
 
   return <div
         ref={googleMapRef}
-        style={{ width: '100%', height: 500 }}
+        style={{ width: '100%', height: '80vh' }}
     />
 }
 
