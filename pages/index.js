@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css'
 
 import { Radio } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import Layout from '../components/Layout'
+import Layout from '../components/layout/Layout'
 import { GreenRadio, RedRadio, YellowRadio } from '../components/RadioButtons'
 
 export default function Home () {

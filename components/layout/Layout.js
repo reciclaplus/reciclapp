@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import MenuIcon from '@mui/icons-material/Menu'
-import { FormControl, InputLabel, ListItem, ListItemButton, NativeSelect } from '@mui/material'
+import { FormControl, InputLabel, ListItem, NativeSelect } from '@mui/material'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -8,33 +8,22 @@ import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import Toolbar from '@mui/material/Toolbar'
 import PropTypes from 'prop-types'
 import * as React from 'react'
 
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
-import AnalyticsIcon from '@mui/icons-material/Analytics'
-import ListAltIcon from '@mui/icons-material/ListAlt'
-import MyLocationIcon from '@mui/icons-material/MyLocation'
-import PlaylistAddCheckCircleIcon from '@mui/icons-material/PlaylistAddCheckCircle'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
-import { TownContext } from '../context/TownContext'
-import OpenFile from './gcloud/OpenFile'
-import SignIn from './gcloud/SignIn'
-import UploadFile from './gcloud/UploadFile'
+import { TownContext } from '../../context/TownContext'
+import OpenFile from '../gcloud/OpenFile'
+import SignIn from '../gcloud/SignIn'
+import UploadFile from '../gcloud/UploadFile'
 
 import Button from '@material-ui/core/Button'
-import ScaleIcon from '@mui/icons-material/Scale'
 
-import ExpandLess from '@mui/icons-material/ExpandLess'
-import ExpandMore from '@mui/icons-material/ExpandMore'
-import StarBorder from '@mui/icons-material/StarBorder'
-import Collapse from '@mui/material/Collapse'
 import Script from 'next/script'
-import { CLIENT_ID, GOOGLE_API_KEY } from './gcloud/google'
+import { CLIENT_ID, GOOGLE_API_KEY } from '../gcloud/google'
+import { Navigation } from './Navigation'
 
 const drawerWidth = 240
 
@@ -89,83 +78,7 @@ function Layout ({ children, ...props }) {
     <div>
       <Toolbar />
       <Divider />
-      <List sx={{ ml: 2 }}>
-      <Link href="/list">
-          <ListItem disablePadding>
-
-            <ListItemButton key="Lista">
-              <ListItemIcon>
-                <ListAltIcon />
-              </ListItemIcon>
-              <ListItemText primary="Lista" />
-            </ListItemButton>
-
-          </ListItem>
-          </Link>
-        <Link href="/map">
-        <ListItem disablePadding>
-        <ListItemButton onClick={handleClick} key="Mapa">
-          <ListItemIcon>
-            <MyLocationIcon/>
-          </ListItemIcon>
-          <ListItemText primary="Mapa" />
-          {open ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        </ListItem>
-        </Link>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <Link href="/downloadMap">
-          <ListItem disablePadding>
-            <ListItemButton key="Descargar Mapa">
-              <ListItemIcon>
-                <StarBorder />
-              </ListItemIcon>
-              <ListItemText primary="Descargar Mapa" />
-            </ListItemButton>
-            </ListItem>
-          </Link>
-        </Collapse>
-        <Link href="/newPdr">
-        <ListItem disablePadding>
-          <ListItemButton key="Nuevo Punto">
-            <ListItemIcon>
-              <AddCircleOutlineIcon />
-            </ListItemIcon>
-            <ListItemText primary="Nuevo Punto" />
-          </ListItemButton>
-          </ListItem>
-        </Link>
-        <Link href="/pasarPuntos">
-        <ListItem disablePadding>
-          <ListItemButton key="Pasar Puntos">
-            <ListItemIcon>
-              <PlaylistAddCheckCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Pasar Puntos" />
-          </ListItemButton>
-          </ListItem>
-        </Link>
-        <Link href="/pesada">
-        <ListItem disablePadding>
-          <ListItemButton key="Pesada">
-            <ListItemIcon>
-              <ScaleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Pesada" />
-          </ListItemButton>
-          </ListItem>
-        </Link>
-        <Link href="/stats">
-        <ListItem disablePadding>
-          <ListItemButton key="Estadísticas">
-            <ListItemIcon>
-              <AnalyticsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Estadísticas" />
-          </ListItemButton>
-          </ListItem>
-        </Link>
-      </List>
+      <Navigation handleClick={handleClick} open={open}></Navigation>
 
       <Divider />
 

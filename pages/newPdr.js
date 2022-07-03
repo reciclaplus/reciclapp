@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import Layout from '../components/Layout'
+import Layout from '../components/layout/Layout'
 import NewPdr from '../components/NewPdr'
 import styles from '../styles/Home.module.css'
 

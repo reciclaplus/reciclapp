@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import Layout from '../components/Layout'
+import Layout from '../components/layout/Layout'
 import PasarPuntos from '../components/PasarPuntos'
 import styles from '../styles/Home.module.css'
 
