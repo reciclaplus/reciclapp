@@ -25,6 +25,7 @@ import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons'
 
 import Grid from '@mui/material/Grid'
 
+import { ExportCsv, ExportPdf } from '@material-table/exporters'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
@@ -100,6 +101,7 @@ export default function Table (props) {
         exportAriaLabel: 'Hello'
       },
       body: {
+        bulkEditTooltip: 'Editar todo',
         deleteTooltip: 'Eliminar',
         editTooltip: 'Editar',
         editRow: {
@@ -185,7 +187,14 @@ export default function Table (props) {
         filtering: true,
         pageSize: 100,
         exportButton: true,
-        doubleHorizontalScroll: true
+        doubleHorizontalScroll: true,
+        exportMenu: [{
+          label: 'Export PDF',
+          exportFunc: (cols, datas) => ExportPdf(cols, datas, 'myPdfFileName')
+        }, {
+          label: 'Export CSV',
+          exportFunc: (cols, datas) => ExportCsv(cols, datas, 'myCsvFileName')
+        }]
       }}
       detailPanel={[
         {
