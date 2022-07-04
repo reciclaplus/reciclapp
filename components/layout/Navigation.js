@@ -21,13 +21,13 @@ import NavigationItem from './NavigationItem'
 
 export function Navigation (props) {
   return (
-    <List sx={{ ml: 2 }}>
+    <List sx={{ m: 1, ml: 2 }} disablePadding={true}>
 
         <NavigationItem href="/list" name="Lista" icon={<ListAltIcon />} />
 
         <Link href="/map">
             <ListItem disablePadding>
-                <ListItemButton onClick={props.handleClick} key="Mapa">
+                <ListItemButton sx={{ p: 0 }} onClick={props.handleClick} key="Mapa">
                     <ListItemIcon>
                         <MyLocationIcon/>
                     </ListItemIcon>
