@@ -1,3 +1,4 @@
+import MaterialTable from '@material-table/core'
 import ClearIcon from '@mui/icons-material/Clear'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import FirstPageIcon from '@mui/icons-material/FirstPage'
@@ -7,7 +8,6 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import SearchIcon from '@mui/icons-material/Search'
 import Paper from '@mui/material/Paper'
 import Radio from '@mui/material/Radio'
-import MaterialTable from 'material-table'
 import Link from 'next/link'
 import { useContext, useEffect } from 'react'
 
