@@ -1,24 +1,13 @@
-import { Button, FormControl } from '@material-ui/core'
-import InputLabel from '@material-ui/core/InputLabel'
-import NativeSelect from '@material-ui/core/NativeSelect'
-import { makeStyles } from '@material-ui/core/styles'
+
+import { Button, FormControl, InputLabel, NativeSelect } from '@mui/material'
+
 import { useContext, useState } from 'react'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
 import { createMapURL, download } from './StaticMap'
 
-const useStyles = makeStyles((theme) => ({
-
-  content: {
-    paddingTop: theme.spacing(2),
-    paddingLeft: theme.spacing(2)
-  }
-
-}))
-
 export default function DownloadMap (props) {
-  const classes = useStyles()
   const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
 
@@ -40,7 +29,7 @@ export default function DownloadMap (props) {
     return false
   }
   return (
-        <form onSubmit={handleSubmit} className={classes.content}>
+        <form onSubmit={handleSubmit}>
             <div>
                 <FormControl>
                     <InputLabel>Barrio</InputLabel>
