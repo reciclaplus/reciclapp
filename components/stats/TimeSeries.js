@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { getDateOfWeek, getWeekNumber } from '../../utils/dates'
 
-import { Grid } from '@material-ui/core'
+import Grid from '@mui/material/Grid'
 import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { TownContext } from '../../context/TownContext'
@@ -54,7 +54,7 @@ export default function TimeSeries (props) {
 
   return (
       <div>
-        <Grid container justify="flex-end">
+        <Grid container justifyContent="flex-end">
           <SelectCategoria categoria={categoria} setCategoria={setCategoria}></SelectCategoria>
           <SelectWeeks nWeeks={nWeeks} setNWeeks={setNWeeks}></SelectWeeks>
         </Grid>
