@@ -184,7 +184,7 @@ export default function NewPdr (props) {
       </div>
       <br/>
       <div>
-      <Button variant="contained" sx={{ color: 'white' }} type="submit" style={{ marginBottom: '20px' }}>
+      <Button variant="contained" type="submit" style={{ marginBottom: '20px' }}>
         Añadir punto
       </Button>
       </div>

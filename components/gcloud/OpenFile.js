@@ -47,7 +47,7 @@ function OpenFile (props) {
 
         </Head>
 
-        <Button sx={{ color: 'white' }} id="open-btn" variant="contained" onClick={downloadFunction}>Abrir</Button>
+        <Button id="open-btn" variant="contained" onClick={downloadFunction}>Abrir</Button>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
         </>
