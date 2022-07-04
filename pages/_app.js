@@ -1,7 +1,6 @@
+import { purple } from '@mui/material/colors'
 import {
-  createTheme,
-  responsiveFontSizes,
-  ThemeProvider
+  createTheme, ThemeProvider
 } from '@mui/material/styles'
 import { useState } from 'react'
 import { GOOGLE_API_KEY } from '../components/gcloud/google'
@@ -9,6 +8,19 @@ import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
 import { WeightContext } from '../context/WeightContext'
 import '../styles/globals.css'
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      // Purple and green play nicely together.
+      main: '#0db872'
+    },
+    secondary: {
+      // This is green.A700 as hex.
+      main: purple[500]
+    }
+  }
+})
 
 function MyApp ({ Component, pageProps }) {
   const [pdr, setPdr] = useState([])
@@ -18,10 +30,8 @@ function MyApp ({ Component, pageProps }) {
   const [weight, setWeight] = useState([])
   const weightContextValue = { weight, setWeight }
 
-  let theme = createTheme()
-  theme = responsiveFontSizes(theme)
-
   return (
+    <ThemeProvider theme={theme}>
     <TownContext.Provider value={townContextValue}>
     <PdrContext.Provider value={contextValue}>
       <WeightContext.Provider value={weightContextValue}>
@@ -32,6 +42,7 @@ function MyApp ({ Component, pageProps }) {
       </WeightContext.Provider>
     </PdrContext.Provider>
     </TownContext.Provider>
+    </ThemeProvider>
   )
 }
 
