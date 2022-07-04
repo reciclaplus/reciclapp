@@ -1,3 +1,4 @@
+import MaterialTable from '@material-table/core'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import CheckIcon from '@mui/icons-material/Check'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -11,7 +12,6 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore'
 import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import SearchIcon from '@mui/icons-material/Search'
 import Paper from '@mui/material/Paper'
-import MaterialTable from 'material-table'
 import { useContext } from 'react'
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
