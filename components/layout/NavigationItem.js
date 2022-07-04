@@ -9,7 +9,7 @@ export default function NavigationItem (props) {
   return (
         <Link href={props.href}>
         <ListItem disablePadding>
-          <ListItemButton key={props.name}>
+          <ListItemButton sx={{ p: 0 }} key={props.name}>
             <ListItemIcon>
               {props.icon}
             </ListItemIcon>

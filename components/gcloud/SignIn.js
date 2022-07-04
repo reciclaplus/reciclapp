@@ -1,6 +1,5 @@
-import Head from 'next/head'
 import { Button } from '@mui/material'
-import React from 'react'
+import Head from 'next/head'
 
 function SignIn (props) {
   function handleAuthClick () {

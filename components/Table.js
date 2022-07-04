@@ -1,3 +1,4 @@
+import MaterialTable from '@material-table/core'
 import ClearIcon from '@mui/icons-material/Clear'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import FirstPageIcon from '@mui/icons-material/FirstPage'
@@ -7,7 +8,6 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext'
 import SearchIcon from '@mui/icons-material/Search'
 import Paper from '@mui/material/Paper'
 import Radio from '@mui/material/Radio'
-import MaterialTable from 'material-table'
 import Link from 'next/link'
 import { useContext, useEffect } from 'react'
 
@@ -25,6 +25,7 @@ import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons'
 
 import Grid from '@mui/material/Grid'
 
+import { ExportCsv, ExportPdf } from '@material-table/exporters'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
@@ -100,6 +101,7 @@ export default function Table (props) {
         exportAriaLabel: 'Hello'
       },
       body: {
+        bulkEditTooltip: 'Editar todo',
         deleteTooltip: 'Eliminar',
         editTooltip: 'Editar',
         editRow: {
@@ -185,7 +187,14 @@ export default function Table (props) {
         filtering: true,
         pageSize: 100,
         exportButton: true,
-        doubleHorizontalScroll: true
+        doubleHorizontalScroll: true,
+        exportMenu: [{
+          label: 'Export PDF',
+          exportFunc: (cols, datas) => ExportPdf(cols, datas, 'myPdfFileName')
+        }, {
+          label: 'Export CSV',
+          exportFunc: (cols, datas) => ExportCsv(cols, datas, 'myCsvFileName')
+        }]
       }}
       detailPanel={[
         {

@@ -111,7 +111,7 @@ export default function PasarPuntos () {
         </FormControl>
         <br/>
       <div>
-      <Button variant="contained" color="primary" type="submit">
+      <Button variant="contained" type="submit">
         Pasar esos puntos
       </Button>
       </div>
