@@ -65,7 +65,7 @@ function UploadFile (props) {
   }
 
   return (
-        <Button id="upload-btn" component="a" variant="contained" color="primary" onClick={upload}>Guardar</Button>
+        <Button sx={{ color: 'white' }} id="upload-btn" component="a" variant="contained" color="primary" onClick={upload}>Guardar</Button>
   )
 }
 
