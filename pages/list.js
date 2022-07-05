@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
+import DataGridTable from '../components/DataGridTable'
 import Layout from '../components/layout/Layout'
-import Table from '../components/Table'
 
 export default function List () {
   return (
@@ -13,7 +13,7 @@ export default function List () {
         <link rel="icon" type="image/png" href="/logo.png" />
       </Head>
       <Layout>
-        <Table/>
+        <DataGridTable/>
       </Layout>
     </div>
   )
