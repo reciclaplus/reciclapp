@@ -39,7 +39,7 @@ export function Navigation (props) {
         <Collapse in={props.open} timeout="auto" unmountOnExit>
           <Link href="/downloadMap">
           <ListItem disablePadding>
-            <ListItemButton key="Descargar Mapa">
+            <ListItemButton sx={{ p: 0 }} key="Descargar Mapa">
               <ListItemIcon>
                 <StarBorder />
               </ListItemIcon>

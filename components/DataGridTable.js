@@ -1,87 +1,89 @@
 import DeleteIcon from '@mui/icons-material/Delete'
-import Button from '@mui/material/Button'
+import { Button } from '@mui/material'
 import { DataGrid, esES, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid'
 import Link from 'next/link'
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
 import { calculateAlert } from '../utils/pdr-management'
-
-const mutate = () => {
-  return useCallback(
-    (pdr) =>
-      new Promise((resolve, reject) =>
-        setTimeout(() => {
-          if (pdr.nombre === '') {
-            reject(new Error("Error while saving user: name can't be empty."))
-          } else {
-            resolve({ ...pdr, nombre: pdr.nombre?.toUpperCase() })
-          }
-        }, 200)
-      ),
-    []
-  )
-}
+import DeleteRowDialog from './DeleteRowDialog'
 
 export default function DataGridTable () {
   const { pdr, setPdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
+  const [rowToDelete, setRowToDelete] = useState(null)
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const categorias = ['casa', 'escuela', 'negocio']
 
-  const deleteUser = (id) => () => {
+  const deleteRow = (id) => {
     const dataUpdate = pdr.filter((row) => (row.id + row.barrio) !== id)
-    setPdr(
-      dataUpdate
-    )
+    setPdr(dataUpdate)
+    setRowToDelete(null)
   }
 
-  const mutateRow = mutate()
-  const columns =
-      [
-        {
-          field: 'actions',
-          type: 'actions',
-          width: 80,
-          getActions: (params) =>
-            // eslint-disable-next-line react/jsx-key
-            [<GridActionsCellItem
+  const processRowDelete = useCallback(
+    (id) => () => {
+      setRowToDelete(id)
+    },
+    []
+  )
+
+  const processRowUpdate =
+  (newData, oldData) => new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const dataUpdate = [...pdr]
+      const index = oldData.tableData.id
+      dataUpdate[index] = newData
+      setPdr([...dataUpdate])
+      resolve(newData)
+    }, 200)
+  }
+  )
+
+  const columns = [
+    {
+      field: 'actions',
+      type: 'actions',
+      width: 80,
+      getActions: (params) =>
+        // eslint-disable-next-line react/jsx-key
+        [<GridActionsCellItem
           icon={<DeleteIcon />}
           label="Delete"
-          onClick={deleteUser(params.id)}
+          onClick={processRowDelete(params.id)}
         />]
 
-        },
-        { field: 'id', headerName: 'Id', editable: true, type: 'number', width: 50 },
-        { field: 'nombre', headerName: 'Nombre', editable: true, width: 100 },
-        { field: 'descripcion', headerName: 'Descripción', editable: true, width: 200 },
-        { field: 'barrio', headerName: 'Barrio', editable: true, type: 'singleSelect', valueOptions: barrios, width: 125 },
-        {
-          field: 'categoria',
-          headerName: 'Categoría',
-          editable: true,
-          type: 'singleSelect',
-          valueOptions: categorias,
-          valueFormatter: (params) => {
-            if (params.value === 'casa') {
-              return 'Casa Particular'
-            }
-            if (params.value === 'escuela') {
-              return 'Escuela'
-            }
-            return 'Negocio'
-          },
-          width: 150
-        },
-        { field: 'zafacon', headerName: 'Zafacón', editable: true, type: 'boolean', width: 100 },
-        {
-          field: 'ubicacion',
-          headerName: 'Ubicación',
-          editable: false,
-          renderCell: (params) => {
-            return (<>
+    },
+    { field: 'id', headerName: 'Id', editable: true, type: 'number', width: 50 },
+    { field: 'nombre', headerName: 'Nombre', editable: true, width: 100 },
+    { field: 'descripcion', headerName: 'Descripción', editable: true, width: 200 },
+    { field: 'barrio', headerName: 'Barrio', editable: true, type: 'singleSelect', valueOptions: barrios, width: 125 },
+    {
+      field: 'categoria',
+      headerName: 'Categoría',
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: categorias,
+      valueFormatter: (params) => {
+        if (params.value === 'casa') {
+          return 'Casa Particular'
+        }
+        if (params.value === 'escuela') {
+          return 'Escuela'
+        }
+        return 'Negocio'
+      },
+      width: 150
+    },
+    { field: 'zafacon', headerName: 'Zafacón', editable: true, type: 'boolean', width: 100 },
+    {
+      field: 'ubicacion',
+      headerName: 'Ubicación',
+      editable: false,
+      renderCell: (params) => {
+        return (<>
           <Link href={{
             pathname: '/map',
             query: {
@@ -110,38 +112,25 @@ export default function DataGridTable () {
             </Button>
           </Link>
           </>
-            )
-          },
-          width: 200
-        },
-        {
-          field: 'alerta',
-          headerName: 'Alerta',
-          editable: false,
-          type: 'boolean',
-          width: 100,
-          valueGetter: calculateAlert
-        },
-        { field: 'active', headerName: 'Activo', editable: false, type: 'boolean' }
-      ]
-
-  const processRowUpdate = useCallback(
-    async (newRow) => {
-      const response = await mutateRow(newRow)
-      const dataUpdate = [...pdr]
-
-      const index = newRow.tableData.id
-      dataUpdate[index] = newRow
-
-      setPdr([...dataUpdate])
-
-      return response
-    }, [mutateRow])
+        )
+      },
+      width: 200
+    },
+    {
+      field: 'alerta',
+      headerName: 'Alerta',
+      editable: false,
+      type: 'boolean',
+      width: 100,
+      valueGetter: calculateAlert
+    },
+    { field: 'active', headerName: 'Activo', editable: false, type: 'boolean' }
+  ]
 
   return (
     <div style={{ height: '80vh', width: '100%' }}>
       <DataGrid
-      getRowId={(row) => (row.id + row.barrio)}
+      getRowId={(row) => { return (row.id + row.barrio) }}
       rows={pdr}
       columns={columns}
       localeText={esES.components.MuiDataGrid.defaultProps.localeText}
@@ -151,6 +140,9 @@ export default function DataGridTable () {
       }}
       processRowUpdate={processRowUpdate}
       experimentalFeatures={{ newEditingApi: true }}/>
+
+      <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
+
     </div>
   )
 }
