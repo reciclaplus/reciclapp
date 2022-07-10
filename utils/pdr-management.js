@@ -40,3 +40,9 @@ export function calculateAlert (params) {
   }
   return alerta
 }
+
+export function setNewInternalId (pdr) {
+  const internalIds = pdr.map(individualPdr => individualPdr.internalId)
+  console.log(internalIds)
+  return Math.max(...internalIds) + 1
+}
