@@ -4,6 +4,7 @@ import {
 import { useState } from 'react'
 import { GOOGLE_API_KEY } from '../components/gcloud/google'
 import { PdrContext } from '../context/PdrContext'
+import { StatsContext } from '../context/StatsContext'
 import { TownContext } from '../context/TownContext'
 import { WeightContext } from '../context/WeightContext'
 import '../styles/globals.css'
@@ -29,17 +30,19 @@ function MyApp ({ Component, pageProps }) {
   const townContextValue = { town, setTown }
   const [weight, setWeight] = useState([])
   const weightContextValue = { weight, setWeight }
+  const [stats, setStats] = useState([])
+  const statsContextValue = { stats, setStats }
 
   return (
     <ThemeProvider theme={theme}>
     <TownContext.Provider value={townContextValue}>
     <PdrContext.Provider value={contextValue}>
-      <WeightContext.Provider value={weightContextValue}>
-      <ThemeProvider theme={theme}>
+    <WeightContext.Provider value={weightContextValue}>
+    <StatsContext.Provider value={statsContextValue}>
       <Component {...pageProps} />
       <script async defer src={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}`}></script>
-      </ThemeProvider>
-      </WeightContext.Provider>
+    </StatsContext.Provider>
+    </WeightContext.Provider>
     </PdrContext.Provider>
     </TownContext.Provider>
     </ThemeProvider>
