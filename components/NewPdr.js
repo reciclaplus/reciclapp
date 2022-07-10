@@ -9,7 +9,7 @@ import { useContext, useState } from 'react'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
-import { pdrExists } from '../utils/pdr-management'
+import { pdrExists, setNewInternalId } from '../utils/pdr-management'
 import NewPdrMap from './NewPdrMap'
 
 export default function NewPdr (props) {
@@ -66,16 +66,31 @@ export default function NewPdr (props) {
       return
     }
 
-    const newPdrs = pdr
-    newPdrs.push({ nombre: state.nombre, lat: newMarker.getPosition().lat(), lng: newMarker.getPosition().lng(), barrio: state.barrio, zafacon: state.zafacon, id: (state.id > 0) ? state.id : setNewId(state.barrio), descripcion: state.descripcion, categoria: state.categoria, recogida: [], active: true })
+    const newPdrs = JSON.parse(JSON.stringify(pdr))
+    newPdrs.push({
+      internalId: setNewInternalId(pdr),
+      nombre: state.nombre,
+      lat: newMarker.getPosition().lat(),
+      lng: newMarker.getPosition().lng(),
+      barrio: state.barrio,
+      zafacon: state.zafacon,
+      id: (state.id > 0) ? state.id : setNewId(state.barrio),
+      descripcion: state.descripcion,
+      categoria: state.categoria,
+      recogida: [],
+      active: true
+    })
     setPdr(newPdrs)
+    console.log(newPdrs)
+    console.log(setNewInternalId(pdr))
 
     setState({
       zafacon: false,
       barrio: '',
       nombre: '',
       descripcion: '',
-      id: ''
+      id: '',
+      categoria: ''
     })
 
     setNewMarker('')
