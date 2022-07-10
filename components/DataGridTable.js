@@ -34,7 +34,7 @@ export default function DataGridTable () {
   (newData, oldData) => new Promise((resolve, reject) => {
     setTimeout(() => {
       const dataUpdate = [...pdr]
-      const index = oldData.tableData.id
+      const index = pdr.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
       dataUpdate[index] = newData
       setPdr([...dataUpdate])
       resolve(newData)
@@ -57,8 +57,8 @@ export default function DataGridTable () {
 
     },
     { field: 'id', headerName: 'Id', editable: true, type: 'number', width: 50 },
-    { field: 'nombre', headerName: 'Nombre', editable: true, width: 100 },
-    { field: 'descripcion', headerName: 'Descripción', editable: true, width: 200 },
+    { field: 'nombre', headerName: 'Nombre', editable: true, width: 200 },
+    { field: 'descripcion', headerName: 'Descripción', editable: true, width: 350 },
     { field: 'barrio', headerName: 'Barrio', editable: true, type: 'singleSelect', valueOptions: barrios, width: 125 },
     {
       field: 'categoria',
@@ -73,7 +73,10 @@ export default function DataGridTable () {
         if (params.value === 'escuela') {
           return 'Escuela'
         }
-        return 'Negocio'
+        if (params.value === 'negocio') {
+          return 'Negocio'
+        }
+        return ''
       },
       width: 150
     },
@@ -127,13 +130,23 @@ export default function DataGridTable () {
     { field: 'active', headerName: 'Activo', editable: false, type: 'boolean' }
   ]
 
+  const localeObj = {
+    ...esES.components.MuiDataGrid.defaultProps.localeText,
+    ...{
+      filterValueAny: 'Cualquiera',
+      filterValueTrue: 'Sí',
+      filterValueFalse: 'No',
+      filterOperatorIsAnyOf: 'Es cualquiera de'
+    }
+  }
+
   return (
     <div style={{ height: '80vh', width: '100%' }}>
       <DataGrid
-      getRowId={(row) => { return (row.id + row.barrio) }}
+      getRowId={(row) => row.internalId}
       rows={pdr}
       columns={columns}
-      localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+      localeText={localeObj}
       components={{ Toolbar: GridToolbar }}
       componentsProps={{
         toolbar: { color: 'secondary' }
