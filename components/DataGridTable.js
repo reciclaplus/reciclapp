@@ -136,7 +136,8 @@ export default function DataGridTable () {
       filterValueAny: 'Cualquiera',
       filterValueTrue: 'Sí',
       filterValueFalse: 'No',
-      filterOperatorIsAnyOf: 'Es cualquiera de'
+      filterOperatorIsAnyOf: 'Es cualquiera de',
+      toolbarQuickFilterPlaceholder: 'Buscar...'
     }
   }
 
@@ -149,7 +150,7 @@ export default function DataGridTable () {
       localeText={localeObj}
       components={{ Toolbar: GridToolbar }}
       componentsProps={{
-        toolbar: { color: 'secondary' }
+        toolbar: { showQuickFilter: true }
       }}
       processRowUpdate={processRowUpdate}
       experimentalFeatures={{ newEditingApi: true }}/>
