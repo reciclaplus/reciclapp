@@ -60,6 +60,7 @@ export default function PasarPuntos () {
     return d
   }
 
+  // eslint-disable-next-line no-unused-vars
   function storeStats () {
     const categorias = ['casa', 'negocio', 'escuela']
 
@@ -87,7 +88,6 @@ export default function PasarPuntos () {
             categoria,
             totalPdr,
             affirmativePdr
-
           })
         )
       }
@@ -98,7 +98,7 @@ export default function PasarPuntos () {
   function handleSubmit (event) {
     event.preventDefault()
     window.confirm('Recuerda guardar todos los cambios')
-    // storeStats()
+    storeStats()
     return false
   }
 
@@ -132,7 +132,7 @@ export default function PasarPuntos () {
 
               return (
                 <div key={index}>
-                    <FormLabel component="legend">{element.nombre} - {element.descripcion}</FormLabel>
+                    <FormLabel sx={{ mt: 3 }} component="legend">{element.nombre} - {element.descripcion}</FormLabel>
                     <RadioButtonsGroup onChange={pasarPunto} barrio={element.barrio} id={element.id} year={fecha.getFullYear()} week={semana} initialValue={initialValue}/>
                 </div>)
             }
@@ -141,7 +141,7 @@ export default function PasarPuntos () {
         </FormControl>
         <br/>
       <div>
-      <Button color="secondary" variant="contained" type="submit">
+      <Button sx={{ my: 3 }} color="secondary" variant="contained" type="submit">
         Pasar esos puntos
       </Button>
       </div>
