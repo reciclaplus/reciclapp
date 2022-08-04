@@ -1,10 +1,12 @@
 /* eslint-disable no-undef */
 import { Button } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
+import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
 import { WeightContext } from '../../context/WeightContext'
 import { BUCKET_NAME } from './google'
@@ -12,14 +14,17 @@ import { BUCKET_NAME } from './google'
 function OpenFile (props) {
   const router = useRouter()
   const { setPdr } = useContext(PdrContext)
+  const { setStats } = useContext(StatsContext)
   const { town } = useContext(TownContext)
   const { setWeight } = useContext(WeightContext)
+  const [isOpening, setIsOpening] = useState(false)
 
   const file = conf[town].file
 
   const bucket = town === 'sample' ? 'reciclaplus-public' : BUCKET_NAME
 
   function downloadFunction () {
+    setIsOpening(true)
     const request = gapi.client.request({
       path: `https://storage.googleapis.com/storage/v1/b/${bucket}/o/${file}?alt=media`,
       method: 'GET',
@@ -29,9 +34,11 @@ function OpenFile (props) {
       }
     })
     return request.execute(function (file, rawResponse) {
+      setIsOpening(false)
       if (JSON.parse(rawResponse).gapiRequest.data.status === 200) {
         setPdr(file.pdr)
         setWeight(file.peso)
+        setStats(file.stats)
         router.push('/list')
       } else {
         alert('Conéctate para abrir el archivo')
@@ -48,6 +55,7 @@ function OpenFile (props) {
         </Head>
 
         <Button id="open-btn" variant="contained" onClick={downloadFunction}>Abrir</Button>
+        {isOpening ? <CircularProgress size={30} thickness={6} sx={{ ml: 2 }}/> : <></>}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
         </>

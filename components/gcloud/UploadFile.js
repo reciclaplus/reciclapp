@@ -27,7 +27,7 @@ function UploadFile (props) {
     const delimiter = '\r\n--' + boundary + '\r\n'
     const closeDelim = '\r\n--' + boundary + '--'
     const fileName = conf[town].file
-    const fileData = JSON.stringify({ pdr, peso: weight })
+    const fileData = JSON.stringify({ pdr, peso: weight, stats })
     const contentType = 'text/plain'
     const metadata = {
       name: fileName,
