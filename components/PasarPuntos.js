@@ -30,10 +30,6 @@ export default function PasarPuntos () {
     setTodaysPdr([...pdr].filter(individualPdr => individualPdr.barrio === barrio))
   }, [barrio])
 
-  // useEffect(() => {
-  //   pasarPuntosToStatsWrapper(pdr, stats, [2021, 2022], [...Array(52).keys()], ['casa', 'negocio', 'escuela'], barrios)
-  // }, [])
-
   function pasarPunto (barrio, id, year, week, value) {
     todaysPdr.forEach((el) => {
       let alreadyChanged = false

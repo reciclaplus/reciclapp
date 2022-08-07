@@ -4,17 +4,14 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 import Grid from '@mui/material/Grid'
 import moment from 'moment'
 import { conf } from '../../configuration'
-import { PdrContext } from '../../context/PdrContext'
 import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
-import { pasarPuntosToStatsWrapper } from '../../scripts/pasar-puntos-on-demand'
 import CustomTooltip from './CustomTooltip'
 import SelectCategoria from './SelectCategoria'
 import SelectWeeks from './SelectWeeks'
 
 export default function TimeSeries (props) {
   const [barData, setBarData] = useState()
-  const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
   const { stats } = useContext(StatsContext)
   const [categoria, setCategoria] = useState('all')
@@ -22,10 +19,6 @@ export default function TimeSeries (props) {
   const barriosList = []
   const barrios = conf[town].barrios
   barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
-
-  useEffect(() => {
-    pasarPuntosToStatsWrapper(pdr, stats, [2021, 2022], [...Array(53).keys()], ['casa', 'negocio', 'escuela'], barriosList)
-  }, [])
 
   useEffect(() => {
     const today = moment().format('DD/MM/YYYY')
