@@ -1,7 +1,7 @@
 import datetime
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import flask
 import google.oauth2.credentials
@@ -24,6 +24,22 @@ app.secret_key = "yoreciclo"
 @app.route("/hello", methods=['GET', 'POST'])
 def hello():
   return "hello world"
+
+@app.route("/add-date-to-recogida", methods=['GET', 'POST'])
+def add_date():
+  pdr = request.json
+  for ipdr in pdr:
+    if "recogida" in ipdr.keys():
+      recogida = ipdr["recogida"]
+      for week in recogida:
+        if "date" in week.keys():
+          continue
+        else:
+          recogida_date = date(week["year"], 1, 1) + timedelta(weeks=week["week"])
+          recogida_date = recogida_date - timedelta(days=recogida_date.weekday())
+          week["date"] = recogida_date.strftime("%d/%m/%Y")
+  
+  return jsonify(pdr)
 
 @app.route("/time-series-data", methods=['GET', 'POST'])
 def time_series_data():
