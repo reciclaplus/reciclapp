@@ -6,7 +6,8 @@ import { WeightContext } from '../../context/WeightContext'
 export default function WeeklyWeight (props) {
   const { weight } = useContext(WeightContext)
 
-  weight.sort(function (a, b) {
+  const weightData = [...weight]
+  weightData.sort(function (a, b) {
     const keyA = new Date(a.date)
     const keyB = new Date(b.date)
     // Compare the 2 dates
@@ -15,7 +16,7 @@ export default function WeeklyWeight (props) {
     return 0
   })
 
-  const data = weight.map(entry => {
+  const data = weightData.map(entry => {
     return { ...entry, date: moment(entry.date).format('DD/MM/YYYY') }
   }).slice(0, 10)
 
