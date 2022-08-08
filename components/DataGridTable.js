@@ -18,7 +18,7 @@ export default function DataGridTable () {
   const categorias = ['casa', 'escuela', 'negocio']
 
   const deleteRow = (id) => {
-    const dataUpdate = pdr.filter((row) => (row.id + row.barrio) !== id)
+    const dataUpdate = pdr.filter((row) => row.internalId !== id)
     setPdr(dataUpdate)
     setRowToDelete(null)
   }
