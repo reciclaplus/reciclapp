@@ -18,7 +18,7 @@ export default function WeeklyWeight (props) {
 
   const data = weightData.map(entry => {
     return { ...entry, date: moment(entry.date).format('DD/MM/YYYY') }
-  }).slice(0, 10)
+  }).slice(-10)
 
   return (
     <ResponsiveContainer width="100%" height={300} id="chart">
