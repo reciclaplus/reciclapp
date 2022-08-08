@@ -2,6 +2,7 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Button } from '@mui/material'
 import { DataGrid, esES, GridActionsCellItem, GridToolbarContainer } from '@mui/x-data-grid'
+import moment from 'moment'
 import { useCallback, useContext, useState } from 'react'
 import { WeightContext } from '../context/WeightContext'
 import DeleteRowDialog from './DeleteRowDialog'
@@ -44,7 +45,7 @@ export default function WeightDataGridTable (props) {
   (newData, oldData) => new Promise((resolve, reject) => {
     setTimeout(() => {
       const dataUpdate = [...weight]
-      const index = oldData.tableData.id
+      const index = weight.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
       dataUpdate[index] = newData
       setWeight([...dataUpdate])
       resolve(newData)
@@ -74,7 +75,7 @@ export default function WeightDataGridTable (props) {
       width: 150,
       valueFormatter: (params) => {
         const date = new Date(params.value)
-        return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear()
+        return moment(date).format('DD/MM/YYYY')
       }
     },
     { field: 'pet', headerName: 'Pet (lb)', editable: true, type: 'number', width: 100 },
@@ -85,11 +86,12 @@ export default function WeightDataGridTable (props) {
   return (
         <div style={{ height: '80vh', width: '100%' }}>
             <DataGrid
-            getRowId={(row) => row.date }
+            getRowId={(row) => moment(row.date).format('DD/MM/YYYY') }
             rows={weight}
             columns={columns}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText}
             processRowUpdate={processRowUpdate}
+            experimentalFeatures={{ newEditingApi: true }}
             components={{ Toolbar: EditToolbar }}
             componentsProps={{
               toolbar: { setWeight }
