@@ -1,10 +1,11 @@
 import { FormControlLabel, RadioGroup } from '@mui/material'
 import Radio from '@mui/material/Radio'
-import React from 'react'
+import { useEffect, useState } from 'react'
 import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons'
 
 export default function RadioButtonsGroup (props) {
-  const [selectedValue, setSelectedValue] = React.useState(props.initialValue)
+  const [selectedValue, setSelectedValue] = useState(props.initialValue)
+  useEffect(() => setSelectedValue(props.initialValue), [props.initialValue])
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value)

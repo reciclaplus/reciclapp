@@ -3,6 +3,7 @@ import { Button } from '@mui/material'
 import { useContext } from 'react'
 import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
+import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
 import { WeightContext } from '../../context/WeightContext'
 import { BUCKET_NAME } from './google'
@@ -11,6 +12,7 @@ function UploadFile (props) {
   const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
   const { weight } = useContext(WeightContext)
+  const { stats } = useContext(StatsContext)
 
   const bucket = town === 'sample' ? 'reciclaplus-public' : BUCKET_NAME
 
@@ -27,7 +29,7 @@ function UploadFile (props) {
     const delimiter = '\r\n--' + boundary + '\r\n'
     const closeDelim = '\r\n--' + boundary + '--'
     const fileName = conf[town].file
-    const fileData = JSON.stringify({ pdr, peso: weight })
+    const fileData = JSON.stringify({ pdr, peso: weight, stats })
     const contentType = 'text/plain'
     const metadata = {
       name: fileName,

@@ -12,7 +12,7 @@ export default function Map () {
         <link rel="icon" type="image/png" href="/logo.png" />
       </Head>
       <Layout>
-        <PasarPuntos></PasarPuntos>
+        <PasarPuntos />
       </Layout>
     </div>
   )

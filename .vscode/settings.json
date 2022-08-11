@@ -5,5 +5,7 @@
     },
     "eslint.validate": ["javascript"],
     "eslint.format.enable": true,
-    "eslint.enable": true
+    "eslint.enable": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": false
 }

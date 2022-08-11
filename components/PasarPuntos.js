@@ -1,42 +1,39 @@
 import { Button, FormControl, FormLabel } from '@mui/material'
 import InputLabel from '@mui/material/InputLabel'
 import NativeSelect from '@mui/material/NativeSelect'
-import { makeStyles } from '@mui/styles'
-import { useContext, useState } from 'react'
+import moment from 'moment'
+import { useContext, useEffect, useState } from 'react'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
+import { StatsContext } from '../context/StatsContext'
 import { TownContext } from '../context/TownContext'
-import { getWeekNumber } from '../utils/dates'
-import { getActivePdr } from '../utils/pdr-management'
+import { getMonday, getWeekNumber } from '../utils/dates'
 import DatePicker from './DatePicker'
 import RadioButtonsGroup from './RadioButtonsGroup'
 
-const useStyles = makeStyles((theme) => ({
-
-  radioButtonGroup: {
-    // marginBottom: theme.spacing(3)
-  }
-
-}))
-
 export default function PasarPuntos () {
-  const { pdr, setPdr } = useContext(PdrContext)
+  const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
+  const { stats } = useContext(StatsContext)
 
-  const classes = useStyles()
   const currentDate = new Date()
 
   const [barrio, setBarrio] = useState('')
+
   const [fecha, setFecha] = useState(currentDate)
   const [semana, setSemana] = useState(getWeekNumber(currentDate))
-  const recogida = getActivePdr(pdr)
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
+  const [todaysPdr, setTodaysPdr] = useState([])
+
+  useEffect(() => {
+    setTodaysPdr([...pdr].filter(individualPdr => individualPdr.barrio === barrio))
+  }, [barrio])
 
   function pasarPunto (barrio, id, year, week, value) {
-    recogida.forEach((el) => {
+    todaysPdr.forEach((el) => {
       let alreadyChanged = false
-      if (el.barrio === barrio && el.id === id) {
+      if (el.id === id) {
         el.recogida.forEach((diaDeRecogida) => {
           if (diaDeRecogida.year === year && diaDeRecogida.week === week) {
             diaDeRecogida.wasCollected = value
@@ -45,8 +42,7 @@ export default function PasarPuntos () {
         })
 
         if (!alreadyChanged) {
-          console.log('adding new value')
-          el.recogida.push({ year, week, wasCollected: value })
+          el.recogida.push({ date: moment(getMonday(fecha)).format('DD/MM/YYYY'), year, week, wasCollected: value })
           alreadyChanged = true
         }
       }
@@ -60,11 +56,45 @@ export default function PasarPuntos () {
     return d
   }
 
+  // eslint-disable-next-line no-unused-vars
+  function storeStats () {
+    const categorias = ['casa', 'negocio', 'escuela']
+
+    categorias.forEach(categoria => {
+      const catPdr = todaysPdr.filter(individualPdr => individualPdr.categoria === categoria)
+      const totalPdr = catPdr.length
+      const affirmativePdr = catPdr.map(individualPdr => {
+        const recogida = individualPdr.recogida.find(recogida => recogida.week === semana && recogida.year === fecha.getFullYear())
+        if (recogida) {
+          return recogida.wasCollected === 'si'
+        } else {
+          return false
+        }
+      }).filter(Boolean).length
+
+      const previousResult = stats.recogidaSemanal.find(element => element.barrio === barrio && element.date === moment(getMonday(fecha)).format('DD/MM/YYYY') && element.categoria === categoria)
+      if (previousResult) {
+        previousResult.totalPdr = totalPdr
+        previousResult.affirmativePdr = affirmativePdr
+      } else {
+        (
+          stats.recogidaSemanal.push({
+            barrio,
+            date: moment(getMonday(fecha)).format('DD/MM/YYYY'),
+            categoria,
+            totalPdr,
+            affirmativePdr
+          })
+        )
+      }
+    }
+    )
+  }
+
   function handleSubmit (event) {
     event.preventDefault()
     window.confirm('Recuerda guardar todos los cambios')
-    setPdr(recogida)
-
+    storeStats()
     return false
   }
 
@@ -83,35 +113,31 @@ export default function PasarPuntos () {
                     value={barrio}
                     onChange={(event) => setBarrio(event.target.value)}
                     >
-                    <option value=""></option>
-                    {barrios.map(item => {
-                      return (<option value={item} key={item}>{item}</option>)
-                    })}
+                      <option value=""></option>
+                      {barrios.map(item => {
+                        return (<option value={item} key={item}>{item}</option>)
+                      })}
                     </NativeSelect>
                 </FormControl>
-            </div>
+                </div>
         <br/>
         <FormControl component="fieldset">
-            {getActivePdr(pdr).map((element, index) => {
+            {todaysPdr.map((element, index) => {
               const recogida = element.recogida.filter(weeks => weeks.year === fecha.getFullYear() && weeks.week === semana)
               const initialValue = recogida.length > 0 ? recogida[0].wasCollected : ''
 
-              if (element.barrio === barrio) {
-                return (
-                <div key={index} className={classes.radioButtonGroup}>
-                    <FormLabel component="legend">{element.nombre} - {element.descripcion}</FormLabel>
+              return (
+                <div key={index}>
+                    <FormLabel sx={{ mt: 3 }} component="legend">{element.nombre} - {element.descripcion}</FormLabel>
                     <RadioButtonsGroup onChange={pasarPunto} barrio={element.barrio} id={element.id} year={fecha.getFullYear()} week={semana} initialValue={initialValue}/>
                 </div>)
-              } else {
-                return <div></div>
-              }
             }
 
             )}
         </FormControl>
         <br/>
       <div>
-      <Button variant="contained" type="submit">
+      <Button sx={{ my: 3 }} color="secondary" variant="contained" type="submit">
         Pasar esos puntos
       </Button>
       </div>

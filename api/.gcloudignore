@@ -12,9 +12,8 @@
 # below:
 .git
 .gitignore
-/pages/
-/components/
-/scripts/
 
-# Node.js dependencies:
-node_modules/
+# Python pycache:
+__pycache__/
+# Ignored by the build system
+/setup.cfg

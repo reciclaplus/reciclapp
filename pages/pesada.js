@@ -2,7 +2,7 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
 import Layout from '../components/layout/Layout'
-import WeightTable from '../components/WeightTable'
+import WeightDataGridTable from '../components/WeightDataGridTable'
 export default function List () {
   return (
     <div className={styles.container}>
@@ -13,7 +13,7 @@ export default function List () {
       </Head>
       <Layout>
         {/* <Pesada/> */}
-        <WeightTable/>
+        <WeightDataGridTable/>
       </Layout>
     </div>
   )

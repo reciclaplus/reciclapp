@@ -9,7 +9,7 @@ import { useContext, useState } from 'react'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
-import { pdrExists } from '../utils/pdr-management'
+import { pdrExists, setNewInternalId } from '../utils/pdr-management'
 import NewPdrMap from './NewPdrMap'
 
 export default function NewPdr (props) {
@@ -66,16 +66,31 @@ export default function NewPdr (props) {
       return
     }
 
-    const newPdrs = pdr
-    newPdrs.push({ nombre: state.nombre, lat: newMarker.getPosition().lat(), lng: newMarker.getPosition().lng(), barrio: state.barrio, zafacon: state.zafacon, id: (state.id > 0) ? state.id : setNewId(state.barrio), descripcion: state.descripcion, categoria: state.categoria, recogida: [], active: true })
+    const newPdrs = JSON.parse(JSON.stringify(pdr))
+    newPdrs.push({
+      internalId: setNewInternalId(pdr),
+      nombre: state.nombre,
+      lat: newMarker.getPosition().lat(),
+      lng: newMarker.getPosition().lng(),
+      barrio: state.barrio,
+      zafacon: state.zafacon,
+      id: (state.id > 0) ? state.id : setNewId(state.barrio),
+      descripcion: state.descripcion,
+      categoria: state.categoria,
+      recogida: [],
+      active: true
+    })
     setPdr(newPdrs)
+    console.log(newPdrs)
+    console.log(setNewInternalId(pdr))
 
     setState({
       zafacon: false,
       barrio: '',
       nombre: '',
       descripcion: '',
-      id: ''
+      id: '',
+      categoria: ''
     })
 
     setNewMarker('')
@@ -87,16 +102,16 @@ export default function NewPdr (props) {
     <form onSubmit={handleSubmit}>
       <div>
 
-      <TextField required={true} id="nombre" label="Nombre" name="nombre" onChange={handleInputChange} value={state.nombre}/>
+      <TextField color='secondary' required={true} id="nombre" label="Nombre" name="nombre" onChange={handleInputChange} value={state.nombre}/>
 
       </div>
       <br/>
       <div>
-        <TextField id="descripcion" label="Descripción" name="descripcion" onChange={handleInputChange} value={state.descripcion}/>
+        <TextField color='secondary' id="descripcion" label="Descripción" name="descripcion" onChange={handleInputChange} value={state.descripcion}/>
       </div>
       <br/>
       <div>
-      <FormControl required={true}>
+      <FormControl color='secondary' required={true}>
         <InputLabel>Barrio</InputLabel>
         <NativeSelect
         inputProps={{
@@ -118,6 +133,7 @@ export default function NewPdr (props) {
 
       <div>
       <TextField
+          color='secondary'
           required={true}
           id="id"
           label="Id"
@@ -133,7 +149,7 @@ export default function NewPdr (props) {
         />
       </div>
       <br/>
-      <FormControl required={true}>
+      <FormControl required={true} color='secondary'>
         <InputLabel>Categoría</InputLabel>
         <NativeSelect
         inputProps={{
@@ -159,7 +175,6 @@ export default function NewPdr (props) {
             checked={state.zafacon}
             onChange={handleInputChange}
             name="zafacon"
-            color="primary"
           />
         }
         label="Tiene zafacón?"
@@ -168,6 +183,7 @@ export default function NewPdr (props) {
       <br/>
       <div>
       <TextField
+        color='secondary'
         required={true}
         id="outlined-name"
         name="ubicacion"
@@ -184,7 +200,7 @@ export default function NewPdr (props) {
       </div>
       <br/>
       <div>
-      <Button variant="contained" type="submit" style={{ marginBottom: '20px' }}>
+      <Button variant="contained" type="submit" color="secondary" sx={{ marginBottom: '20px' }}>
         Añadir punto
       </Button>
       </div>

@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { getDateOfWeek, getWeekNumber } from '../../utils/dates'
 
 import Grid from '@mui/material/Grid'
+import moment from 'moment'
 import { conf } from '../../configuration'
-import { PdrContext } from '../../context/PdrContext'
+import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
 import CustomTooltip from './CustomTooltip'
 import SelectCategoria from './SelectCategoria'
@@ -12,45 +12,32 @@ import SelectWeeks from './SelectWeeks'
 
 export default function TimeSeries (props) {
   const [barData, setBarData] = useState()
-  const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
+  const { stats } = useContext(StatsContext)
   const [categoria, setCategoria] = useState('all')
   const [nWeeks, setNWeeks] = useState(52)
   const barriosList = []
   const barrios = conf[town].barrios
-
   barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
 
   useEffect(() => {
-    const result = []
-    const currentDate = new Date()
-    for (let i = 0; i < Number(nWeeks); i++) {
-      const date = currentDate - i * 7 * 24 * 60 * 60 * 1000
-      const week = getWeekNumber(date)
-      const year = new Date(date).getFullYear()
+    const today = moment().format('DD/MM/YYYY')
+    const start = moment().subtract(nWeeks * 7, 'days').format('DD/MM/YYYY')
 
-      pdr.reduce(function (res, data) {
-        if (!res[week]) {
-          res[week] = {
-            week,
-            year,
-            date: getDateOfWeek(week, year).toLocaleDateString()
-          }
-
-          for (let i = 0; i < barriosList.length; i++) {
-            res[week][barriosList[i]] = 0
-          }
-          result.push(res[week])
-        }
-        if ((data.categoria === categoria || categoria === 'all') && data.recogida.some(weeks => weeks.year === year && weeks.week === week && weeks.wasCollected === 'si')) {
-          res[week][data.barrio] += 1
-        }
-
-        return res
-      }, {})
-    }
-    setBarData(result.reverse())
-  }, [nWeeks, categoria])
+    fetch(`https://api-dot-norse-voice-343214.uc.r.appspot.com/time-series-data?categoria=${categoria}&start=${start}&end=${today}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify(stats.recogidaSemanal)
+    }).then(function (response) {
+      return response.json()
+    })
+      .then(function (myJson) {
+        setBarData(myJson)
+      })
+  }, [categoria, nWeeks])
 
   return (
       <div>
