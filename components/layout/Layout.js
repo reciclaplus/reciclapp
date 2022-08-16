@@ -104,9 +104,8 @@ function Layout ({ children, ...props }) {
               onChange={handleTownChange}
             >
               <option value={'sabanayegua'}>Sabana Yegua</option>
-              <option value={'proyecto4'}>Proyecto 4</option>
+              <option value={'sabanayegua_cardboard'}>Sabana Yegua - Cartón</option>
               <option value={'sample'}>Ejemplo</option>
-
             </NativeSelect>
           </FormControl>
         </ListItem>
