@@ -8,11 +8,17 @@ import { WeightContext } from '../context/WeightContext'
 import DeleteRowDialog from './DeleteRowDialog'
 
 function EditToolbar (props) {
-  const { setWeight } = props
+  const { weight, setWeight } = props
 
   const handleClick = () => {
-    const date = new Date()
-    setWeight((oldRows) => [{ date, pet: 0, galones: 0, plasticoduro: 0, basura: 0 }, ...oldRows])
+    const prevDates = weight.map((row) => moment(row.date).format('DD/MM/YYYY'))
+    const newDate = moment()
+
+    while (prevDates.includes(moment(newDate).format('DD/MM/YYYY'))) {
+      newDate.add(1, 'days')
+    }
+
+    setWeight((oldRows) => [{ date: newDate.toDate(), pet: 0, galones: 0, plasticoduro: 0, basura: 0 }, ...oldRows])
   }
 
   return (
@@ -29,7 +35,7 @@ export default function WeightDataGridTable (props) {
   const [rowToDelete, setRowToDelete] = useState(null)
 
   const deleteRow = (id) => {
-    const dataUpdate = weight.filter((row) => row.date !== id)
+    const dataUpdate = weight.filter((row) => moment(row.date).format('DD/MM/YYYY') !== id)
     setWeight(dataUpdate)
     setRowToDelete(null)
   }
@@ -94,7 +100,7 @@ export default function WeightDataGridTable (props) {
             experimentalFeatures={{ newEditingApi: true }}
             components={{ Toolbar: EditToolbar }}
             componentsProps={{
-              toolbar: { setWeight }
+              toolbar: { weight, setWeight }
             }} />
             <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
         </div>
