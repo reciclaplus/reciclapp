@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@googlemaps/markerclusterer": "^2.0.10",
     "@material-table/core": "^0.2.35",
     "@material-table/exporters": "^1.0.12",
     "@mui/icons-material": "^5.3.1",

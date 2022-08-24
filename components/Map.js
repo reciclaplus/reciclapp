@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { MarkerClusterer } from '@googlemaps/markerclusterer'
 import { useRouter } from 'next/router'
 import { useContext, useEffect, useRef } from 'react'
 import initPolygonsP4 from '../config/P4/P4Polygons'
@@ -9,7 +10,6 @@ import { TownContext } from '../context/TownContext'
 import { getActivePdr } from '../utils/pdr-management'
 import { initGoogleMap } from './BaseMap'
 import { geoLocation } from './GeoMap'
-
 const MyMap = (props) => {
   const googleMapRef = useRef(null)
   let googleMap = null
@@ -35,9 +35,9 @@ const MyMap = (props) => {
 
   useEffect(() => {
     googleMap = initGoogleMap(googleMapRef, mapCenter, zoomMap)
-
+    let allMarkers
     if (pdr.length > 1) {
-      getActivePdr(pdr).forEach(position => {
+      allMarkers = getActivePdr(pdr).map(position => {
         const marker = addMarker(position, googleMap, position.nombre)
         const infowindow = new google.maps.InfoWindow({
           content: position.nombre
@@ -78,8 +78,30 @@ const MyMap = (props) => {
         google.maps.event.addListener(googleMap, 'click', function (event) {
           infowindow.close()
         })
+        return marker
       })
     }
+
+    const renderer = {
+      render ({ count, position }) {
+        return new google.maps.Marker({
+          position,
+          label: String(count),
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 15,
+            strokeWeight: 4,
+            fillOpacity: 1,
+            fillColor: '#7DC48B',
+            strokeColor: '#4B7553'
+          }
+        })
+      }
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    const markerCluster = new MarkerClusterer({ map: googleMap, markers: allMarkers, renderer })
+
     initPolygonsSY(googleMap)
     initPolygonsP4(googleMap)
   }, [pdr])
