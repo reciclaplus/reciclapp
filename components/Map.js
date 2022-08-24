@@ -92,8 +92,8 @@ const MyMap = (props) => {
             scale: 15,
             strokeWeight: 4,
             fillOpacity: 1,
-            fillColor: '#7DC48B',
-            strokeColor: '#4B7553'
+            fillColor: '#B5D3C5',
+            strokeColor: '#47916E'
           }
         })
       }
