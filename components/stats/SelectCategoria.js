@@ -1,8 +1,13 @@
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import NativeSelect from '@mui/material/NativeSelect'
+import { useContext } from 'react'
+import { conf } from '../../configuration'
+import { TownContext } from '../../context/TownContext'
 
 export default function SelectCategoria (props) {
+  const { town } = useContext(TownContext)
+  const categories = conf[town].categories
   const { setCategoria } = props
   const handleChange = (event) => {
     setCategoria(event.target.value)
@@ -21,9 +26,12 @@ export default function SelectCategoria (props) {
         onChange={handleChange}
       >
 
-          <option value='casa'> Casa Particular </option>
-          <option value='escuela'> Escuela </option>
-          <option value='negocio'> Negocio </option>
+          {
+            categories.map(cat => {
+              return <option value={cat.value} key={cat}>{cat.label}</option>
+            })
+          }
+
           <option value='all'> Todo </option>
       </NativeSelect>
     </FormControl>
