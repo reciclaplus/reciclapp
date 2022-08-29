@@ -58,9 +58,9 @@ export default function PasarPuntos () {
 
   // eslint-disable-next-line no-unused-vars
   function storeStats () {
-    const categorias = ['casa', 'negocio', 'escuela']
+    const categories = conf[town].categories.map((cat) => { return cat.value })
 
-    categorias.forEach(categoria => {
+    categories.forEach(categoria => {
       const catPdr = todaysPdr.filter(individualPdr => individualPdr.categoria === categoria)
       const totalPdr = catPdr.length
       const affirmativePdr = catPdr.map(individualPdr => {

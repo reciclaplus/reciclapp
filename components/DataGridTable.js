@@ -15,7 +15,7 @@ export default function DataGridTable () {
   const [rowToDelete, setRowToDelete] = useState(null)
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
-  const categorias = ['casa', 'escuela', 'negocio']
+  const categories = conf[town].categories
 
   const deleteRow = (id) => {
     const dataUpdate = pdr.filter((row) => row.internalId !== id)
@@ -65,18 +65,9 @@ export default function DataGridTable () {
       headerName: 'Categoría',
       editable: true,
       type: 'singleSelect',
-      valueOptions: categorias,
+      valueOptions: categories.map((cat) => { return cat.value }),
       valueFormatter: (params) => {
-        if (params.value === 'casa') {
-          return 'Casa Particular'
-        }
-        if (params.value === 'escuela') {
-          return 'Escuela'
-        }
-        if (params.value === 'negocio') {
-          return 'Negocio'
-        }
-        return ''
+        return categories.find(cat => cat.value === params.value).label
       },
       width: 150
     },

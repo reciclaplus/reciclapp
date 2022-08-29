@@ -15,7 +15,7 @@ import NewPdrMap from './NewPdrMap'
 export default function NewPdr (props) {
   const { town } = useContext(TownContext)
   const { pdr, setPdr } = useContext(PdrContext)
-
+  const categories = conf[town].categories
   const [state, setState] = useState({
     zafacon: false,
     barrio: '',
@@ -160,10 +160,14 @@ export default function NewPdr (props) {
           value={state.categoria}
           onChange={handleInputChange}
         >
+
           <option value=""></option>
-          <option value="casa">Casa Particular</option>
-          <option value="escuela">Escuela</option>
-          <option value="negocio">Negocio</option>
+          {
+            categories.map(cat => {
+              return <option value={cat.value} key={cat}>{cat.label}</option>
+            })
+          }
+
         </NativeSelect>
       </FormControl>
       <br />
