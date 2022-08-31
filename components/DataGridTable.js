@@ -1,6 +1,8 @@
 import DeleteIcon from '@mui/icons-material/Delete'
-import { Button } from '@mui/material'
+import { Button, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material'
+
 import { DataGrid, esES, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid'
+import moment from 'moment'
 import Link from 'next/link'
 import { useCallback, useContext, useState } from 'react'
 import { conf } from '../configuration'
@@ -8,6 +10,7 @@ import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
 import { calculateAlert } from '../utils/pdr-management'
 import DeleteRowDialog from './DeleteRowDialog'
+import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons'
 
 export default function DataGridTable () {
   const { pdr, setPdr } = useContext(PdrContext)
@@ -118,7 +121,49 @@ export default function DataGridTable () {
       width: 100,
       valueGetter: calculateAlert
     },
-    { field: 'active', headerName: 'Activo', editable: false, type: 'boolean' }
+    { field: 'active', headerName: 'Activo', editable: false, type: 'boolean' },
+    {
+      field: 'recogida',
+      headerName: 'Últimas 5 semanas',
+      editable: false,
+      renderCell: (params) => {
+        const recogida = params.value
+
+        const fiveMondays = [...Array(5).keys()].map(nWeek => moment().day('monday').subtract(nWeek, 'weeks'))
+
+        const lastNweeks = fiveMondays.map(monday => {
+          const r = recogida.find(week => week.date === monday.format('DD/MM/YYYY'))
+          if (r) {
+            return { date: r.date, wasCollected: r.wasCollected }
+          } else {
+            return { date: monday.format('DD/MM/YYYY'), wasCollected: 'null' }
+          }
+        })
+
+        const result = lastNweeks.map(date => {
+          let control
+          if (date.wasCollected === 'si') {
+            control = <GreenRadio checked={true} size='small' sx={{ p: 0 }}/>
+          } else if (date.wasCollected === 'no') {
+            control = <RedRadio checked={true} size='small' sx={{ p: 0 }}/>
+          } else if (date.wasCollected === 'cerrado') {
+            control = <Radio checked={true} color="default" size='small' sx={{ p: 0 }}/>
+          } else if (date.wasCollected === 'nada') {
+            control = <YellowRadio checked={true} size='small' sx={{ p: 0 }}/>
+          } else if (date.wasCollected === 'null') {
+            control = <Radio checked={false} color="default" size='small' sx={{ p: 0 }}/>
+          }
+
+          return <FormControlLabel control={control} label={<Typography variant="body2" color="textSecondary">{date.date}</Typography>} labelPlacement="top" key={date.date} />
+        }).reverse()
+
+        return (
+          <RadioGroup row>
+          { result }
+          </RadioGroup>)
+      },
+      width: 600
+    }
   ]
 
   const localeObj = {
