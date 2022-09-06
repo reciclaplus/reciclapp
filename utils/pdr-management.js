@@ -42,6 +42,9 @@ export function calculateAlert (params) {
 }
 
 export function setNewInternalId (pdr) {
+  if (pdr.length < 1) {
+    return 1
+  }
   const internalIds = pdr.map(individualPdr => individualPdr.internalId)
   console.log(internalIds)
   return Math.max(...internalIds) + 1
