@@ -25,6 +25,17 @@ app.secret_key = "yoreciclo"
 def hello():
   return "hello world"
 
+@app.route("/add-date-added", methods=['POST'])
+def add_date_added():
+  pdr = request.json
+  for ipdr in pdr:
+    if "recogida" in ipdr.keys():
+      recogida = ipdr["recogida"]
+      dates = [datetime.strptime(week["date"], '%d/%m/%Y') for week in recogida]
+      date_added = datetime.strftime(min(dates), '%d/%m/%Y')
+      ipdr["dateAdded"] = date_added
+  return jsonify(pdr)
+
 @app.route("/add-date-to-recogida", methods=['GET', 'POST'])
 def add_date():
   pdr = request.json
