@@ -34,6 +34,12 @@ export const conf =
     nombre: 'Sabana Yegua - Cartón',
     file: 'cardboard_sy.json',
     map_center: { lat: 18.4606607, lng: -70.8405734 },
+    categories: [
+      { value: 'casa', label: 'Casa Particular' },
+      { value: 'escuela', label: 'Escuela' },
+      { value: 'negocio', label: 'Negocio' },
+      { value: 'iglesia', label: 'Iglesia' }
+    ],
     barrios: [
       { nombre: 'Barrio Blanco', color: '#FF95C5', center: '18.4562141,-70.829' },
       { nombre: 'Barrio Pintado', color: '#8884d8', center: '18.4579091,-70.835' },
@@ -49,6 +55,12 @@ export const conf =
     nombre: 'Sabana Yegua',
     file: 'sample.json',
     map_center: { lat: 18.4606607, lng: -70.8405734 },
+    categories: [
+      { value: 'casa', label: 'Casa Particular' },
+      { value: 'escuela', label: 'Escuela' },
+      { value: 'negocio', label: 'Negocio' },
+      { value: 'iglesia', label: 'Iglesia' }
+    ],
     barrios: [
       { nombre: 'Barrio Blanco', color: '#FF95C5', center: '18.4562141,-70.829' },
       { nombre: 'Barrio Pintado', color: '#8884d8', center: '18.4579091,-70.835' },
