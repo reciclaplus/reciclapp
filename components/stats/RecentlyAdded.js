@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material'
-import { DataGrid, GridToolbar } from '@mui/x-data-grid'
+import { DataGrid, esES, GridToolbar } from '@mui/x-data-grid'
 import moment from 'moment'
 import { useContext, useState } from 'react'
 import { conf } from '../../configuration'
@@ -17,25 +17,24 @@ export default function RecentlyAdded () {
   const [nWeeks, setNWeeks] = useState(4)
 
   const recentlyAddedPdr = pdr.filter(ipdr => moment().diff(moment(ipdr.dateAdded, 'DD/MM/YYYY'), 'days') < 7 * nWeeks)
-  console.log(recentlyAddedPdr.length)
-  console.log(pdr.map(ipdr => moment(ipdr.dateAdded, 'DD/MM/YYYY').diff(moment(), 'days')))
+
   const columns = [
     {
       field: 'dateAdded',
       headerName: 'Añadido el día',
-      editable: true,
+      editable: false,
       type: 'date',
       width: 150,
       valueGetter: (params) => { return moment(params.value, 'DD/MM/YYYY') },
       valueFormatter: (params) => { return params.value.format('DD/MM/YYYY') }
     },
-    { field: 'nombre', headerName: 'Nombre', editable: true, width: 200 },
-    { field: 'descripcion', headerName: 'Descripción', editable: true, width: 350 },
-    { field: 'barrio', headerName: 'Barrio', editable: true, type: 'singleSelect', valueOptions: barrios, width: 125 },
+    { field: 'nombre', headerName: 'Nombre', editable: false, width: 200 },
+    { field: 'descripcion', headerName: 'Descripción', editable: false, width: 350 },
+    { field: 'barrio', headerName: 'Barrio', editable: false, type: 'singleSelect', valueOptions: barrios, width: 125 },
     {
       field: 'categoria',
       headerName: 'Categoría',
-      editable: true,
+      editable: false,
       type: 'singleSelect',
       valueOptions: categories.map((cat) => { return cat.value }),
       valueFormatter: (params) => {
@@ -54,6 +53,17 @@ export default function RecentlyAdded () {
     }
   ]
 
+  const localeObj = {
+    ...esES.components.MuiDataGrid.defaultProps.localeText,
+    ...{
+      filterValueAny: 'Cualquiera',
+      filterValueTrue: 'Sí',
+      filterValueFalse: 'No',
+      filterOperatorIsAnyOf: 'Es cualquiera de',
+      toolbarQuickFilterPlaceholder: 'Buscar...'
+    }
+  }
+
   return (
         <div style={{ height: 500, width: '100%' }}>
             <Grid container justifyContent="flex-end" sx={{ mb: 1 }}>
@@ -71,7 +81,7 @@ export default function RecentlyAdded () {
                     rows={recentlyAddedPdr}
                     columns={columns}
                     components={{ Toolbar: GridToolbar }}
-
+                    localeText={localeObj}
                     experimentalFeatures={{ newEditingApi: true }}/>
                 </div>
             </div>
