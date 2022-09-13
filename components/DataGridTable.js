@@ -4,7 +4,7 @@ import { Button, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/ma
 import { DataGrid, esES, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid'
 import moment from 'moment'
 import Link from 'next/link'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
@@ -54,21 +54,6 @@ export default function DataGridTable () {
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const categories = conf[town].categories
-
-  useEffect(() => {
-    fetch('http://localhost:5000/add-date-added', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json'
-      },
-      body: JSON.stringify(pdr)
-    }).then(function (response) {
-      return response.json()
-    }).then(function (json) {
-      setPdr(json)
-    })
-  }, [])
 
   const deleteRow = (id) => {
     const dataUpdate = pdr.filter((row) => row.internalId !== id)
