@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
 import MyPieChart from './stats/PieChart'
+import RecentlyAdded from './stats/RecentlyAdded'
 import TimeSeries from './stats/TimeSeries'
 import WeeklyWeight from './stats/WeeklyWeight'
 
@@ -38,8 +39,11 @@ export default function Dashboard () {
             <WeeklyWeight/>
           </Item>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Item>xs=6 md=8</Item>
+        <Grid item xs={12} md={12}>
+          <Item>
+          <h2>Puntos Nuevos</h2>
+            <RecentlyAdded />
+          </Item>
         </Grid>
       </Grid>
     </Box>

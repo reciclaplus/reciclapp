@@ -5,6 +5,7 @@ import InputLabel from '@mui/material/InputLabel'
 import NativeSelect from '@mui/material/NativeSelect'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
+import moment from 'moment'
 import { useContext, useState } from 'react'
 import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
@@ -78,8 +79,10 @@ export default function NewPdr (props) {
       descripcion: state.descripcion,
       categoria: state.categoria,
       recogida: [],
-      active: true
+      active: true,
+      dateAdded: moment().format('DD/MM/YYYY')
     })
+
     setPdr(newPdrs)
     console.log(newPdrs)
     console.log(setNewInternalId(pdr))
@@ -164,7 +167,7 @@ export default function NewPdr (props) {
           <option value=""></option>
           {
             categories.map(cat => {
-              return <option value={cat.value} key={cat}>{cat.label}</option>
+              return <option value={cat.value} key={cat.value}>{cat.label}</option>
             })
           }
 

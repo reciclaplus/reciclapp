@@ -28,7 +28,7 @@ export default function SelectCategoria (props) {
 
           {
             categories.map(cat => {
-              return <option value={cat.value} key={cat}>{cat.label}</option>
+              return <option value={cat.value} key={cat.value}>{cat.label}</option>
             })
           }
 
