@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 import { Button } from '@mui/material'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
 import { WeightContext } from '../../context/WeightContext'
+import CustomAlert from '../CustomAlert'
 import { BUCKET_NAME } from './google'
 
 function UploadFile (props) {
@@ -13,6 +14,7 @@ function UploadFile (props) {
   const { town } = useContext(TownContext)
   const { weight } = useContext(WeightContext)
   const { stats } = useContext(StatsContext)
+  const [alertMessage, setAlertMessage] = useState(null)
 
   const bucket = town === 'sample' ? 'reciclaplus-public' : BUCKET_NAME
 
@@ -20,7 +22,12 @@ function UploadFile (props) {
     if (pdr.length > 0) {
       uploadFunction()
     } else {
-      alert('No hay puntos en el archivo actual.')
+      setAlertMessage(
+        <CustomAlert
+          message='No hay puntos en el archivo actual'
+          setAlertMessage={setAlertMessage}
+          severity='error'/>
+      )
     }
   }
 
@@ -58,16 +65,29 @@ function UploadFile (props) {
     })
     return request.execute(function (file, rawResponse) {
       if (JSON.parse(rawResponse).gapiRequest.data.status === 200) {
-        alert('Archivo guardado correctamente')
+        setAlertMessage(
+          <CustomAlert
+            message='Archivo guardado correctamente'
+            setAlertMessage={setAlertMessage}
+            severity='success'/>
+        )
       } else {
         console.log(JSON.parse(rawResponse))
-        alert('No se pudo guardar el archivo')
+        setAlertMessage(
+          <CustomAlert
+            message='No se pudo guardar el archivo'
+            setAlertMessage={setAlertMessage}
+            severity='error'/>
+        )
       }
     })
   }
 
   return (
+      <div>
+        {alertMessage}
         <Button id="upload-btn" component="a" variant="contained" color="primary" onClick={upload}>Guardar</Button>
+      </div>
   )
 }
 

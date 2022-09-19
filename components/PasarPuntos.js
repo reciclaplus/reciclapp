@@ -8,14 +8,14 @@ import { PdrContext } from '../context/PdrContext'
 import { StatsContext } from '../context/StatsContext'
 import { TownContext } from '../context/TownContext'
 import { getMonday, getWeekNumber } from '../utils/dates'
+import CustomAlert from './CustomAlert'
 import DatePicker from './DatePicker'
 import RadioButtonsGroup from './RadioButtonsGroup'
-
 export default function PasarPuntos () {
   const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
   const { stats } = useContext(StatsContext)
-
+  const [alertMessage, setAlertMessage] = useState(null)
   const currentDate = new Date()
 
   const [barrio, setBarrio] = useState('')
@@ -93,12 +93,19 @@ export default function PasarPuntos () {
 
   function handleSubmit (event) {
     event.preventDefault()
-    window.confirm('Recuerda guardar todos los cambios')
+    setAlertMessage(
+      <CustomAlert
+        message='Recuerda guardar los cambios'
+        setAlertMessage={setAlertMessage}
+        severity='info'/>
+    )
     storeStats()
     return false
   }
 
   return (
+    <div>
+      {alertMessage}
         <form onSubmit={handleSubmit}>
             <DatePicker defaultDate={fecha} onChange={(event) => { setSemana(getWeekNumber(datePickerDate(event))); setFecha(datePickerDate(event)) }}/>
             <div>
@@ -141,6 +148,7 @@ export default function PasarPuntos () {
         Pasar esos puntos
       </Button>
       </div>
-        </form>
+    </form>
+  </div>
   )
 }
