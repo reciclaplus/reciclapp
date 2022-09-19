@@ -11,8 +11,8 @@ import { conf } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { TownContext } from '../context/TownContext'
 import { pdrExists, setNewInternalId } from '../utils/pdr-management'
+import CustomAlert from './CustomAlert'
 import NewPdrMap from './NewPdrMap'
-
 export default function NewPdr (props) {
   const { town } = useContext(TownContext)
   const { pdr, setPdr } = useContext(PdrContext)
@@ -26,6 +26,7 @@ export default function NewPdr (props) {
     categoria: ''
   })
 
+  const [alertMessage, setAlertMessage] = useState(null)
   const [newMarker, setNewMarker] = useState('')
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
@@ -63,7 +64,8 @@ export default function NewPdr (props) {
     event.preventDefault()
 
     if (pdrExists(state.barrio, state.id, pdr)) {
-      alert('Id incorrecto')
+      // alert('Id incorrecto')
+
       return
     }
 
@@ -84,8 +86,6 @@ export default function NewPdr (props) {
     })
 
     setPdr(newPdrs)
-    console.log(newPdrs)
-    console.log(setNewInternalId(pdr))
 
     setState({
       zafacon: false,
@@ -97,11 +97,20 @@ export default function NewPdr (props) {
     })
 
     setNewMarker('')
-    alert(`Nuevo punto: ${state.nombre} en ${state.barrio}`)
+
+    setAlertMessage(
+    <CustomAlert
+      message={`Nuevo punto: ${state.nombre} en ${state.barrio}`}
+      setAlertMessage={setAlertMessage}
+      severity='info'/>
+    )
+
     return false
   }
 
   return (
+    <div>
+    {alertMessage}
     <form onSubmit={handleSubmit}>
       <div>
 
@@ -212,5 +221,6 @@ export default function NewPdr (props) {
       </Button>
       </div>
     </form>
+    </div>
   )
 }
