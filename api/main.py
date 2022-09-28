@@ -56,11 +56,15 @@ def add_date():
 def time_series_data():
 
   categoria = request.args.get("categoria")
+  if 'barrio' in request.args:
+    barrio = request.args.get("barrio")
+  else:
+    barrio = 'all'
   start = request.args.get("start")
   end = request.args.get("end")
   data = request.json
   
-  return get_time_series_data(data, categoria, start, end)
+  return get_time_series_data(data, categoria, start, end, barrio)
 
 @app.route("/download-file")
 def download_file():

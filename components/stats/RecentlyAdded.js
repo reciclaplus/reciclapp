@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material'
+import Grid from '@mui/material/Grid'
 import { DataGrid, esES, GridToolbar } from '@mui/x-data-grid'
 import moment from 'moment'
 import { useContext, useState } from 'react'
@@ -6,7 +6,7 @@ import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { TownContext } from '../../context/TownContext'
 import { lastNweeks } from '../DataGridTable'
-import SelectWeeks from './SelectWeeks'
+import Filter from './Filter'
 
 export default function RecentlyAdded () {
   const { pdr } = useContext(PdrContext)
@@ -65,11 +65,15 @@ export default function RecentlyAdded () {
   }
 
   return (
-        <div style={{ height: 500, width: '100%' }}>
+        <div>
             <Grid container justifyContent="flex-end" sx={{ mb: 1 }}>
-                <SelectWeeks nWeeks={nWeeks} setNWeeks={setNWeeks}></SelectWeeks>
+              <Filter
+                currentValue={nWeeks}
+                setCurrentValue={setNWeeks}
+                filterName='Plazo'
+                values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }]}></Filter>
             </Grid>
-            <div style={{ display: 'flex', height: '100%' }}>
+            <div style={{ display: 'flex', height: 500 }}>
                 <div style={{ flexGrow: 1 }}>
                     <DataGrid
                     initialState={{
