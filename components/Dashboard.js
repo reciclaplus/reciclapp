@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles'
 import MyPieChart from './stats/PieChart'
 import RecentlyAdded from './stats/RecentlyAdded'
 import TimeSeries from './stats/TimeSeries'
+import WastePctg from './stats/WastePctg'
 import WeeklyWeight from './stats/WeeklyWeight'
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -43,6 +44,12 @@ export default function Dashboard () {
           <Item>
           <h2>Puntos Nuevos</h2>
             <RecentlyAdded />
+          </Item>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Item>
+          <h2>Porcentaje de baura</h2>
+            <WastePctg />
           </Item>
         </Grid>
       </Grid>
