@@ -24,7 +24,7 @@ export default function TimeSeries (props) {
   useEffect(() => {
     const today = moment().format('DD/MM/YYYY')
     const start = moment().subtract(nWeeks * 7, 'days').format('DD/MM/YYYY')
-    console.log()
+
     fetch(`https://api-dot-norse-voice-343214.uc.r.appspot.com/time-series-data?categoria=${categoria}&barrio=${barrio}&start=${start}&end=${today}`, {
       method: 'POST',
       headers: {
