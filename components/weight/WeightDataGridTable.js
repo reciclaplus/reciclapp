@@ -4,8 +4,8 @@ import { Button } from '@mui/material'
 import { DataGrid, esES, GridActionsCellItem, GridToolbarContainer } from '@mui/x-data-grid'
 import moment from 'moment'
 import { useCallback, useContext, useState } from 'react'
-import { WeightContext } from '../context/WeightContext'
-import DeleteRowDialog from './DeleteRowDialog'
+import { WeightContext } from '../../context/WeightContext'
+import DeleteRowDialog from '../DeleteRowDialog'
 
 function EditToolbar (props) {
   const { weight, setWeight } = props

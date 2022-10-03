@@ -1,9 +1,9 @@
 import { useContext, useEffect, useRef } from 'react'
-import { conf } from '../configuration'
-import { PdrContext } from '../context/PdrContext'
-import { TownContext } from '../context/TownContext'
-import { getActivePdr } from '../utils/pdr-management'
-import { addMarker, initGoogleMap } from './BaseMap'
+import { conf } from '../../configuration'
+import { PdrContext } from '../../context/PdrContext'
+import { TownContext } from '../../context/TownContext'
+import { getActivePdr } from '../../utils/pdr-management'
+import { addMarker, initGoogleMap } from '../map/BaseMap'
 
 function NewPdrMap (props) {
   const googleMapRef = useRef(null)

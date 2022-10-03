@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Layout from '../components/layout/Layout'
-import PasarPuntos from '../components/PasarPuntos'
+import PasarPuntos from '../components/pasarpuntos/PasarPuntos'
 import styles from '../styles/Home.module.css'
 
 export default function Map () {

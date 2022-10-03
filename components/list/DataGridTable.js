@@ -5,12 +5,12 @@ import { DataGrid, esES, GridActionsCellItem, GridToolbar } from '@mui/x-data-gr
 import moment from 'moment'
 import Link from 'next/link'
 import { useCallback, useContext, useState } from 'react'
-import { conf } from '../configuration'
-import { PdrContext } from '../context/PdrContext'
-import { TownContext } from '../context/TownContext'
-import { calculateAlert } from '../utils/pdr-management'
-import DeleteRowDialog from './DeleteRowDialog'
-import { GreenRadio, RedRadio, YellowRadio } from './RadioButtons'
+import { conf } from '../../configuration'
+import { PdrContext } from '../../context/PdrContext'
+import { TownContext } from '../../context/TownContext'
+import { calculateAlert } from '../../utils/pdr-management'
+import DeleteRowDialog from '../DeleteRowDialog'
+import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons'
 
 export function lastNweeks (recogida, n) {
   const fiveMondays = [...Array(5).keys()].map(nWeek => moment().day('monday').subtract(nWeek, 'weeks'))
