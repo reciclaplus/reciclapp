@@ -188,7 +188,7 @@ export default function DataGridTable () {
   }
 
   return (
-    <div style={{ height: '80vh', width: '100%' }}>
+    <div style={{ height: '80vh', width: '100%' }} data-testid="table">
       <DataGrid
       getRowId={(row) => row.internalId}
       rows={pdr}
@@ -196,7 +196,8 @@ export default function DataGridTable () {
       localeText={localeObj}
       components={{ Toolbar: GridToolbar }}
       componentsProps={{
-        toolbar: { showQuickFilter: true }
+        toolbar: { showQuickFilter: true },
+        footer: {"data-testid": "footer"}
       }}
       processRowUpdate={processRowUpdate}
       experimentalFeatures={{ newEditingApi: true }}/>
