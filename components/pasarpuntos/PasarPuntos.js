@@ -106,10 +106,12 @@ export default function PasarPuntos () {
   return (
     <div>
       {alertMessage}
-        <form onSubmit={handleSubmit}>
-            <DatePicker defaultDate={fecha} onChange={(event) => { setSemana(getWeekNumber(datePickerDate(event))); setFecha(datePickerDate(event)) }}/>
+        <form onSubmit={handleSubmit} data-testid="pasar-puntos-form">
+            <FormControl role="form-field">
+              <DatePicker defaultDate={fecha} onChange={(event) => { setSemana(getWeekNumber(datePickerDate(event))); setFecha(datePickerDate(event)) }}/>
+            </FormControl>
             <div>
-                <FormControl>
+                <FormControl role="form-field">
                     <InputLabel>Barrio</InputLabel>
                     <NativeSelect
                     inputProps={{
@@ -128,7 +130,7 @@ export default function PasarPuntos () {
                 </FormControl>
                 </div>
         <br/>
-        <FormControl component="fieldset">
+        <FormControl component="fieldset" role="form-field">
             {todaysPdr.map((element, index) => {
               const recogida = element.recogida.filter(weeks => weeks.year === fecha.getFullYear() && weeks.week === semana)
               const initialValue = recogida.length > 0 ? recogida[0].wasCollected : ''
