@@ -90,7 +90,7 @@ export default function WeightDataGridTable (props) {
     { field: 'basura', headerName: 'Basura (lb)', editable: true, type: 'number', width: 100 }
   ]
   return (
-        <div style={{ height: '80vh', width: '100%' }}>
+        <div style={{ height: '80vh', width: '100%' }} data-testid='weight-table'>
             <DataGrid
             getRowId={(row) => moment(row.date).format('DD/MM/YYYY') }
             rows={weight}
@@ -100,7 +100,8 @@ export default function WeightDataGridTable (props) {
             experimentalFeatures={{ newEditingApi: true }}
             components={{ Toolbar: EditToolbar }}
             componentsProps={{
-              toolbar: { weight, setWeight }
+              toolbar: { weight, setWeight },
+              footer: {"data-testid": "footer"}
             }} />
             <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
         </div>
