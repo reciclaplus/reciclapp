@@ -3,7 +3,8 @@ import styles from '../styles/Home.module.css'
 
 import Layout from '../components/layout/Layout'
 import WeightDataGridTable from '../components/weight/WeightDataGridTable'
-export default function List () {
+
+export default function WeightPage () {
   return (
     <div className={styles.container}>
       <Head>

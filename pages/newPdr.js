@@ -3,7 +3,7 @@ import Layout from '../components/layout/Layout'
 import NewPdr from '../components/newpdr/NewPdr'
 import styles from '../styles/Home.module.css'
 
-export default function Map () {
+export default function NewPdrPage () {
   return (
     <div className={styles.container}>
       <Head>

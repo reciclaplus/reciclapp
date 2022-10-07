@@ -3,7 +3,7 @@ import Layout from '../components/layout/Layout'
 import PasarPuntos from '../components/pasarpuntos/PasarPuntos'
 import styles from '../styles/Home.module.css'
 
-export default function Map () {
+export default function PasarPuntosPage () {
   return (
     <div className={styles.container}>
       <Head>
