@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
-import DataGridTable from '../components/DataGridTable'
 import Layout from '../components/layout/Layout'
+import DataGridTable from '../components/list/DataGridTable'
 
 export default function List () {
   return (

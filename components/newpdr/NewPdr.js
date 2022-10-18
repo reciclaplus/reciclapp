@@ -7,12 +7,14 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import moment from 'moment'
 import { useContext, useState } from 'react'
-import { conf } from '../configuration'
-import { PdrContext } from '../context/PdrContext'
-import { TownContext } from '../context/TownContext'
-import { pdrExists, setNewInternalId } from '../utils/pdr-management'
-import CustomAlert from './CustomAlert'
+import { conf } from '../../configuration'
+import { PdrContext } from '../../context/PdrContext'
+import { TownContext } from '../../context/TownContext'
+import { pdrExists, setNewInternalId } from '../../utils/pdr-management'
+import CustomAlert from '../CustomAlert'
+import { MapsWrapper } from '../map/MapsWrapper'
 import NewPdrMap from './NewPdrMap'
+
 export default function NewPdr (props) {
   const { town } = useContext(TownContext)
   const { pdr, setPdr } = useContext(PdrContext)
@@ -210,9 +212,9 @@ export default function NewPdr (props) {
       />
       </div>
       <div>
-
-        <NewPdrMap containerStyle={{ width: '100%', height: '60%' }} setNewMarker={setNewMarker}/>
-
+        <MapsWrapper>
+          <NewPdrMap containerStyle={{ width: '100%', height: '60%' }} setNewMarker={setNewMarker}/>
+        </MapsWrapper>
       </div>
       <br/>
       <div>
