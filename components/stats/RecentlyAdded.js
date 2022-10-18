@@ -5,7 +5,7 @@ import { useContext, useState } from 'react'
 import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { TownContext } from '../../context/TownContext'
-import { lastNweeks } from '../list/DataGridTable'
+import { lastNweeks } from '../DataGridTable'
 import Filter from './Filter'
 
 export default function RecentlyAdded () {

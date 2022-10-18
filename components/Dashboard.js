@@ -2,11 +2,11 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
-import MyPieChart from './PieChart'
-import RecentlyAdded from './RecentlyAdded'
-import TimeSeries from './TimeSeries'
-import WastePctg from './WastePctg'
-import WeeklyWeight from './WeeklyWeight'
+import MyPieChart from './stats/PieChart'
+import RecentlyAdded from './stats/RecentlyAdded'
+import TimeSeries from './stats/TimeSeries'
+import WastePctg from './stats/WastePctg'
+import WeeklyWeight from './stats/WeeklyWeight'
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
