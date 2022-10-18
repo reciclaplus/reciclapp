@@ -1,5 +1,5 @@
 import { getActivePdr } from '../../utils/pdr-management'
-
+import { GOOGLE_API_KEY } from '../gcloud/google'
 export function download (e) {
   fetch(e, {
     method: 'GET',
@@ -32,7 +32,7 @@ export function createMapURL (pdr, barrio, center) {
   }
   )
 
-  const URL = `${startURL}?center=${center}&zoom=${zoom}&size=600x600&maptype=roadmap%20${markersString}%20&key=AIzaSyA_HXSM7kTwflhLNM6N8v5MJviwz89IHhw`
+  const URL = `${startURL}?center=${center}&zoom=${zoom}&size=600x600&maptype=roadmap%20${markersString}%20&key=${GOOGLE_API_KEY}`
   console.log(URL)
   return URL
 }
