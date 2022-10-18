@@ -1,10 +1,9 @@
 import Head from 'next/head'
 import Layout from '../components/layout/Layout'
-import { MapComponent } from '../components/map/Map'
-import { MapsWrapper } from '../components/map/MapsWrapper'
+import MyMap from '../components/Map'
 import styles from '../styles/Home.module.css'
 
-export default function MapPage () {
+export default function Map () {
   return (
     <div className={styles.container}>
       <Head>
@@ -13,9 +12,7 @@ export default function MapPage () {
         <link rel="icon" type="image/png" href="/logo.png" />
       </Head>
       <Layout>
-        <MapsWrapper>
-          <MapComponent />
-        </MapsWrapper>
+        <MyMap></MyMap>
       </Layout>
     </div>
   )

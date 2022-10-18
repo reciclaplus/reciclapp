@@ -2,9 +2,8 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
 import Layout from '../components/layout/Layout'
-import WeightDataGridTable from '../components/weight/WeightDataGridTable'
-
-export default function WeightPage () {
+import WeightDataGridTable from '../components/WeightDataGridTable'
+export default function List () {
   return (
     <div className={styles.container}>
       <Head>
