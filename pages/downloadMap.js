@@ -1,9 +1,9 @@
 import Head from 'next/head'
-import DownloadMap from '../components/DownloadMap'
 import Layout from '../components/layout/Layout'
+import DownloadMap from '../components/map/DownloadMap'
 import styles from '../styles/Home.module.css'
 
-export default function Map () {
+export default function DownloadMapPage () {
   return (
     <div className={styles.container}>
       <Head>

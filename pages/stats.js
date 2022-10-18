@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import { useContext } from 'react'
-import Dashboard from '../components/Dashboard'
 import Layout from '../components/layout/Layout'
 import DashboardSample from '../components/sample/DashboardSample'
+import Dashboard from '../components/stats/Dashboard'
 import styles from '../styles/Home.module.css'
 
 import { TownContext } from '../context/TownContext'

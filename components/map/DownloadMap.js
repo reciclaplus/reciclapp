@@ -2,9 +2,9 @@
 import { Button, FormControl, InputLabel, NativeSelect } from '@mui/material'
 
 import { useContext, useState } from 'react'
-import { conf } from '../configuration'
-import { PdrContext } from '../context/PdrContext'
-import { TownContext } from '../context/TownContext'
+import { conf } from '../../configuration'
+import { PdrContext } from '../../context/PdrContext'
+import { TownContext } from '../../context/TownContext'
 import { createMapURL, download } from './StaticMap'
 
 export default function DownloadMap (props) {
