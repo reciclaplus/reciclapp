@@ -1,22 +1,42 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { TownContext } from '../../context/TownContext'
 import { getActivePdr } from '../../utils/pdr-management'
-import { addMarker, initGoogleMap } from '../map/BaseMap'
+import { addMarker } from '../map/BaseMap'
 
 function NewPdrMap (props) {
   const googleMapRef = useRef(null)
-  let googleMap = null
+  const [googleMap, setGoogleMap] = useState(null)
 
   const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
 
-  useEffect(() => {
-    const mapCenter = conf[town].map_center
-    googleMap = initGoogleMap(googleMapRef, mapCenter, 14)
+  useEffect(()=> {
+    const center = conf[town].map_center
+    const zoom = 14
+    function initGoogleMap() {
+        return new window.google.maps.Map(googleMapRef.current, {
+            center,
+            zoom,
+          })
+    }
+    setGoogleMap(initGoogleMap())
+  }, [googleMapRef])
 
-    addEventListener()
+  useEffect(() => {
+    if (googleMap !== null) {
+
+    let marker
+    googleMap.addListener('click', (event) => {
+        if (typeof marker !== 'undefined') {
+            marker.setMap(null)
+        }
+
+        marker = addMarker(event.latLng, googleMap)
+        props.setNewMarker(marker)
+        })
+        
     getActivePdr(pdr).forEach(position => {
       const marker = addMarker(position, googleMap)
       const infowindow = new window.google.maps.InfoWindow({
@@ -30,23 +50,8 @@ function NewPdrMap (props) {
         })
       })
     })
-  }, [])
-
-  let marker
-  const addEventListener = (callback) => {
-    if (typeof googleMap === 'undefined') {
-      callback()
-    } else {
-      window.google.maps.event.addListener(googleMap, 'click', (event) => {
-        if (typeof marker !== 'undefined') {
-          marker.setMap(null)
-        }
-
-        marker = addMarker(event.latLng, googleMap)
-        props.setNewMarker(marker)
-      })
-    }
-  }
+}
+  }, [googleMap])
 
   return <div
     ref={googleMapRef}
