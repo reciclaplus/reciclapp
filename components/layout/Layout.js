@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+/* global gapi */
 import MenuIcon from '@mui/icons-material/Menu'
 import { FormControl, InputLabel, ListItem, NativeSelect } from '@mui/material'
 import AppBar from '@mui/material/AppBar'
@@ -11,28 +12,28 @@ import List from '@mui/material/List'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
-import PropTypes from 'prop-types'
-import * as React from 'react'
+import { useContext, useState } from 'react'
 import { TownContext } from '../../context/TownContext'
 import OpenFile from '../gcloud/OpenFile'
-import SignIn from '../gcloud/SignIn'
 import UploadFile from '../gcloud/UploadFile'
 
 import Button from '@mui/material/Button'
 
-import Script from 'next/script'
-import { CLIENT_ID, GOOGLE_API_KEY } from '../gcloud/google'
+import SignIn from '../gcloud/SignIn'
 import { Navigation } from './Navigation'
 
 const drawerWidth = 240
 
 function Layout ({ children, ...props }) {
+  
   const { window } = props
-  const [mobileOpen, setMobileOpen] = React.useState(false)
-  const [GoogleAuth, setGoogleAuth] = React.useState()
-  const { town, setTown } = React.useContext(TownContext)
-  const [open, setOpen] = React.useState(false)
-
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [tokenClient, setTokenClient] = useState()
+  const [accessToken, setAccessToken] = useState()
+  const [GoogleAuth, setGoogleAuth] = useState()
+  const { town, setTown } = useContext(TownContext)
+  const [open, setOpen] = useState(false)
+  
   const handleClick = () => {
     setOpen(!open)
   }
@@ -45,34 +46,6 @@ function Layout ({ children, ...props }) {
     setMobileOpen(!mobileOpen)
   }
 
-  function handleClientLoad () {
-    // Load the API's client and auth2 modules.
-    // Call the initClient function after the modules load.
-    gapi.load('client:auth2', initClient)
-  }
-
-  function initClient () {
-    const SCOPE = 'https://www.googleapis.com/auth/devstorage.full_control'
-    // Initialize the gapi.client object, which app uses to make API requests.
-    // Get API key and client ID from API Console.
-    // 'scope' field specifies space-delimited list of access scopes.
-    try {
-      gapi.client.init({
-        apiKey: GOOGLE_API_KEY,
-        clientId: CLIENT_ID,
-        scope: SCOPE,
-        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
-      }).then(() => {
-      // GoogleAuth = gapi.auth2.getAuthInstance();
-        setGoogleAuth(gapi.auth2.getAuthInstance())
-        console.log(GoogleAuth)
-      }
-      )
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
   const drawer = (
     <div>
       <Toolbar />
@@ -83,10 +56,10 @@ function Layout ({ children, ...props }) {
 
       <List>
         <ListItem>
-            <SignIn googleauth={GoogleAuth} setgoogleauth={setGoogleAuth}/>
+            <SignIn accessToken={accessToken} setAccessToken={setAccessToken} setgoogleauth={setGoogleAuth} tokenClient={tokenClient} setTokenClient={setTokenClient}/>
         </ListItem>
         <ListItem>
-            <OpenFile googleauth={GoogleAuth}/>
+            <OpenFile accessToken={accessToken}/>
         </ListItem>
         <ListItem>
             <UploadFile googleauth={GoogleAuth}/>
@@ -186,18 +159,9 @@ function Layout ({ children, ...props }) {
         {children}
       </Box>
     </Box>
-    <Script src='https://apis.google.com/js/api.js' onLoad={handleClientLoad}></Script>
-    <Script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></Script>
     </>
   )
 }
 
-Layout.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func
-}
 
 export default Layout
