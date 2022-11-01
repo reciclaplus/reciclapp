@@ -5,13 +5,9 @@ from datetime import date, datetime, timedelta
 
 import flask
 import google.oauth2.credentials
-import pandas as pd
 from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin
-from google.auth.transport import requests
+from flask_cors import CORS
 from google.cloud import storage
-from google.oauth2 import id_token
-from google_auth_oauthlib import flow
 from google_auth_oauthlib.flow import Flow
 
 from time_series_data import get_time_series_data
@@ -66,20 +62,24 @@ def time_series_data():
   
   return get_time_series_data(data, categoria, start, end, barrio)
 
-@app.route("/download-file")
+@app.route("/download-file", methods=['GET', 'POST'])
 def download_file():
-    # Load credentials from the session.
-    credentials = google.oauth2.credentials.Credentials(
-      **flask.session['credentials'])
 
+    accessToken = request.args.get("token")
+    file = request.args.get("file")
+    bucket = request.args.get("bucket")
+    # Load credentials
+    credentials = google.oauth2.credentials.Credentials(accessToken)
 
-    storage_client = storage.Client("project-name", credentials=credentials)
-    buckets = storage_client.list_buckets()
-    bucket = storage_client.bucket("bucket-name")
-    blob = bucket.blob("file-name.json")
-    contents = blob.download_as_string()
+    storage_client = storage.Client("norse-voice", credentials=credentials)
+    bucket = storage_client.bucket(bucket)
+    blob = bucket.blob(file)
+    try:
+      contents = blob.download_as_bytes()
+    except Exception as e:
+      return e.message
 
-    return {"data": json.loads(contents)}
+    return json.loads(contents)
 
 @app.route("/authorise")
 def authorise():
@@ -119,7 +119,7 @@ def oauth2callback():
     credentials = flow.credentials
     flask.session['credentials'] = credentials_to_dict(credentials)
 
-    return flask.redirect('download-file')
+    return flask.redirect('http://localhost:3000')
 
 def credentials_to_dict(credentials):
     return {'token': credentials.token,

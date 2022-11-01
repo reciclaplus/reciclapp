@@ -25,6 +25,7 @@ function OpenFile (props) {
 
   const bucket = town === 'sample' ? 'reciclaplus-public' : BUCKET_NAME
 
+
   function downloadFunction () {
     setIsOpening(true)
     const request = gapi.client.request({
@@ -54,6 +55,43 @@ function OpenFile (props) {
     })
   }
 
+  function downloadFunction2() {
+    
+    setIsOpening(true)
+    if (props.accessToken){
+      fetch(`https://api-dot-norse-voice-343214.uc.r.appspot.com/download-file?token=${props.accessToken}&file=${file}&bucket=${bucket}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      }
+    }).then(function (response) {
+      return response.json()
+    })
+      .then(function (data) {
+        setPdr(data.pdr)
+        setWeight(data.peso)
+        setStats(data.stats)
+        router.push('/list')
+        console.log(data)
+        setIsOpening(false)
+      })
+    }
+    else{
+      setAlertMessage(
+                <CustomAlert
+                  message='Conéctate para abrir el archivo'
+                  setAlertMessage={setAlertMessage}
+                  severity='error'/>
+              )
+      setIsOpening(false)
+    }
+  
+    
+  }
+  
+  
+
   return (<>
         <Head>
 
@@ -64,7 +102,6 @@ function OpenFile (props) {
         <Button id="open-btn" variant="contained" onClick={downloadFunction}>Abrir</Button>
         {isOpening ? <CircularProgress size={30} thickness={6} sx={{ ml: 2 }}/> : <></>}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
         </>
   )
 }
