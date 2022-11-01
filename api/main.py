@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta
 import flask
 import google.oauth2.credentials
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from google.cloud import storage
 from google_auth_oauthlib.flow import Flow
 
@@ -23,13 +23,18 @@ def hello():
 
 @app.route("/add-date-added", methods=['POST'])
 def add_date_added():
+  
   pdr = request.json
+  
   for ipdr in pdr:
     if "recogida" in ipdr.keys():
       recogida = ipdr["recogida"]
-      dates = [datetime.strptime(week["date"], '%d/%m/%Y') for week in recogida]
-      date_added = datetime.strftime(min(dates), '%d/%m/%Y')
-      ipdr["dateAdded"] = date_added
+      if len(recogida) < 1:
+        print(ipdr)
+      else:
+        dates = [datetime.strptime(week["date"], '%d/%m/%Y') for week in recogida]
+        date_added = datetime.strftime(min(dates), '%d/%m/%Y')
+        ipdr["dateAdded"] = date_added
   return jsonify(pdr)
 
 @app.route("/add-date-to-recogida", methods=['GET', 'POST'])
