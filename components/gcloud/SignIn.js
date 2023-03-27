@@ -12,7 +12,7 @@ function SignIn (props) {
   function gapiStart() {
       gapi.client.init({
     }).then(function(response) {
-      console.log('discovery document loaded');
+      console.log('gapi client initialised');
     }, function(reason) {
       console.log('Error: ' + reason.result.error.message);
     });
@@ -28,7 +28,6 @@ function SignIn (props) {
       callback: (tokenResponse) => {
         access_token = tokenResponse.access_token;
         props.setAccessToken(access_token)
-        console.log(access_token)
       }
     })
     
@@ -40,10 +39,6 @@ function SignIn (props) {
     
     props.tokenClient.requestAccessToken();
   }
-
-  // function handleAuthClick () {
-  //   props.googleauth.signIn()
-  // }
   
   return (<>
         <Head>
