@@ -22,6 +22,7 @@ export default function NewPdr (props) {
   const [state, setState] = useState({
     zafacon: false,
     barrio: '',
+    comunidad: '',
     nombre: '',
     descripcion: '',
     id: '',
@@ -32,7 +33,8 @@ export default function NewPdr (props) {
   const [newMarker, setNewMarker] = useState('')
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
-
+  const comunidades = []
+  conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   function setNewId (barrio) {
     const allIds = []
     pdr.map((e) => {
@@ -78,6 +80,7 @@ export default function NewPdr (props) {
       lat: newMarker.getPosition().lat(),
       lng: newMarker.getPosition().lng(),
       barrio: state.barrio,
+      comunidad: state.comunidad,
       zafacon: state.zafacon,
       id: (state.id > 0) ? state.id : setNewId(state.barrio),
       descripcion: state.descripcion,
@@ -91,6 +94,7 @@ export default function NewPdr (props) {
 
     setState({
       zafacon: false,
+      comunidad: '',
       barrio: '',
       nombre: '',
       descripcion: '',
@@ -124,6 +128,28 @@ export default function NewPdr (props) {
         <TextField color='secondary' id="descripcion" label="Descripción" name="descripcion" onChange={handleInputChange} value={state.descripcion}/>
       </div>
       <br/>
+
+      <div>
+      <FormControl color='secondary' required={true}>
+        <InputLabel>Comunidad</InputLabel>
+        <NativeSelect
+        inputProps={{
+          name: 'comunidad',
+          id: 'age-native-simple'
+        }}
+          id="demo-simple-select"
+          value={state.comunidad}
+          onChange={handleInputChange}
+        >
+          <option value=""></option>
+          {comunidades.map(item => {
+            return (<option value={item} key={item}>{item}</option>)
+          })}
+        </NativeSelect>
+      </FormControl>
+      </div>
+      <br/>
+      
       <div>
       <FormControl color='secondary' required={true}>
         <InputLabel>Barrio</InputLabel>
@@ -137,9 +163,13 @@ export default function NewPdr (props) {
           onChange={handleInputChange}
         >
           <option value=""></option>
-          {barrios.map(item => {
-            return (<option value={item} key={item}>{item}</option>)
-          })}
+          {
+          state.comunidad != '' ?
+            conf[town].comunidades.find(obj => {return obj.nombre === state.comunidad}).barrios.map(item => {
+              return (<option value={item} key={item}>{item}</option>)
+            })
+          : <></>
+          }
         </NativeSelect>
       </FormControl>
       </div>
@@ -213,14 +243,14 @@ export default function NewPdr (props) {
       </div>
       <div>
         <MapsWrapper>
-          <NewPdrMap containerStyle={{ width: '100%', height: '60%' }} setNewMarker={setNewMarker}/>
+          <NewPdrMap containerStyle={{ width: '100%', height: '60%' }} setNewMarker={setNewMarker} comunidad={state.comunidad} newMarker={newMarker}/>
         </MapsWrapper>
       </div>
       <br/>
       <div>
-      <Button variant="contained" type="submit" color="secondary" sx={{ marginBottom: '20px' }}>
-        Añadir punto
-      </Button>
+        <Button variant="contained" type="submit" color="secondary" sx={{ marginBottom: '20px' }}>
+          Añadir punto
+        </Button>
       </div>
     </form>
     </div>

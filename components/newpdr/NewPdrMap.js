@@ -11,9 +11,11 @@ function NewPdrMap (props) {
 
   const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
-
+  
   useEffect(()=> {
+    console.log("hello")
     const center = conf[town].map_center
+    
     const zoom = 14
     function initGoogleMap() {
         return new window.google.maps.Map(googleMapRef.current, {
@@ -23,6 +25,13 @@ function NewPdrMap (props) {
     }
     setGoogleMap(initGoogleMap())
   }, [googleMapRef])
+
+  useEffect(()=> {
+    if (props.comunidad != '' && googleMap !== null) {
+      const map_center = conf[town].comunidades.find(obj => {return obj.nombre === props.comunidad}).center
+      googleMap.setCenter({lat: parseFloat(map_center.split(",")[0]), lng: parseFloat(map_center.split(",")[1])})
+    }
+  }, [props.comunidad])
 
   useEffect(() => {
     if (googleMap !== null) {
