@@ -19,8 +19,8 @@ import SignIn from '../gcloud/SignIn'
 import UploadFile from '../gcloud/UploadFile'
 
 import Button from '@mui/material/Button'
-
 import Script from 'next/script'
+import { PdrContext } from '../../context/PdrContext'
 import { CLIENT_ID, GOOGLE_API_KEY } from '../gcloud/google'
 import { Navigation } from './Navigation'
 
@@ -31,6 +31,7 @@ function Layout ({ children, ...props }) {
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const [GoogleAuth, setGoogleAuth] = React.useState()
   const { town, setTown } = React.useContext(TownContext)
+  const { pdr, setPdr } = React.useContext(PdrContext)
   const [open, setOpen] = React.useState(false)
 
   const handleClick = () => {
@@ -104,7 +105,6 @@ function Layout ({ children, ...props }) {
               onChange={handleTownChange}
             >
               <option value={'sabanayegua'}>Sabana Yegua</option>
-              <option value={'sabanayegua_cardboard'}>Sabana Yegua - Cartón</option>
               <option value={'sample'}>Ejemplo</option>
             </NativeSelect>
           </FormControl>

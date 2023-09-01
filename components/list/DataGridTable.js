@@ -48,9 +48,13 @@ export function lastNweeks (recogida, n) {
 }
 
 export default function DataGridTable () {
+
+  
   const { pdr, setPdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
   const [rowToDelete, setRowToDelete] = useState(null)
+  const comunidades = []
+  conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const categories = conf[town].categories
@@ -97,6 +101,7 @@ export default function DataGridTable () {
     { field: 'id', headerName: 'Id', editable: true, type: 'number', width: 50 },
     { field: 'nombre', headerName: 'Nombre', editable: true, width: 200 },
     { field: 'descripcion', headerName: 'Descripción', editable: true, width: 350 },
+    { field: 'comunidad', headerName: 'Comunidad', editable: true, type: 'singleSelect', valueOptions: comunidades, width: 125 },
     { field: 'barrio', headerName: 'Barrio', editable: true, type: 'singleSelect', valueOptions: barrios, width: 125 },
     {
       field: 'categoria',
