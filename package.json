@@ -20,6 +20,7 @@
     "@mui/material": "^5.5.3",
     "@mui/x-data-grid": "^5.12.3",
     "@mui/x-data-grid-generator": "^5.12.3",
+    "@react-oauth/google": "^0.11.1",
     "devextreme": "^21.2.5",
     "eslint-plugin-unused-imports": "^2.0.0",
     "moment": "^2.29.4",

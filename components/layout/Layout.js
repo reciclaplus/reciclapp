@@ -12,28 +12,49 @@ import List from '@mui/material/List'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { TownContext } from '../../context/TownContext'
 import OpenFile from '../gcloud/OpenFile'
 import UploadFile from '../gcloud/UploadFile'
 
 import Button from '@mui/material/Button'
-
-import SignIn from '../gcloud/SignIn'
+import SignInButton from '../gcloud/SignInButton'
 import { Navigation } from './Navigation'
 
 const drawerWidth = 240
 
-function Layout ({ children, ...props }) {
-  
+function Layout({ children, ...props }) {
+
   const { window } = props
   const [mobileOpen, setMobileOpen] = useState(false)
   const [tokenClient, setTokenClient] = useState()
   const [accessToken, setAccessToken] = useState()
   const [GoogleAuth, setGoogleAuth] = useState()
-  const { town, setTown } = useContext(TownContext)
+  const [town, setTown] = useContext(TownContext)
   const [open, setOpen] = useState(false)
-  
+  const [user, setUser] = useState()
+  const [picture, setPicture] = useState()
+  const [idToken, setIdToken] = useState()
+
+  useEffect(() => {
+    if (sessionStorage.id_token) {
+      fetch(`http://localhost:8000/get-current-user?id_token_2=${sessionStorage.id_token}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        }
+      }).then(function (response) {
+        return response.json()
+      })
+        .then(function (user_profile) {
+          setUser(user_profile["name"])
+          setPicture(user_profile["picture"])
+        })
+    }
+
+  }, [idToken])
+
   const handleClick = () => {
     setOpen(!open)
   }
@@ -53,20 +74,19 @@ function Layout ({ children, ...props }) {
       <Navigation handleClick={handleClick} open={open}></Navigation>
 
       <Divider />
-
       <List>
         <ListItem>
-            <SignIn accessToken={accessToken} setAccessToken={setAccessToken} setgoogleauth={setGoogleAuth} tokenClient={tokenClient} setTokenClient={setTokenClient}/>
+          <SignInButton setAccessToken={setAccessToken} user={user} picture={picture} setIdToken={setIdToken} />
         </ListItem>
         <ListItem>
-            <OpenFile accessToken={accessToken}/>
+          <OpenFile accessToken={accessToken} />
         </ListItem>
         <ListItem>
-            <UploadFile googleauth={GoogleAuth}/>
+          <UploadFile googleauth={GoogleAuth} />
         </ListItem>
         <Divider />
         <ListItem>
-            <FormControl variant="standard">
+          <FormControl variant="standard">
             <InputLabel id="demo-simple-select-standard-label">Pueblo</InputLabel>
             <NativeSelect
               inputProps={{
@@ -90,75 +110,75 @@ function Layout ({ children, ...props }) {
 
   return (
     <>
-    <Box sx={{ display: { xs: 'block', sm: 'flex' } }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` }
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+      <Box sx={{ display: { xs: 'block', sm: 'flex' } }}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          sx={{
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            ml: { sm: `${drawerWidth}px` }
+          }}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: 'none' } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Link href="/">
+              <Button style={{ color: '#FFF' }}>
+                <Typography variant="h6" noWrap component="div">
+                  Recicla+
+                </Typography>
+              </Button>
+            </Link>
+          </Toolbar>
+        </AppBar>
+        <Box
+          component="nav"
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          aria-label="navigation"
+        >
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: 'block', sm: 'none' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-          <Link href="/">
-            <Button style={{ color: '#FFF' }}>
-              <Typography variant="h6" noWrap component="div">
-                Recicla+
-              </Typography>
-            </Button>
-          </Link>
-        </Toolbar>
-      </AppBar>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="navigation"
-      >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
-          }}
+            {drawer}
+          </Drawer>
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
         >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth }
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-      >
-          <Toolbar/>
+          <Toolbar />
 
-        {children}
+          {children}
+        </Box>
       </Box>
-    </Box>
     </>
   )
 }
