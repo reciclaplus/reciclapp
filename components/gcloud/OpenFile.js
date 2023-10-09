@@ -105,7 +105,6 @@ function OpenFile(props) {
         setPdr(data.pdr)
         setWeight(data.peso)
         setStats(data.stats)
-        console.log(pdr)
         router.push('/list')
         setIsOpening(false)
       })

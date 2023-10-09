@@ -9,7 +9,6 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from google.cloud import storage
 from google_auth_oauthlib.flow import Flow
-
 from time_series_data import get_time_series_data
 
 app = Flask(__name__)
@@ -20,6 +19,14 @@ app.secret_key = "yoreciclo"
 @app.route("/hello", methods=['GET', 'POST'])
 def hello():
   return "hello world"
+
+@app.route("/add-community", methods=['POST'])
+def add_community():
+  print("hello")
+  pdr = request.json
+  for ipdr in pdr:
+    ipdr["comunidad"] = "Sabana Yegua"
+  return jsonify(pdr)
 
 @app.route("/add-date-added", methods=['POST'])
 def add_date_added():
