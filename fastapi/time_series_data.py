@@ -51,4 +51,4 @@ def get_time_series_data(data, categoria, start, end, barrio="all"):
     new_df = new_df.fillna(0).sort_values("date").reset_index()
     new_df["date"] = new_df["date"].dt.strftime("%d/%m/%Y")
 
-    return new_df.to_json(orient="records", index=False)
+    return new_df.to_dict(orient="records")

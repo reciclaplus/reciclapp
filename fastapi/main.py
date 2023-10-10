@@ -11,14 +11,15 @@ from google_auth_oauthlib.flow import Flow
 from starlette.middleware.sessions import SessionMiddleware
 from time_series_data import get_time_series_data
 
-from fastapi import Body, FastAPI, Request
+from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
 flow = Flow.from_client_secrets_file(
-    "../client_secret_.json",
+    "./client_secret_.json",
     scopes=[
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/devstorage.full_control",
@@ -41,7 +42,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("../client_secret_.json") as f:
+with open("./client_secret_.json") as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
 
@@ -78,9 +79,9 @@ def authentication(request: Request, code: str):
 
 
 @app.get("/get-current-user")
-def get_current_user(request: Request, id_token_2: str):
+def get_current_user(request: Request, id_token_param: str):
     user = id_token.verify_oauth2_token(
-        str(id_token_2),
+        str(id_token_param),
         requests.Request(),
         client_id,
     )
@@ -94,10 +95,10 @@ def get_current_user(request: Request, id_token_2: str):
 
 @app.post("/time-series-data")
 def time_series_data(
-    categoria: str,
     start: str,
     end: str,
     barrio: str = "all",
+    categoria: str = "all",
     payload: Any = Body(None),
 ):
     return get_time_series_data(payload, categoria, start, end, barrio)
@@ -105,9 +106,6 @@ def time_series_data(
 
 @app.get("/download-file")
 def download_file(request: Request, file: str, bucket: str, token: str):
-    access_token = request.session.get("credentials")
-    print(access_token)
-    print(token)
     # Load credentials
     credentials = google.oauth2.credentials.Credentials(token)
 
@@ -117,10 +115,11 @@ def download_file(request: Request, file: str, bucket: str, token: str):
     try:
         contents = blob.download_as_bytes()
     except Exception as e:
-        return e.message
+        print(e.code)
+        raise HTTPException(status_code=403, detail="No permission")
 
     return json.loads(contents)
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

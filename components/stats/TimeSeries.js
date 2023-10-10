@@ -9,7 +9,7 @@ import { TownContext } from '../../context/TownContext'
 import CustomTooltip from './CustomTooltip'
 import Filter from './Filter'
 
-export default function TimeSeries (props) {
+export default function TimeSeries(props) {
   const [barData, setBarData] = useState()
   const { town } = useContext(TownContext)
   const { stats } = useContext(StatsContext)
@@ -25,57 +25,55 @@ export default function TimeSeries (props) {
     const today = moment().format('DD/MM/YYYY')
     const start = moment().subtract(nWeeks * 7, 'days').format('DD/MM/YYYY')
 
-    fetch(`https://api-dot-norse-voice-343214.uc.r.appspot.com/time-series-data?categoria=${categoria}&barrio=${barrio}&start=${start}&end=${today}`, {
+    fetch(`https://fastapi-dot-norse-voice-343214.uc.r.appspot.com/time-series-data?categoria=${categoria}&barrio=${barrio}&start=${start}&end=${today}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json'
       },
       body: JSON.stringify(stats.recogidaSemanal)
-    }).then(function (response) {
-      return response.json()
-    })
+    }).then((response) => response.json())
       .then(function (myJson) {
         setBarData(myJson)
       })
   }, [categoria, nWeeks, barrio])
 
   return (
-      <div>
-        <Grid container justifyContent="flex-end">
+    <div>
+      <Grid container justifyContent="flex-end">
 
-          <Filter
-            currentValue={nWeeks}
-            setCurrentValue={setNWeeks}
-            filterName='Plazo'
-            values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }]}></Filter>
-          <Filter
-            currentValue={categoria}
-            setCurrentValue={setCategoria}
-            filterName='Categoria'
-            values={[...categories, { value: 'all', label: 'Todo' }]}></Filter>
-          <Filter
-            currentValue={barrio}
-            setCurrentValue={setBarrio}
-            filterName='Barrio'
-            values={[...barrios.map(b => { return { value: b.nombre, label: b.nombre } }), { value: 'all', label: 'Todo' }]}></Filter>
+        <Filter
+          currentValue={nWeeks}
+          setCurrentValue={setNWeeks}
+          filterName='Plazo'
+          values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }]}></Filter>
+        <Filter
+          currentValue={categoria}
+          setCurrentValue={setCategoria}
+          filterName='Categoria'
+          values={[...categories, { value: 'all', label: 'Todo' }]}></Filter>
+        <Filter
+          currentValue={barrio}
+          setCurrentValue={setBarrio}
+          filterName='Barrio'
+          values={[...barrios.map(b => { return { value: b.nombre, label: b.nombre } }), { value: 'all', label: 'Todo' }]}></Filter>
 
-        </Grid>
-        <ResponsiveContainer width="100%" height={300} id="chart">
-          <BarChart
-            data={barData}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip content={<CustomTooltip/>} />
-            <Legend />
-            {barrios.map(item => {
-              return (<Bar dataKey={item.nombre} stackId="a" fill={item.color} key={item.nombre}>{item.nombre}</Bar>)
-            })}
-            <Bar dataKey="total" hide={true} stackId="b" key="Total">Total</Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      </Grid>
+      <ResponsiveContainer width="100%" height={300} id="chart">
+        <BarChart
+          data={barData}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend />
+          {barrios.map(item => {
+            return (<Bar dataKey={item.nombre} stackId="a" fill={item.color} key={item.nombre}>{item.nombre}</Bar>)
+          })}
+          <Bar dataKey="total" hide={true} stackId="b" key="Total">Total</Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   )
 }

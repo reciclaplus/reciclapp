@@ -38,7 +38,7 @@ function Layout({ children, ...props }) {
 
   useEffect(() => {
     if (sessionStorage.id_token) {
-      fetch(`http://localhost:8000/get-current-user?id_token_2=${sessionStorage.id_token}`, {
+      fetch(`https://fastapi-dot-norse-voice-343214.uc.r.appspot.com/get-current-user?id_token_param=${sessionStorage.id_token}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

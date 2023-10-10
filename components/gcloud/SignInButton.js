@@ -5,7 +5,7 @@ function SignInButton(props) {
 
   const login = useGoogleLogin({
     onSuccess: codeResponse => {
-      fetch(`http://localhost:8000/auth?code=${codeResponse.code}`, {
+      fetch(`https://fastapi-dot-norse-voice-343214.uc.r.appspot.com/auth?code=${codeResponse.code}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ function SignInButton(props) {
   else {
     return (
       <Button variant="outlined" onClick={() => login()}>
-        Conectate
+        Conéctate
       </Button>)
   }
 
