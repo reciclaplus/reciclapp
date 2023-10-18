@@ -25,14 +25,13 @@ flow = Flow.from_client_secrets_file(
         "https://www.googleapis.com/auth/devstorage.full_control",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="http://localhost:3000",
+    redirect_uri="https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
 )
 
 origins = [
+    "https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
     "http://localhost:3000",
 ]
-
-app.add_middleware(SessionMiddleware, secret_key="reciclapp")
 
 app.add_middleware(
     CORSMiddleware,
@@ -63,17 +62,6 @@ def authentication(request: Request, code: str):
         requests.Request(),
         client_id,
     )
-
-    request.session["user"] = dict({"email": user["email"]})
-    request.session["credentials"] = {
-        "token": credentials.token,
-        "refresh_token": credentials.refresh_token,
-        "token_uri": credentials.token_uri,
-        "client_id": credentials.client_id,
-        "client_secret": credentials.client_secret,
-        "scopes": credentials.scopes,
-    }
-    request.session["access_token"] = credentials.token
 
     return credentials.token, str(credentials.id_token)
 
@@ -119,7 +107,3 @@ def download_file(request: Request, file: str, bucket: str, token: str):
         raise HTTPException(status_code=403, detail="No permission")
 
     return json.loads(contents)
-
-
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -10,7 +10,6 @@ function SignInButton(props) {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          "Cross-Origin-Opener-Policy": "same-origin-allow-popups"
         }
       })
         .then((response) => response.json())
