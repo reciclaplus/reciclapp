@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pandas
+gunicorn
+google-auth-oauthlib
+google-cloud-storage
+itsdangerous

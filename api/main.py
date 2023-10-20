@@ -5,13 +5,9 @@ from datetime import date, datetime, timedelta
 
 import flask
 import google.oauth2.credentials
-import pandas as pd
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from google.auth.transport import requests
 from google.cloud import storage
-from google.oauth2 import id_token
-from google_auth_oauthlib import flow
 from google_auth_oauthlib.flow import Flow
 from time_series_data import get_time_series_data
 
@@ -20,122 +16,92 @@ CORS(app)
 app.secret_key = "yoreciclo"
 
 
-@app.route("/hello", methods=['GET', 'POST'])
+@app.route("/hello", methods=["GET", "POST"])
 def hello():
-  return "hello world"
+    return "hello world"
 
-@app.route("/add-community", methods=['POST'])
+
+@app.route("/add-community", methods=["POST"])
 def add_community():
-  print("hello")
-  pdr = request.json
-  for ipdr in pdr:
-    ipdr["comunidad"] = "Sabana Yegua"
-  return jsonify(pdr)
+    print("hello")
+    pdr = request.json
+    for ipdr in pdr:
+        ipdr["comunidad"] = "Sabana Yegua"
+    return jsonify(pdr)
 
-@app.route("/add-date-added", methods=['POST'])
+
+@app.route("/add-date-added", methods=["POST"])
 def add_date_added():
-  pdr = request.json
-  for ipdr in pdr:
-    if "recogida" in ipdr.keys():
-      recogida = ipdr["recogida"]
-      dates = [datetime.strptime(week["date"], '%d/%m/%Y') for week in recogida]
-      date_added = datetime.strftime(min(dates), '%d/%m/%Y')
-      ipdr["dateAdded"] = date_added
-  return jsonify(pdr)
+    pdr = request.json
 
-@app.route("/add-date-to-recogida", methods=['GET', 'POST'])
+    for ipdr in pdr:
+        if "recogida" in ipdr.keys():
+            recogida = ipdr["recogida"]
+            if len(recogida) < 1:
+                print(ipdr)
+            else:
+                dates = [
+                    datetime.strptime(week["date"], "%d/%m/%Y") for week in recogida
+                ]
+                date_added = datetime.strftime(min(dates), "%d/%m/%Y")
+                ipdr["dateAdded"] = date_added
+    return jsonify(pdr)
+
+
+@app.route("/add-date-to-recogida", methods=["GET", "POST"])
 def add_date():
-  pdr = request.json
-  for ipdr in pdr:
-    if "recogida" in ipdr.keys():
-      recogida = ipdr["recogida"]
-      for week in recogida:
-        if "date" in week.keys():
-          continue
-        else:
-          recogida_date = date(week["year"], 1, 1) + timedelta(weeks=week["week"])
-          recogida_date = recogida_date - timedelta(days=recogida_date.weekday())
-          week["date"] = recogida_date.strftime("%d/%m/%Y")
-  
-  return jsonify(pdr)
+    pdr = request.json
+    for ipdr in pdr:
+        if "recogida" in ipdr.keys():
+            recogida = ipdr["recogida"]
+            for week in recogida:
+                if "date" in week.keys():
+                    continue
+                else:
+                    recogida_date = date(week["year"], 1, 1) + timedelta(
+                        weeks=week["week"]
+                    )
+                    recogida_date = recogida_date - timedelta(
+                        days=recogida_date.weekday()
+                    )
+                    week["date"] = recogida_date.strftime("%d/%m/%Y")
 
-@app.route("/time-series-data", methods=['GET', 'POST'])
+    return jsonify(pdr)
+
+
+@app.route("/time-series-data", methods=["GET", "POST"])
 def time_series_data():
+    categoria = request.args.get("categoria")
+    if "barrio" in request.args:
+        barrio = request.args.get("barrio")
+    else:
+        barrio = "all"
+    start = request.args.get("start")
+    end = request.args.get("end")
+    data = request.json
 
-  categoria = request.args.get("categoria")
-  if 'barrio' in request.args:
-    barrio = request.args.get("barrio")
-  else:
-    barrio = 'all'
-  start = request.args.get("start")
-  end = request.args.get("end")
-  data = request.json
-  
-  return get_time_series_data(data, categoria, start, end, barrio)
+    return get_time_series_data(data, categoria, start, end, barrio)
 
-@app.route("/download-file")
+
+@app.route("/download-file", methods=["GET", "POST"])
 def download_file():
-    # Load credentials from the session.
-    credentials = google.oauth2.credentials.Credentials(
-      **flask.session['credentials'])
+    accessToken = request.args.get("token")
+    file = request.args.get("file")
+    bucket = request.args.get("bucket")
+    # Load credentials
+    credentials = google.oauth2.credentials.Credentials(accessToken)
 
+    storage_client = storage.Client("norse-voice", credentials=credentials)
+    bucket = storage_client.bucket(bucket)
+    blob = bucket.blob(file)
+    try:
+        contents = blob.download_as_bytes()
+    except Exception as e:
+        return e.message
 
-    storage_client = storage.Client("project-name", credentials=credentials)
-    buckets = storage_client.list_buckets()
-    bucket = storage_client.bucket("bucket-name")
-    blob = bucket.blob("file-name.json")
-    contents = blob.download_as_string()
+    return json.loads(contents)
 
-    return {"data": json.loads(contents)}
-
-@app.route("/authorise")
-def authorise():
-    flow = Flow.from_client_secrets_file(
-      'client_secret.json', scopes=["https://www.googleapis.com/auth/devstorage.read_only"])
-
-    flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
-    authorization_url, state = flow.authorization_url(
-    # Enable offline access so that you can refresh an access token without
-    # re-prompting the user for permission. Recommended for web server apps.
-    access_type='offline',
-    # Enable incremental authorization. Recommended as a best practice.
-    # include_granted_scopes='true'
-    )
-
-    flask.session['state'] = state
-
-    return flask.redirect(authorization_url)
-
-@app.route('/oauth2callback')
-def oauth2callback():
-  # Specify the state when creating the flow in the callback so that it can
-  # verified in the authorization server response.
-    state = flask.session['state']
-
-    flow = Flow.from_client_secrets_file(
-        'client_secret.json', scopes=["https://www.googleapis.com/auth/devstorage.read_only"])
-    flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
-
-    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    authorization_response = flask.request.url
-    flow.fetch_token(authorization_response=authorization_response)
-
-    # Store credentials in the session.
-    # ACTION ITEM: In a production app, you likely want to save these
-    #              credentials in a persistent database instead.
-    credentials = flow.credentials
-    flask.session['credentials'] = credentials_to_dict(credentials)
-
-    return flask.redirect('download-file')
-
-def credentials_to_dict(credentials):
-    return {'token': credentials.token,
-            'refresh_token': credentials.refresh_token,
-            'token_uri': credentials.token_uri,
-            'client_id': credentials.client_id,
-            'client_secret': credentials.client_secret,
-            'scopes': credentials.scopes}
 
 if __name__ == "__main__":
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
     app.run()
