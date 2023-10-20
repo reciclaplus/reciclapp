@@ -1,3 +1,0 @@
-env: standard
-runtime: python310
-service: api
