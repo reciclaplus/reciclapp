@@ -18,37 +18,37 @@ const Item = styled(Paper)(({ theme }) => ({
 
 }))
 
-export default function Dashboard () {
+export default function Dashboard() {
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, p: 2 }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Item>
             <h2>Recogida semanal</h2>
-            <TimeSeries/>
+            <TimeSeries />
           </Item>
         </Grid>
         <Grid item xs={12} md={6}>
           <Item>
             <h2>Distribución de barrios</h2>
-            <MyPieChart/>
+            <MyPieChart />
           </Item>
         </Grid>
         <Grid item xs={12} md={6}>
           <Item>
             <h2>Libras recogidas por semana</h2>
-            <WeeklyWeight/>
+            <WeeklyWeight />
           </Item>
         </Grid>
         <Grid item xs={12} md={12}>
           <Item>
-          <h2>Puntos Nuevos</h2>
+            <h2>Puntos Nuevos</h2>
             <RecentlyAdded />
           </Item>
         </Grid>
         <Grid item xs={12} md={6}>
           <Item>
-          <h2>Porcentaje de baura</h2>
+            <h2>Porcentaje de baura</h2>
             <WastePctg />
           </Item>
         </Grid>
