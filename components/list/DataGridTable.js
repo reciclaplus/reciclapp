@@ -1,18 +1,18 @@
-import DeleteIcon from '@mui/icons-material/Delete'
-import { Button, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import { DataGrid, GridActionsCellItem, GridToolbar, esES } from '@mui/x-data-grid';
+import moment from 'moment';
+import Link from 'next/link';
+import { useCallback, useContext, useState } from 'react';
+import { conf } from '../../configuration';
+import { PdrContext } from '../../context/PdrContext';
+import { TownContext } from '../../context/TownContext';
+import { calculateAlert } from '../../utils/pdr-management';
+import DeleteRowDialog from '../DeleteRowDialog';
+import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
 
-import { DataGrid, esES, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid'
-import moment from 'moment'
-import Link from 'next/link'
-import { useCallback, useContext, useState } from 'react'
-import { conf } from '../../configuration'
-import { PdrContext } from '../../context/PdrContext'
-import { TownContext } from '../../context/TownContext'
-import { calculateAlert } from '../../utils/pdr-management'
-import DeleteRowDialog from '../DeleteRowDialog'
-import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons'
-
-export function lastNweeks (recogida, n) {
+export function lastNweeks(recogida, n) {
   const fiveMondays = [...Array(5).keys()].map(nWeek => moment().day('monday').subtract(nWeek, 'weeks'))
 
   const lastNweeks = fiveMondays.map(monday => {
@@ -27,29 +27,29 @@ export function lastNweeks (recogida, n) {
   const result = lastNweeks.map(date => {
     let control
     if (date.wasCollected === 'si') {
-      control = <GreenRadio checked={true} size='small' sx={{ p: 0 }}/>
+      control = <GreenRadio checked={true} size='small' sx={{ p: 0 }} />
     } else if (date.wasCollected === 'no') {
-      control = <RedRadio checked={true} size='small' sx={{ p: 0 }}/>
+      control = <RedRadio checked={true} size='small' sx={{ p: 0 }} />
     } else if (date.wasCollected === 'cerrado') {
-      control = <Radio checked={true} color="default" size='small' sx={{ p: 0 }}/>
+      control = <Radio checked={true} color="default" size='small' sx={{ p: 0 }} />
     } else if (date.wasCollected === 'nada') {
-      control = <YellowRadio checked={true} size='small' sx={{ p: 0 }}/>
+      control = <YellowRadio checked={true} size='small' sx={{ p: 0 }} />
     } else if (date.wasCollected === 'null') {
-      control = <Radio checked={false} color="default" size='small' sx={{ p: 0 }}/>
+      control = <Radio checked={false} color="default" size='small' sx={{ p: 0 }} />
     }
 
     return <FormControlLabel control={control} label={<Typography variant="body2" color="textSecondary">{date.date}</Typography>} labelPlacement="top" key={date.date} />
   }).reverse()
 
   return (
-        <RadioGroup row>
-        { result }
-        </RadioGroup>)
+    <RadioGroup row>
+      {result}
+    </RadioGroup>)
 }
 
-export default function DataGridTable () {
+export default function DataGridTable() {
 
-  
+
   const { pdr, setPdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
   const [rowToDelete, setRowToDelete] = useState(null)
@@ -73,16 +73,16 @@ export default function DataGridTable () {
   )
 
   const processRowUpdate =
-  (newData, oldData) => new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const dataUpdate = [...pdr]
-      const index = pdr.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
-      dataUpdate[index] = newData
-      setPdr([...dataUpdate])
-      resolve(newData)
-    }, 200)
-  }
-  )
+    (newData, oldData) => new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const dataUpdate = [...pdr]
+        const index = pdr.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
+        dataUpdate[index] = newData
+        setPdr([...dataUpdate])
+        resolve(newData)
+      }, 200)
+    }
+    )
 
   const columns = [
     {
@@ -148,7 +148,7 @@ export default function DataGridTable () {
               Editar
             </Button>
           </Link>
-          </>
+        </>
         )
       },
       width: 200
@@ -193,22 +193,21 @@ export default function DataGridTable () {
   }
 
   return (
-    <div style={{ height: '80vh', width: '100%' }} data-testid="table">
+    <Box sx={{ height: '100%', width: '100%', p: 2 }}>
       <DataGrid
-      getRowId={(row) => row.internalId}
-      rows={pdr}
-      columns={columns}
-      localeText={localeObj}
-      components={{ Toolbar: GridToolbar }}
-      componentsProps={{
-        toolbar: { showQuickFilter: true },
-        footer: {"data-testid": "footer"}
-      }}
-      processRowUpdate={processRowUpdate}
-      experimentalFeatures={{ newEditingApi: true }}/>
+        getRowId={(row) => row.internalId}
+        rows={pdr}
+        columns={columns}
+        localeText={localeObj}
+        components={{ Toolbar: GridToolbar }}
+        componentsProps={{
+          toolbar: { showQuickFilter: true },
+          footer: { "data-testid": "footer" }
+        }}
+        processRowUpdate={processRowUpdate}
+        experimentalFeatures={{ newEditingApi: true }} />
 
       <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
-
-    </div>
+    </Box>
   )
 }

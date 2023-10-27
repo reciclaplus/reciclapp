@@ -1,13 +1,13 @@
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
-import { Button } from '@mui/material'
-import { DataGrid, esES, GridActionsCellItem, GridToolbarContainer } from '@mui/x-data-grid'
+import { Box, Button } from '@mui/material'
+import { DataGrid, GridActionsCellItem, GridToolbarContainer, esES } from '@mui/x-data-grid'
 import moment from 'moment'
 import { useCallback, useContext, useState } from 'react'
 import { WeightContext } from '../../context/WeightContext'
 import DeleteRowDialog from '../DeleteRowDialog'
 
-function EditToolbar (props) {
+function EditToolbar(props) {
   const { weight, setWeight } = props
 
   const handleClick = () => {
@@ -22,15 +22,15 @@ function EditToolbar (props) {
   }
 
   return (
-          <GridToolbarContainer>
-            <Button color="secondary" startIcon={<AddIcon />} onClick={handleClick}>
-              Añadir fila
-            </Button>
-          </GridToolbarContainer>
+    <GridToolbarContainer>
+      <Button color="secondary" startIcon={<AddIcon />} onClick={handleClick}>
+        Añadir fila
+      </Button>
+    </GridToolbarContainer>
   )
 }
 
-export default function WeightDataGridTable (props) {
+export default function WeightDataGridTable(props) {
   const { weight, setWeight } = useContext(WeightContext)
   const [rowToDelete, setRowToDelete] = useState(null)
 
@@ -48,16 +48,16 @@ export default function WeightDataGridTable (props) {
   )
 
   const processRowUpdate =
-  (newData, oldData) => new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const dataUpdate = [...weight]
-      const index = weight.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
-      dataUpdate[index] = newData
-      setWeight([...dataUpdate])
-      resolve(newData)
-    }, 200)
-  }
-  )
+    (newData, oldData) => new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const dataUpdate = [...weight]
+        const index = weight.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
+        dataUpdate[index] = newData
+        setWeight([...dataUpdate])
+        resolve(newData)
+      }, 200)
+    }
+    )
 
   const columns = [
     {
@@ -65,12 +65,12 @@ export default function WeightDataGridTable (props) {
       type: 'actions',
       width: 80,
       getActions: (params) =>
-      // eslint-disable-next-line react/jsx-key
+        // eslint-disable-next-line react/jsx-key
         [<GridActionsCellItem
-            icon={<DeleteIcon />}
-            label="Delete"
-            onClick={processRowDelete(params.id)}
-          />]
+          icon={<DeleteIcon />}
+          label="Delete"
+          onClick={processRowDelete(params.id)}
+        />]
 
     },
     {
@@ -90,20 +90,20 @@ export default function WeightDataGridTable (props) {
     { field: 'basura', headerName: 'Basura (lb)', editable: true, type: 'number', width: 100 }
   ]
   return (
-        <div style={{ height: '80vh', width: '100%' }} data-testid='weight-table'>
-            <DataGrid
-            getRowId={(row) => moment(row.date).format('DD/MM/YYYY') }
-            rows={weight}
-            columns={columns}
-            localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-            processRowUpdate={processRowUpdate}
-            experimentalFeatures={{ newEditingApi: true }}
-            components={{ Toolbar: EditToolbar }}
-            componentsProps={{
-              toolbar: { weight, setWeight },
-              footer: {"data-testid": "footer"}
-            }} />
-            <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
-        </div>
+    <Box sx={{ height: '100%', width: '100%', p: 2 }}>
+      <DataGrid
+        getRowId={(row) => moment(row.date).format('DD/MM/YYYY')}
+        rows={weight}
+        columns={columns}
+        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+        processRowUpdate={processRowUpdate}
+        experimentalFeatures={{ newEditingApi: true }}
+        components={{ Toolbar: EditToolbar }}
+        componentsProps={{
+          toolbar: { weight, setWeight },
+          footer: { "data-testid": "footer" }
+        }} />
+      <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
+    </Box>
   )
 }

@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel } from '@mui/material'
+import { Box, Button, FormControl, FormLabel } from '@mui/material'
 import InputLabel from '@mui/material/InputLabel'
 import NativeSelect from '@mui/material/NativeSelect'
 import moment from 'moment'
@@ -12,7 +12,7 @@ import CustomAlert from '../CustomAlert'
 import RadioButtonsGroup from '../RadioButtonsGroup'
 import DatePicker from './DatePicker'
 
-export default function PasarPuntos () {
+export default function PasarPuntos() {
   const { pdr } = useContext(PdrContext)
   const { town } = useContext(TownContext)
   const { stats } = useContext(StatsContext)
@@ -34,7 +34,7 @@ export default function PasarPuntos () {
     setTodaysPdr([...pdr].filter(individualPdr => individualPdr.barrio === barrio))
   }, [barrio])
 
-  function pasarPunto (barrio, id, year, week, value) {
+  function pasarPunto(barrio, id, year, week, value) {
     todaysPdr.forEach((el) => {
       let alreadyChanged = false
       if (el.id === id) {
@@ -53,7 +53,7 @@ export default function PasarPuntos () {
     })
   }
 
-  function datePickerDate (event) {
+  function datePickerDate(event) {
     const dateString = event.target.value
     const d = new Date(+dateString.substring(0, 4), +dateString.substring(5, 7) - 1, +dateString.substring(8, 10))
 
@@ -61,7 +61,7 @@ export default function PasarPuntos () {
   }
 
   // eslint-disable-next-line no-unused-vars
-  function storeStats () {
+  function storeStats() {
     const categories = conf[town].categories.map((cat) => { return cat.value })
 
     categories.forEach(categoria => {
@@ -95,32 +95,32 @@ export default function PasarPuntos () {
     )
   }
 
-  function handleSubmit (event) {
+  function handleSubmit(event) {
     event.preventDefault()
     setAlertMessage(
       <CustomAlert
         message='Recuerda guardar los cambios'
         setAlertMessage={setAlertMessage}
-        severity='info'/>
+        severity='info' />
     )
     storeStats()
     return false
   }
 
   return (
-    <div>
+    <Box sx={{ p: 2 }}>
       {alertMessage}
-        <form onSubmit={handleSubmit} data-testid="pasar-puntos-form">
+      <form onSubmit={handleSubmit} data-testid="pasar-puntos-form">
         <div>
           <FormControl role="form-field">
-            <DatePicker defaultDate={fecha} onChange={(event) => { setSemana(getWeekNumber(datePickerDate(event))); setFecha(datePickerDate(event)) }}/>
+            <DatePicker defaultDate={fecha} onChange={(event) => { setSemana(getWeekNumber(datePickerDate(event))); setFecha(datePickerDate(event)) }} />
           </FormControl>
-          </div>
-          <br/>
-          <div>
-            <FormControl role="form-field">
-              <InputLabel>Comunidad</InputLabel>
-              <NativeSelect
+        </div>
+        <br />
+        <div>
+          <FormControl role="form-field">
+            <InputLabel>Comunidad</InputLabel>
+            <NativeSelect
               inputProps={{
                 name: 'comunidad',
                 id: 'comunidad'
@@ -128,19 +128,19 @@ export default function PasarPuntos () {
               id="comunidad-select"
               value={comunidad}
               onChange={(event) => setComunidad(event.target.value)}
-              >
-                <option value=""></option>
-                {comunidades.map(item => {
-                  return (<option value={item} key={item}>{item}</option>)
-                })}
-              </NativeSelect>
-              </FormControl>
-            </div>
-            <br/>
-          <div>
-            <FormControl role="form-field">
-              <InputLabel>Barrio</InputLabel>
-              <NativeSelect
+            >
+              <option value=""></option>
+              {comunidades.map(item => {
+                return (<option value={item} key={item}>{item}</option>)
+              })}
+            </NativeSelect>
+          </FormControl>
+        </div>
+        <br />
+        <div>
+          <FormControl role="form-field">
+            <InputLabel>Barrio</InputLabel>
+            <NativeSelect
               inputProps={{
                 name: 'barrio',
                 id: 'barrio'
@@ -148,40 +148,40 @@ export default function PasarPuntos () {
               id="barrio-select"
               value={barrio}
               onChange={(event) => setBarrio(event.target.value)}
-              >
-                <option value=""></option>
-                {
-                  comunidad != '' ?
-                    conf[town].comunidades.find(obj => {return obj.nombre === comunidad}).barrios.map(item => {
-                      return (<option value={item} key={item}>{item}</option>)
-                    })
+            >
+              <option value=""></option>
+              {
+                comunidad != '' ?
+                  conf[town].comunidades.find(obj => { return obj.nombre === comunidad }).barrios.map(item => {
+                    return (<option value={item} key={item}>{item}</option>)
+                  })
                   : <></>
-                }
-              </NativeSelect>
-              </FormControl>
-            </div>
-        <br/>
+              }
+            </NativeSelect>
+          </FormControl>
+        </div>
+        <br />
         <FormControl component="fieldset" role="form-field">
-            {todaysPdr.map((element, index) => {
-              const recogida = element.recogida.filter(weeks => weeks.year === fecha.getFullYear() && weeks.week === semana)
-              const initialValue = recogida.length > 0 ? recogida[0].wasCollected : ''
+          {todaysPdr.map((element, index) => {
+            const recogida = element.recogida.filter(weeks => weeks.year === fecha.getFullYear() && weeks.week === semana)
+            const initialValue = recogida.length > 0 ? recogida[0].wasCollected : ''
 
-              return (
-                <div key={index}>
-                    <FormLabel sx={{ mt: 3 }} component="legend">{element.nombre} - {element.descripcion}</FormLabel>
-                    <RadioButtonsGroup onChange={pasarPunto} barrio={element.barrio} id={element.id} year={fecha.getFullYear()} week={semana} initialValue={initialValue}/>
-                </div>)
-            }
+            return (
+              <div key={index}>
+                <FormLabel sx={{ mt: 3 }} component="legend">{element.nombre} - {element.descripcion}</FormLabel>
+                <RadioButtonsGroup onChange={pasarPunto} barrio={element.barrio} id={element.id} year={fecha.getFullYear()} week={semana} initialValue={initialValue} />
+              </div>)
+          }
 
-            )}
+          )}
         </FormControl>
-        <br/>
-      <div>
-      <Button sx={{ my: 3 }} color="secondary" variant="contained" type="submit">
-        Pasar esos puntos
-      </Button>
-      </div>
-    </form>
-  </div>
+        <br />
+        <div>
+          <Button sx={{ my: 3 }} color="secondary" variant="contained" type="submit">
+            Pasar esos puntos
+          </Button>
+        </div>
+      </form>
+    </Box>
   )
 }
