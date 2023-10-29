@@ -1,3 +1,4 @@
+export const API_URL = 'https://fastapi-dot-norse-voice-343214.uc.r.appspot.com'
 export const conf =
 {
   sabanayegua: {
@@ -40,9 +41,9 @@ export const conf =
     nombre: 'Proyecto 4',
     file: 'Puntos_P4.json',
     barrios: [{ nombre: 'P4 Viejo Oeste', color: '#FF95C5', center: '18.412643,-70.828455' },
-      { nombre: 'P4 Viejo Este', color: '#8884d8', center: '18.412103,-70.823498' },
-      { nombre: 'P4 Nuevo Oeste', color: '#82ca9d', center: '18.421417,-70.829368' },
-      { nombre: 'P4 Nuevo Este', color: '#FFC898', center: '18.420669,-70.824762' }],
+    { nombre: 'P4 Viejo Este', color: '#8884d8', center: '18.412103,-70.823498' },
+    { nombre: 'P4 Nuevo Oeste', color: '#82ca9d', center: '18.421417,-70.829368' },
+    { nombre: 'P4 Nuevo Este', color: '#FFC898', center: '18.420669,-70.824762' }],
     map_center: { lat: 18.416482964779416, lng: -70.82662731805073 }
   },
   sample: {
