@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 
 import Grid from '@mui/material/Grid'
 import moment from 'moment'
-import { conf } from '../../configuration'
+import { API_URL, conf } from '../../configuration'
 import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
 import CustomTooltip from './CustomTooltip'
@@ -23,9 +23,9 @@ export default function TimeSeries(props) {
 
   useEffect(() => {
     const today = moment().format('DD/MM/YYYY')
-    const start = moment().subtract(nWeeks * 7, 'days').format('DD/MM/YYYY')
+    const start = nWeeks == 'all' ? '08/02/2021' : moment().subtract(nWeeks * 7, 'days').format('DD/MM/YYYY')
 
-    fetch(`https://fastapi-dot-norse-voice-343214.uc.r.appspot.com/time-series-data?categoria=${categoria}&barrio=${barrio}&start=${start}&end=${today}`, {
+    fetch(`${API_URL}/time-series-data?categoria=${categoria}&barrio=${barrio}&start=${start}&end=${today}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export default function TimeSeries(props) {
           currentValue={nWeeks}
           setCurrentValue={setNWeeks}
           filterName='Plazo'
-          values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }]}></Filter>
+          values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }, { value: 'all', label: 'Todo' }]}></Filter>
         <Filter
           currentValue={categoria}
           setCurrentValue={setCategoria}

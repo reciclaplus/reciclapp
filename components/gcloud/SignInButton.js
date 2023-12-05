@@ -1,11 +1,12 @@
 import { Avatar, Button } from '@mui/material';
 import { useGoogleLogin } from '@react-oauth/google';
+import { API_URL } from '../../configuration';
 
 function SignInButton(props) {
 
   const login = useGoogleLogin({
     onSuccess: codeResponse => {
-      fetch(`https://fastapi-dot-norse-voice-343214.uc.r.appspot.com/auth?code=${codeResponse.code}`, {
+      fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
