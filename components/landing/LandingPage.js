@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { API_URL } from '../../configuration';
 
 export default function LandingPage() {
     const router = useRouter()
@@ -21,7 +22,7 @@ export default function LandingPage() {
 
     const login = useGoogleLogin({
         onSuccess: codeResponse => {
-            fetch(`https://fastapi-dot-norse-voice-343214.uc.r.appspot.com/auth?code=${codeResponse.code}`, {
+            fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

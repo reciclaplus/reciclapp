@@ -3,7 +3,7 @@ import { Button } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useContext, useState } from 'react'
-import { conf } from '../../configuration'
+import { API_URL, conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
@@ -26,7 +26,7 @@ function OpenFile(props) {
 
   function downloadFunctionFastApi() {
     setIsOpening(true)
-    fetch(`https://fastapi-dot-norse-voice-343214.uc.r.appspot.com/download-file?file=${file}&bucket=${bucket}&token=${sessionStorage.token}`, {
+    fetch(`${API_URL}/download-file?file=${file}&bucket=${bucket}&token=${sessionStorage.token}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
