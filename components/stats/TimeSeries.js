@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import Grid from '@mui/material/Grid'
-import moment from 'moment'
 import { API_URL, conf } from '../../configuration'
 import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
@@ -22,16 +21,12 @@ export default function TimeSeries(props) {
   barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
 
   useEffect(() => {
-    const today = moment().format('DD/MM/YYYY')
-    const start = nWeeks == 'all' ? '08/02/2021' : moment().subtract(nWeeks * 7, 'days').format('DD/MM/YYYY')
-
-    fetch(`${API_URL}/time-series-data?categoria=${categoria}&barrio=${barrio}&start=${start}&end=${today}`, {
-      method: 'POST',
+    fetch(`${API_URL}/recogida/get/last_n_by_barrio?n=${nWeeks}`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json'
-      },
-      body: JSON.stringify(stats.recogidaSemanal)
+      }
     }).then((response) => response.json())
       .then(function (myJson) {
         setBarData(myJson)
@@ -46,7 +41,7 @@ export default function TimeSeries(props) {
           currentValue={nWeeks}
           setCurrentValue={setNWeeks}
           filterName='Plazo'
-          values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }, { value: 'all', label: 'Todo' }]}></Filter>
+          values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }, { value: -1, label: 'Todo' }]}></Filter>
         <Filter
           currentValue={categoria}
           setCurrentValue={setCategoria}

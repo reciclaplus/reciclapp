@@ -1,68 +1,98 @@
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Button, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import { Button, FormControlLabel, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
+import Radio from '@mui/material/Radio';
 import { DataGrid, GridActionsCellItem, GridToolbar, esES } from '@mui/x-data-grid';
 import moment from 'moment';
 import Link from 'next/link';
-import { useCallback, useContext, useState } from 'react';
-import { conf } from '../../configuration';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { API_URL, conf } from '../../configuration';
 import { PdrContext } from '../../context/PdrContext';
 import { TownContext } from '../../context/TownContext';
-import { calculateAlert } from '../../utils/pdr-management';
 import DeleteRowDialog from '../DeleteRowDialog';
 import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
 
-export function lastNweeks(recogida, n) {
-  const fiveMondays = [...Array(5).keys()].map(nWeek => moment().day('monday').subtract(nWeek, 'weeks'))
-
-  const lastNweeks = fiveMondays.map(monday => {
-    const r = recogida.find(week => week.date === monday.format('DD/MM/YYYY'))
-    if (r) {
-      return { date: r.date, wasCollected: r.wasCollected }
-    } else {
-      return { date: monday.format('DD/MM/YYYY'), wasCollected: 'null' }
-    }
-  })
-
-  const result = lastNweeks.map(date => {
-    let control
-    if (date.wasCollected === 'si') {
-      control = <GreenRadio checked={true} size='small' sx={{ p: 0 }} />
-    } else if (date.wasCollected === 'no') {
-      control = <RedRadio checked={true} size='small' sx={{ p: 0 }} />
-    } else if (date.wasCollected === 'cerrado') {
-      control = <Radio checked={true} color="default" size='small' sx={{ p: 0 }} />
-    } else if (date.wasCollected === 'nada') {
-      control = <YellowRadio checked={true} size='small' sx={{ p: 0 }} />
-    } else if (date.wasCollected === 'null') {
-      control = <Radio checked={false} color="default" size='small' sx={{ p: 0 }} />
-    }
-
-    return <FormControlLabel control={control} label={<Typography variant="body2" color="textSecondary">{date.date}</Typography>} labelPlacement="top" key={date.date} />
-  }).reverse()
-
-  return (
-    <RadioGroup row>
-      {result}
-    </RadioGroup>)
-}
 
 export default function DataGridTable() {
 
-
   const { pdr, setPdr } = useContext(PdrContext)
+  const [pdrUpdate, setPdrUpdate] = useState(false)
   const { town } = useContext(TownContext)
   const [rowToDelete, setRowToDelete] = useState(null)
+  const [last5, setLast5] = useState(null)
   const comunidades = []
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const categories = conf[town].categories
 
-  const deleteRow = (id) => {
-    const dataUpdate = pdr.filter((row) => row.internalId !== id)
-    setPdr(dataUpdate)
+
+  useEffect(() => {
+    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + sessionStorage.id_token
+      }
+    }).then((response) => (response.json())).then((data) => { setPdr(data) })
+
+    fetch(`${API_URL}/recogida/get/last_n`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+    }).then((response) => (response.json())).then((data) => {
+      setLast5(data)
+    }
+    )
+
+  }, [pdrUpdate])
+
+
+  function lastNweeks(params) {
+
+    const last5weeks = last5.map(date => ({ "value": params.row.internal_id in date ? date[params.row.internal_id]["value"] : "", "date": date["date"] }))
+    return last5weeks
+  }
+
+  function renderLastNweeks(params) {
+
+    const result = params.value.map(date => {
+      const value = date.value
+      const monday = date.date
+      let control
+      if (value === 'si') {
+        control = <GreenRadio checked={true} size='small' sx={{ p: 0 }} />
+      } else if (value === 'no') {
+        control = <RedRadio checked={true} size='small' sx={{ p: 0 }} />
+      } else if (value === 'cerrado') {
+        control = <Radio checked={true} color="default" size='small' sx={{ p: 0 }} />
+      } else if (value === 'nada') {
+        control = <YellowRadio checked={true} size='small' sx={{ p: 0 }} />
+      } else {
+        control = <Radio checked={false} color="default" size='small' sx={{ p: 0 }} />
+      }
+      return <FormControlLabel control={control} label={<Typography variant="body2" color="textSecondary">{monday}</Typography>} labelPlacement="top" key={date} />
+    }).reverse()
+
+    return (
+      <Box>
+        {result}
+      </Box>
+    )
+  }
+  const deleteRow = (internal_id) => {
+    fetch(`${API_URL}/pdr/delete/${internal_id}?id_token_param=${sessionStorage.id_token}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    })
     setRowToDelete(null)
+    setPdrUpdate(!pdrUpdate)
   }
 
   const processRowDelete = useCallback(
@@ -75,10 +105,21 @@ export default function DataGridTable() {
   const processRowUpdate =
     (newData, oldData) => new Promise((resolve, reject) => {
       setTimeout(() => {
-        const dataUpdate = [...pdr]
-        const index = pdr.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
-        dataUpdate[index] = newData
-        setPdr([...dataUpdate])
+        delete newData.active
+        delete newData.alerta
+        delete newData.zafacon
+
+        const new_data = fetch(`${API_URL}/pdr/update/${newData.internal_id}?id_token_param=${sessionStorage.id_token}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify(newData),
+        }).then((response) => (response.json())).then((data) => {
+          setPdrUpdate(!pdrUpdate)
+          console.log(data)
+        })
         resolve(newData)
       }, 200)
     }
@@ -96,7 +137,6 @@ export default function DataGridTable() {
           label="Delete"
           onClick={processRowDelete(params.id)}
         />]
-
     },
     { field: 'id', headerName: 'Id', editable: true, type: 'number', width: 50 },
     { field: 'nombre', headerName: 'Nombre', editable: true, width: 200 },
@@ -154,7 +194,7 @@ export default function DataGridTable() {
       width: 200
     },
     {
-      field: 'dateAdded',
+      field: 'date_added',
       headerName: 'Añadido el día',
       editable: true,
       type: 'date',
@@ -163,20 +203,11 @@ export default function DataGridTable() {
       valueFormatter: (params) => { return params.value.format('DD/MM/YYYY') }
     },
     {
-      field: 'alerta',
-      headerName: 'Alerta',
-      editable: false,
-      type: 'boolean',
-      width: 100,
-      valueGetter: calculateAlert
-    },
-    {
       field: 'recogida',
       headerName: 'Últimas 5 semanas',
       editable: false,
-      renderCell: (params) => {
-        return lastNweeks(params.value)
-      },
+      valueGetter: lastNweeks,
+      renderCell: renderLastNweeks,
       width: 600
     }
   ]
@@ -195,7 +226,7 @@ export default function DataGridTable() {
   return (
     <Box sx={{ height: '100%', width: '100%', p: 2 }}>
       <DataGrid
-        getRowId={(row) => row.internalId}
+        getRowId={(row) => row.internal_id}
         rows={pdr}
         columns={columns}
         localeText={localeObj}
