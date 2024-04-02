@@ -40,7 +40,6 @@ async def get_week(year: int, week: int):
 async def set_week(year: int, week: int, recogida: dict):
     if week < 10:
         week = f"0{week}"
-    print(recogida)
     week_doc = db.collection("recogida").document(f"{year}{week}").get()
     if not week_doc.exists:
         db.collection("recogida").document(f"{year}{week}").set(recogida)

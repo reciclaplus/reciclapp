@@ -11,7 +11,7 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": false,
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
     "python.formatting.provider": "none"
 }
