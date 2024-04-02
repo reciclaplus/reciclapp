@@ -14,12 +14,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
-import { TownContext } from '../../context/TownContext';
-import OpenFile from '../gcloud/OpenFile';
-import SignInButton from '../gcloud/SignInButton';
-import UploadFile from '../gcloud/UploadFile';
-import { Navigation } from './Navigation';
 import { API_URL } from '../../configuration';
+import { TownContext } from '../../context/TownContext';
+import SignInButton from '../gcloud/SignInButton';
+import { Navigation } from './Navigation';
 const drawerWidth = 240
 
 function Layout({ children, ...props }) {
@@ -77,12 +75,7 @@ function Layout({ children, ...props }) {
         <ListItem>
           <SignInButton setAccessToken={setAccessToken} user={user} picture={picture} setIdToken={setIdToken} />
         </ListItem>
-        <ListItem>
-          <OpenFile accessToken={accessToken} />
-        </ListItem>
-        <ListItem>
-          <UploadFile googleauth={GoogleAuth} />
-        </ListItem>
+
         <Divider />
         <ListItem>
           <FormControl variant="standard">
