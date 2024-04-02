@@ -2,30 +2,41 @@ import json
 import os
 from typing import Any
 
+import firebase_admin
 import google.oauth2.credentials
 import uvicorn
+from fastapi import APIRouter, Body, FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from firebase_admin import credentials, firestore
 from google.auth.transport import requests
 from google.cloud import storage
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 from starlette.middleware.sessions import SessionMiddleware
-from time_series_data import get_time_series_data
 
-from fastapi import Body, FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+cred = credentials.Certificate("fast_api/routers/firestore-service-account.json")
+firebase_app = firebase_admin.initialize_app(cred)
+
+from .routers import pdr, recogida
+from .time_series_data import get_time_series_data
 
 app = FastAPI()
 
+
+app.include_router(pdr.router)
+app.include_router(recogida.router)
+
+
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
 flow = Flow.from_client_secrets_file(
-    "./client_secret_.json",
+    "fast_api/client_secret_.json",
     scopes=[
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/devstorage.full_control",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
+    redirect_uri="http://localhost:3000",
 )
 
 origins = [
@@ -41,7 +52,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("./client_secret_.json") as f:
+with open("fast_api/client_secret_.json") as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
 
@@ -77,33 +88,5 @@ def get_current_user(request: Request, id_token_param: str):
     profile = {"name": user["name"], "picture": user["picture"]}
     name = user["name"]
     picture = user["picture"]
-
+    print(name, picture)
     return profile
-
-
-@app.post("/time-series-data")
-def time_series_data(
-    start: str,
-    end: str,
-    barrio: str = "all",
-    categoria: str = "all",
-    payload: Any = Body(None),
-):
-    return get_time_series_data(payload, categoria, start, end, barrio)
-
-
-@app.get("/download-file")
-def download_file(request: Request, file: str, bucket: str, token: str):
-    # Load credentials
-    credentials = google.oauth2.credentials.Credentials(token)
-
-    storage_client = storage.Client("norse-voice", credentials=credentials)
-    bucket = storage_client.bucket(bucket)
-    blob = bucket.blob(file)
-    try:
-        contents = blob.download_as_bytes()
-    except Exception as e:
-        print(e.code)
-        raise HTTPException(status_code=403, detail="No permission")
-
-    return json.loads(contents)
