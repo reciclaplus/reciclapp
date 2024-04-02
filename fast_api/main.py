@@ -1,19 +1,13 @@
 import json
 import os
-from typing import Any
 
 import firebase_admin
-import google.oauth2.credentials
-import uvicorn
-from fastapi import APIRouter, Body, FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials
 from google.auth.transport import requests
-from google.cloud import storage
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
-from starlette.middleware.sessions import SessionMiddleware
 
 cred = credentials.Certificate("fast_api/routers/firestore-service-account.json")
 firebase_app = firebase_admin.initialize_app(cred)
@@ -88,4 +82,5 @@ def get_current_user(request: Request, id_token_param: str):
     name = user["name"]
     picture = user["picture"]
     print(name, picture)
+    return profile
     return profile

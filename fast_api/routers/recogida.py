@@ -1,12 +1,8 @@
-from datetime import date, datetime, timedelta
-from operator import itemgetter
+from datetime import date, timedelta
 
-import firebase_admin
 import pandas as pd
 from fastapi import APIRouter
-from firebase_admin import credentials, firestore
-from google.cloud.firestore_v1.field_path import FieldPath
-from pydantic import BaseModel
+from firebase_admin import firestore
 
 db = firestore.client()
 
@@ -51,7 +47,6 @@ async def set_week(year: int, week: int, recogida: dict):
 
 @router.get("/recogida/get/last_n_by_barrio", tags=["recogida"])
 async def last_n_by_barrio(n: int = 5, category: str = None, barrio: str = None):
-
     current_date = date.today()
 
     if n == -1:
@@ -95,7 +90,7 @@ async def last_n_by_barrio(n: int = 5, category: str = None, barrio: str = None)
     ]
 
     values = [list(x.values()) for x in docs if x not in ["date", "week"]]
-    values = [x for xs in values for x in xs if type(x) == dict]
+    values = [x for xs in values for x in xs if isinstance(x, dict)]
 
     if len(values) == 0:
         empty_result = []

@@ -1,9 +1,8 @@
 import json
-from typing import Annotated, Union
+from typing import Annotated
 
-import firebase_admin
-from fastapi import APIRouter, Depends, HTTPException, Request
-from firebase_admin import credentials, firestore
+from fastapi import APIRouter, Depends, HTTPException
+from firebase_admin import firestore
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from pydantic import BaseModel
@@ -62,7 +61,6 @@ class Pdr(BaseModel):
 
 @router.get("/pdr/get_all", tags=["pdr"])
 async def get_pdrs(is_valid_user: Annotated[bool, Depends(valid_user)]):
-
     collection = db.collection("pdr")
     docs = collection.stream()
     return [doc.to_dict() for doc in docs]
@@ -100,5 +98,5 @@ async def add_pdr(
 async def delete_pdr(
     internal_id: str, is_valid_user: Annotated[bool, Depends(valid_user)]
 ):
-    doc_ref = db.collection("pdr").document(f"{str(internal_id)}").delete()
+    db.collection("pdr").document(f"{str(internal_id)}").delete()
     return internal_id
