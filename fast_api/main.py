@@ -19,7 +19,6 @@ cred = credentials.Certificate("fast_api/routers/firestore-service-account.json"
 firebase_app = firebase_admin.initialize_app(cred)
 
 from .routers import pdr, recogida
-from .time_series_data import get_time_series_data
 
 app = FastAPI()
 
