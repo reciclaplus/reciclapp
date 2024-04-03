@@ -1,5 +1,5 @@
 env: standard
-runtime: nodejs16
+runtime: nodejs18
 service: reciclapp-dev
 handlers:
   - url: /.*
