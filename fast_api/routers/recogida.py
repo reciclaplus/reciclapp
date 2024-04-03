@@ -39,6 +39,9 @@ async def set_week(year: int, week: int, recogida: dict):
     week_doc = db.collection("recogida").document(f"{year}{week}").get()
     if not week_doc.exists:
         db.collection("recogida").document(f"{year}{week}").set(recogida)
+        db.collection("recogida").document(f"{year}{week}").update(
+            {"week": int(f"{year}{week}"), "date": list(recogida.values())[0]["date"]}
+        )
     else:
         db.collection("recogida").document(f"{year}{week}").update(recogida)
 
@@ -64,7 +67,7 @@ async def last_n_by_barrio(n: int = 5, category: str = None, barrio: str = None)
         start_week = f"0{start_week}"
     start_year = start_date.isocalendar().year
 
-    if category and barrio:
+    if category != "all" and barrio != "all":
         pdrs = pd.DataFrame(
             [
                 doc.to_dict()
@@ -77,9 +80,9 @@ async def last_n_by_barrio(n: int = 5, category: str = None, barrio: str = None)
     else:
         pdrs = pd.DataFrame([doc.to_dict() for doc in db.collection("pdr").stream()])
 
-    if category:
+    if category != "all":
         pdrs = pdrs[pdrs["categoria"] == category]
-    if barrio:
+    if barrio != "all":
         pdrs = pdrs[pdrs["barrio"] == barrio]
 
     docs = [

@@ -21,7 +21,7 @@ export default function TimeSeries(props) {
   barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
 
   useEffect(() => {
-    fetch(`${API_URL}/recogida/get/last_n_by_barrio?n=${nWeeks}`, {
+    fetch(`${API_URL}/recogida/get/last_n_by_barrio?n=${nWeeks}&category=${categoria}&barrio=${barrio}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
