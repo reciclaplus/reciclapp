@@ -11,7 +11,7 @@ db = firestore.client()
 
 router = APIRouter()
 
-with open("fast_api/client_secret_.json") as f:
+with open("./client_secret_.json") as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
 

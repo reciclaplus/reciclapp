@@ -9,10 +9,10 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from google_auth_oauthlib.flow import Flow
 
-cred = credentials.Certificate("fast_api/routers/firestore-service-account.json")
+cred = credentials.Certificate("./routers/firestore-service-account.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
-from .routers import pdr, recogida
+from routers import pdr, recogida
 
 app = FastAPI()
 
@@ -23,13 +23,13 @@ app.include_router(recogida.router)
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
 flow = Flow.from_client_secrets_file(
-    "fast_api/client_secret_.json",
+    "./client_secret_.json",
     scopes=[
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/devstorage.full_control",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="http://localhost:3000",
+    redirect_uri="https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
 )
 
 origins = [
@@ -45,7 +45,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("fast_api/client_secret_.json") as f:
+with open("./client_secret_.json") as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
 
@@ -79,8 +79,4 @@ def get_current_user(request: Request, id_token_param: str):
     )
 
     profile = {"name": user["name"], "picture": user["picture"]}
-    name = user["name"]
-    picture = user["picture"]
-    print(name, picture)
-    return profile
     return profile
