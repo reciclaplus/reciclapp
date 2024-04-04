@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
-import { PdrContext } from '../../context/PdrContext'
-import { TownContext } from '../../context/TownContext'
+import React, { useContext, useEffect, useState } from 'react'
+import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import { conf } from '../../configuration'
+import { TownContext } from '../../context/TownContext'
 
-export default function MyPieChart (props) {
+export default function MyPieChart(props) {
   const [data, setData] = useState([])
-  const { pdr } = useContext(PdrContext)
+  const pdr = props.pdr
   const { town } = useContext(TownContext)
 
   const barrios = conf[town].barrios
@@ -20,9 +19,9 @@ export default function MyPieChart (props) {
     const y = cy + radius * Math.sin(-midAngle * RADIAN)
 
     return (
-    <text x={x} y={y} fill="black" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${barriosList[index]} ${(percent * 100).toFixed(0)}%`}
-    </text>
+      <text x={x} y={y} fill="black" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {`${barriosList[index]} ${(percent * 100).toFixed(0)}%`}
+      </text>
     )
   }
 
@@ -40,25 +39,25 @@ export default function MyPieChart (props) {
     const res = Object.values(result)
 
     setData(res)
-  }, [])
+  }, [pdr])
 
   return (
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={renderCustomizedLabel}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {barrios.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color}/>
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie
+          data={data}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          label={renderCustomizedLabel}
+          fill="#8884d8"
+          dataKey="value"
+        >
+          {barrios.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.color} />
+          ))}
+        </Pie>
+      </PieChart>
+    </ResponsiveContainer>
   )
 }
