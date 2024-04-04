@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 import pandas as pd
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from firebase_admin import firestore
 
 db = firestore.client()
@@ -127,3 +127,31 @@ async def last_n_by_barrio(n: int = 5, category: str = None, barrio: str = None)
     result["date"] = result["date"].dt.strftime("%d/%m/%Y")
 
     return result.to_dict(orient="records")
+
+
+@router.get("/recogida/weight/get", tags=["recogida"])
+async def get_weight(request: Request):
+    print("This is the header" + request.headers["Authorization"])
+    collection = db.collection("weight")
+    docs_dict = [doc.to_dict() for doc in collection.stream()]
+    return docs_dict
+
+
+@router.post("/recogida/weight/set/{id}", tags=["recogida"])
+async def set_weight(id: int, new_weight: dict):
+    collection = db.collection("weight").document(f"{id}").set(new_weight)
+    docs_dict = [doc.to_dict() for doc in collection.stream()]
+    return docs_dict
+
+
+@router.post("/recogida/weight/update/{id}", tags=["recogida"])
+async def update_weight(id: int, new_weight: dict):
+    collection = db.collection("weight").document(f"{id}").update(new_weight)
+    docs_dict = [doc.to_dict() for doc in collection.stream()]
+    return docs_dict
+
+
+@router.delete("/recogida/weight/delete/{id}", tags=["recogida"])
+async def delete_weight(id: int):
+    db.collection("weight").document(f"{id}").delete()
+    return id
