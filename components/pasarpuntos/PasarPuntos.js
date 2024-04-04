@@ -6,6 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
+import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
 import { useContext, useEffect, useState } from 'react'
 import { API_URL, conf } from '../../configuration'
 import { StatsContext } from '../../context/StatsContext'
@@ -13,6 +14,7 @@ import { TownContext } from '../../context/TownContext'
 import { getWeekNumber } from '../../utils/dates'
 import CustomAlert from '../CustomAlert'
 import RadioButtonsGroup from '../RadioButtonsGroup'
+dayjs.extend(CustomParseFormat)
 
 export default function PasarPuntos() {
   const [pdr, setPdr] = useState([])
