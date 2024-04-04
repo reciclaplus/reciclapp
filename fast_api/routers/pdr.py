@@ -87,9 +87,6 @@ async def update_pdr(
 async def add_pdr(
     new_pdr: Pdr, is_valid_user: Annotated[bool, Depends(valid_user)]
 ) -> Pdr:
-    print(new_pdr)
-    print(new_pdr.internal_id)
-
     db.collection("pdr").document(str(new_pdr.internal_id)).set(new_pdr.dict())
     return new_pdr
 
