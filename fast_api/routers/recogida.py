@@ -22,6 +22,16 @@ async def last_n(n: int = 5):
     return docs_dict
 
 
+@router.get("/recogida/get/{year}/{week}/{id}", tags=["recogida"])
+async def get_individual_id_week(year: int, week: int, id: str):
+    if week < 10:
+        week = f"0{week}"
+    doc = db.collection("recogida").document(f"{year}{week}").get()
+    if not doc.exists:
+        return {}
+    return doc.to_dict()[id]
+
+
 @router.get("/recogida/get/{year}/{week}", tags=["recogida"])
 async def get_week(year: int, week: int):
     if week < 10:
