@@ -70,7 +70,7 @@ async def get_pdrs(is_valid_user: Annotated[bool, Depends(valid_user)]):
 async def get_pdr(
     internal_id: str, is_valid_user: Annotated[bool, Depends(valid_user)]
 ):
-    doc_ref = db.collection("pdr").document({internal_id})
+    doc_ref = db.collection("pdr").document(internal_id)
     doc = doc_ref.get()
     return doc.to_dict()
 
