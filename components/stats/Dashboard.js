@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
+import { useEffect, useState } from 'react'
+import { API_URL } from '../../configuration'
 import MyPieChart from './PieChart'
 import RecentlyAdded from './RecentlyAdded'
 import TimeSeries from './TimeSeries'
@@ -19,6 +21,21 @@ const Item = styled(Paper)(({ theme }) => ({
 }))
 
 export default function Dashboard() {
+
+  const [pdr, setPdr] = useState([])
+
+  useEffect(() => {
+    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + sessionStorage.id_token
+      }
+    }).then((response) => (response.json())).then((data) => { setPdr(data) })
+  }
+    , [])
+
   return (
     <Box sx={{ flexGrow: 1, p: 2 }}>
       <Grid container spacing={2}>
@@ -31,7 +48,7 @@ export default function Dashboard() {
         <Grid item xs={12} md={6}>
           <Item>
             <h2>Distribución de barrios</h2>
-            <MyPieChart />
+            <MyPieChart pdr={pdr} />
           </Item>
         </Grid>
         <Grid item xs={12} md={6}>
@@ -43,7 +60,7 @@ export default function Dashboard() {
         <Grid item xs={12} md={12}>
           <Item>
             <h2>Puntos Nuevos</h2>
-            <RecentlyAdded />
+            <RecentlyAdded pdr={pdr} />
           </Item>
         </Grid>
         <Grid item xs={12} md={6}>

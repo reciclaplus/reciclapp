@@ -43,3 +43,4 @@ yarn-error.log*
 /api/__pycache__/
 /fastapi/__pycache__/
 client_secret_.json
+*.pyc

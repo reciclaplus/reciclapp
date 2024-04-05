@@ -7,9 +7,8 @@ import NativeSelect from '@mui/material/NativeSelect'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import moment from 'moment'
-import { useContext, useState } from 'react'
-import { conf } from '../../configuration'
-import { PdrContext } from '../../context/PdrContext'
+import { useContext, useEffect, useState } from 'react'
+import { API_URL, conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
 import { pdrExists, setNewInternalId } from '../../utils/pdr-management'
 import CustomAlert from '../CustomAlert'
@@ -18,7 +17,7 @@ import NewPdrMap from './NewPdrMap'
 
 export default function NewPdr(props) {
   const { town } = useContext(TownContext)
-  const { pdr, setPdr } = useContext(PdrContext)
+  const [pdr, setPdr] = useState([])
   const categories = conf[town].categories
   const [state, setState] = useState({
     zafacon: false,
@@ -36,6 +35,19 @@ export default function NewPdr(props) {
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const comunidades = []
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
+
+  useEffect(() => {
+    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    }).then((response) => (response.json())).then((data) => {
+      setPdr(data)
+    })
+  }, [])
+
   function setNewId(barrio) {
     const allIds = []
     pdr.map((e) => {
@@ -74,24 +86,26 @@ export default function NewPdr(props) {
       return
     }
 
-    const newPdrs = JSON.parse(JSON.stringify(pdr))
-    newPdrs.push({
-      internalId: setNewInternalId(pdr),
+    const new_pdr = {
+      internal_id: setNewInternalId(pdr),
       nombre: state.nombre,
       lat: newMarker.getPosition().lat(),
       lng: newMarker.getPosition().lng(),
       barrio: state.barrio,
       comunidad: state.comunidad,
-      zafacon: state.zafacon,
       id: (state.id > 0) ? state.id : setNewId(state.barrio),
       descripcion: state.descripcion,
       categoria: state.categoria,
-      recogida: [],
-      active: true,
-      dateAdded: moment().format('DD/MM/YYYY')
-    })
+      date_added: moment().format('DD/MM/YYYY')
+    }
 
-    setPdr(newPdrs)
+    fetch(`${API_URL}/pdr/add?id_token_param=${sessionStorage.id_token}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(new_pdr)
+    })
 
     setState({
       zafacon: false,
@@ -244,7 +258,7 @@ export default function NewPdr(props) {
         </div>
         <div>
           <MapsWrapper>
-            <NewPdrMap containerStyle={{ width: '100%', height: '60%' }} setNewMarker={setNewMarker} comunidad={state.comunidad} newMarker={newMarker} />
+            <NewPdrMap containerStyle={{ width: '100%', height: '60%' }} setNewMarker={setNewMarker} comunidad={state.comunidad} newMarker={newMarker} pdr={pdr} />
           </MapsWrapper>
         </div>
         <br />

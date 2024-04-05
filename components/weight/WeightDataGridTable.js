@@ -2,23 +2,37 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Box, Button } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridToolbarContainer, esES } from '@mui/x-data-grid'
-import moment from 'moment'
-import { useCallback, useContext, useState } from 'react'
-import { WeightContext } from '../../context/WeightContext'
+import dayjs from 'dayjs'
+import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
+import { useCallback, useEffect, useState } from 'react'
+import { API_URL } from '../../configuration'
 import DeleteRowDialog from '../DeleteRowDialog'
+dayjs.extend(CustomParseFormat)
 
 function EditToolbar(props) {
   const { weight, setWeight } = props
 
   const handleClick = () => {
-    const prevDates = weight.map((row) => moment(row.date).format('DD/MM/YYYY'))
-    const newDate = moment()
 
-    while (prevDates.includes(moment(newDate).format('DD/MM/YYYY'))) {
-      newDate.add(1, 'days')
-    }
+    currentWeek = dayjs().week()
+    currentYear = dayjs().year()
 
-    setWeight((oldRows) => [{ date: newDate.toDate(), pet: 0, galones: 0, plasticoduro: 0, basura: 0 }, ...oldRows])
+    const rowIds = weight.map((row) => row.id);
+    const maxRowId = Math.max(...rowIds);
+    const nextRowId = maxRowId + 1;
+
+    newRow = { id: nextRowId, date: dayjs().toDate(), week: `${curr}`, pet: 0, galones: 0, plasticoduro: 0, basura: 0 }
+
+    fetch(`${API_URL}/recogida/weight/set/${nextRowId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + sessionStorage.id_token
+      },
+      body: JSON.stringify(newRow),
+    }).then((response) => (response.json())).then((data) => { setWeight([...weight, data]) })
+
   }
 
   return (
@@ -31,12 +45,28 @@ function EditToolbar(props) {
 }
 
 export default function WeightDataGridTable(props) {
-  const { weight, setWeight } = useContext(WeightContext)
   const [rowToDelete, setRowToDelete] = useState(null)
+  const [weight, setWeight] = useState([])
+
+  useEffect(() => {
+    fetch(`${API_URL}/recogida/weight/get`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + sessionStorage.id_token
+      }
+    }).then((response) => (response.json())).then((data) => { setWeight(data) })
+  }, [])
 
   const deleteRow = (id) => {
-    const dataUpdate = weight.filter((row) => moment(row.date).format('DD/MM/YYYY') !== id)
-    setWeight(dataUpdate)
+    fetch(`${API_URL}/recogida/weight/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    }).then((response) => (response.json())).then((data) => { setWeight(weight.filter((row) => row.id !== id)) })
     setRowToDelete(null)
   }
 
@@ -50,10 +80,20 @@ export default function WeightDataGridTable(props) {
   const processRowUpdate =
     (newData, oldData) => new Promise((resolve, reject) => {
       setTimeout(() => {
-        const dataUpdate = [...weight]
-        const index = weight.findIndex(e => JSON.stringify(e) === JSON.stringify(oldData))
-        dataUpdate[index] = newData
-        setWeight([...dataUpdate])
+        const rowId = oldData.id
+        fetch(`${API_URL}/recogida/weight/update/${rowId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify(newData),
+        }).then((response) => (response.json()))
+          .then((data) => {
+            setWeight(weight.map((row) => {
+              return row.id === rowId ? newData : row
+            }))
+          })
         resolve(newData)
       }, 200)
     }
@@ -79,10 +119,8 @@ export default function WeightDataGridTable(props) {
       editable: true,
       type: 'date',
       width: 150,
-      valueFormatter: (params) => {
-        const date = new Date(params.value)
-        return moment(date).format('DD/MM/YYYY')
-      }
+      valueGetter: (params) => { return dayjs(params.value, 'DD/MM/YYYY') },
+      valueFormatter: (params) => { return params.value.format('DD/MM/YYYY') }
     },
     { field: 'pet', headerName: 'Pet (lb)', editable: true, type: 'number', width: 100 },
     { field: 'galones', headerName: 'Galones (lb)', editable: true, type: 'number', width: 100 },
@@ -92,7 +130,7 @@ export default function WeightDataGridTable(props) {
   return (
     <Box sx={{ height: '100%', width: '100%', p: 2 }}>
       <DataGrid
-        getRowId={(row) => moment(row.date).format('DD/MM/YYYY')}
+        getRowId={(row) => row.id}
         rows={weight}
         columns={columns}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}

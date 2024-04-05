@@ -5,8 +5,7 @@ import { useRouter } from 'next/router'
 import { useContext, useEffect, useRef, useState } from 'react'
 import initPolygonsP4 from '../../config/P4/P4Polygons'
 import initPolygonsSY from '../../config/SY/SYPolygons'
-import { conf } from '../../configuration'
-import { PdrContext } from '../../context/PdrContext'
+import { API_URL, conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
 
 export const MapComponent = (props) => {
@@ -14,7 +13,7 @@ export const MapComponent = (props) => {
   const googleMapRef = useRef(null)
   const [googleMap, setGoogleMap] = useState(null)
 
-  const { pdr } = useContext(PdrContext)
+  const [pdr, setPdr] = useState([])
   const { town } = useContext(TownContext)
 
   const router = useRouter()
@@ -23,16 +22,15 @@ export const MapComponent = (props) => {
   const center = (!isNaN(lat)) ? ({ lat: Number(lat), lng: Number(lng) }) : conf[town].map_center
   const zoomMap = (!isNaN(zoom)) ? Number(zoom) : 14
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (googleMap !== null) {
-  //       geoLocation(googleMap)
-  //     }
-  //   }, 1000)
-
-  //   return () => clearTimeout(timer)
-  // })
-
+  useEffect(() => {
+    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    }).then((response) => (response.json())).then((data) => { setPdr(data) })
+  }, [])
 
   useEffect(() => {
 
