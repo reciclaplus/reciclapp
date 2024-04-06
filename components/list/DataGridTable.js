@@ -1,4 +1,5 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
 import { Button, FormControlLabel, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Radio from '@mui/material/Radio';
@@ -11,7 +12,6 @@ import { PdrContext } from '../../context/PdrContext';
 import { TownContext } from '../../context/TownContext';
 import DeleteRowDialog from '../DeleteRowDialog';
 import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
-
 
 export default function DataGridTable() {
 
@@ -102,6 +102,12 @@ export default function DataGridTable() {
     []
   )
 
+  const createQRcode = useCallback(
+    (params) => () => {
+      const url = encodeURI(`https://quickchart.io/qr?text=https://sabanayegua.reciclaplus.com/recogida/${params.id}&size=300&margin=1`);
+      window.open(url, '_blank');
+    }, [])
+
   const processRowUpdate =
     (newData, oldData) => new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -136,6 +142,11 @@ export default function DataGridTable() {
           icon={<DeleteIcon />}
           label="Delete"
           onClick={processRowDelete(params.id)}
+        />,
+        <GridActionsCellItem
+          icon={<QrCode2Icon />}
+          label="Create QR code"
+          onClick={createQRcode(params)}
         />]
     },
     { field: 'id', headerName: 'Id', editable: true, type: 'number', width: 50 },
