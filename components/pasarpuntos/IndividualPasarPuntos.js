@@ -98,7 +98,7 @@ const IndividualPasarPuntos = (props) => {
                 <FormControl component="fieldset" role="form-field">
 
 
-                    <FormLabel sx={{ mt: 3 }} component="legend"> {pdr.nombre} </FormLabel>
+                    <FormLabel sx={{ mt: 3 }} component="legend"> {pdr.nombre} - {pdr.barrio} </FormLabel>
                     <RadioButtonsGroup onChange={handleChange} internal_id={internal_id} initialValue={initialValue} />
 
 
