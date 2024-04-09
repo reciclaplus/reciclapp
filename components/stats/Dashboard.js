@@ -25,7 +25,7 @@ export default function Dashboard() {
   const [pdr, setPdr] = useState([])
 
   useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+    fetch(`${API_URL}/pdr/get_all`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

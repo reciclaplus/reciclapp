@@ -37,7 +37,7 @@ export default function PasarPuntos() {
   const [initialValues, setInitialValues] = useState({})
 
   useEffect(() => {
-    const newPdr = fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+    const newPdr = fetch(`${API_URL}/pdr/get_all`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -57,6 +57,7 @@ export default function PasarPuntos() {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'Authorization': 'Bearer ' + sessionStorage.id_token
       }
     }).then((response) => (response.json())).then((data) => {
       setInitialValues(data)

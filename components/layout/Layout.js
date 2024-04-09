@@ -35,11 +35,12 @@ function Layout({ children, ...props }) {
 
   useEffect(() => {
     if (sessionStorage.id_token) {
-      fetch(`${API_URL}/get-current-user?id_token_param=${sessionStorage.id_token}`, {
+      fetch(`${API_URL}/get-current-user`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
+          'Authorization': 'Bearer ' + sessionStorage.id_token
         }
       }).then(function (response) {
         return response.json()

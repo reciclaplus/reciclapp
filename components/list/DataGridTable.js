@@ -28,7 +28,7 @@ export default function DataGridTable() {
 
 
   useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+    fetch(`${API_URL}/pdr/get_all`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -41,7 +41,8 @@ export default function DataGridTable() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + sessionStorage.id_token
       },
     }).then((response) => (response.json())).then((data) => {
       setLast5(data)
@@ -84,11 +85,12 @@ export default function DataGridTable() {
     )
   }
   const deleteRow = (internal_id) => {
-    fetch(`${API_URL}/pdr/delete/${internal_id}?id_token_param=${sessionStorage.id_token}`, {
+    fetch(`${API_URL}/pdr/delete/${internal_id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + sessionStorage.id_token
       }
     })
     setRowToDelete(null)
@@ -104,7 +106,7 @@ export default function DataGridTable() {
 
   const createQRcode = useCallback(
     (params) => () => {
-      const url = encodeURI(`https://quickchart.io/qr?text=https://sabanayegua.reciclaplus.com/recogida/${params.id}&size=300&margin=1`);
+      const url = encodeURI(`https://quickchart.io/qr?text=https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com//recogida/${params.id}&size=300&margin=1`);
       window.open(url, '_blank');
     }, [])
 
@@ -115,11 +117,12 @@ export default function DataGridTable() {
         delete newData.alerta
         delete newData.zafacon
 
-        const new_data = fetch(`${API_URL}/pdr/update/${newData.internal_id}?id_token_param=${sessionStorage.id_token}`, {
+        const new_data = fetch(`${API_URL}/pdr/update/${newData.internal_id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Accept: 'application/json'
+            Accept: 'application/json',
+            'Authorization': 'Bearer ' + sessionStorage.id_token
           },
           body: JSON.stringify(newData),
         }).then((response) => (response.json())).then((data) => {
