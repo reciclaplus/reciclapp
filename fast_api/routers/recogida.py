@@ -1,7 +1,9 @@
 from datetime import date, timedelta
+from typing import Annotated
 
 import pandas as pd
-from fastapi import APIRouter, Request
+from dependencies import valid_user
+from fastapi import APIRouter, Depends
 from firebase_admin import firestore
 
 db = firestore.client()
@@ -10,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/recogida/get/last_n", tags=["recogida"])
-async def last_n(n: int = 5):
+async def last_n(is_valid_user: Annotated[bool, Depends(valid_user)], n: int = 5):
     collection = db.collection("recogida")
     docs = (
         collection.order_by("week", direction=firestore.Query.DESCENDING)
@@ -23,7 +25,9 @@ async def last_n(n: int = 5):
 
 
 @router.get("/recogida/get/{year}/{week}/{id}", tags=["recogida"])
-async def get_individual_id_week(year: int, week: int, id: str):
+async def get_individual_id_week(
+    is_valid_user: Annotated[bool, Depends(valid_user)], year: int, week: int, id: str
+):
     if week < 10:
         week = f"0{week}"
     doc = db.collection("recogida").document(f"{year}{week}").get()
@@ -33,7 +37,9 @@ async def get_individual_id_week(year: int, week: int, id: str):
 
 
 @router.get("/recogida/get/{year}/{week}", tags=["recogida"])
-async def get_week(year: int, week: int):
+async def get_week(
+    is_valid_user: Annotated[bool, Depends(valid_user)], year: int, week: int
+):
     if week < 10:
         week = f"0{week}"
     doc = db.collection("recogida").document(f"{year}{week}").get()
@@ -43,7 +49,12 @@ async def get_week(year: int, week: int):
 
 
 @router.post("/recogida/set/{year}/{week}", tags=["recogida"])
-async def set_week(year: int, week: int, recogida: dict):
+async def set_week(
+    is_valid_user: Annotated[bool, Depends(valid_user)],
+    year: int,
+    week: int,
+    recogida: dict,
+):
     if week < 10:
         week = f"0{week}"
     week_doc = db.collection("recogida").document(f"{year}{week}").get()
@@ -59,7 +70,12 @@ async def set_week(year: int, week: int, recogida: dict):
 
 
 @router.get("/recogida/get/last_n_by_barrio", tags=["recogida"])
-async def last_n_by_barrio(n: int = 5, category: str = None, barrio: str = None):
+async def last_n_by_barrio(
+    is_valid_user: Annotated[bool, Depends(valid_user)],
+    n: int = 5,
+    category: str = None,
+    barrio: str = None,
+):
     current_date = date.today()
 
     if n == -1:
@@ -140,28 +156,31 @@ async def last_n_by_barrio(n: int = 5, category: str = None, barrio: str = None)
 
 
 @router.get("/recogida/weight/get", tags=["recogida"])
-async def get_weight(request: Request):
-    print("This is the header" + request.headers["Authorization"])
+async def get_weight(is_valid_user: Annotated[bool, Depends(valid_user)]):
     collection = db.collection("weight")
     docs_dict = [doc.to_dict() for doc in collection.stream()]
     return docs_dict
 
 
 @router.post("/recogida/weight/set/{id}", tags=["recogida"])
-async def set_weight(id: int, new_weight: dict):
+async def set_weight(
+    is_valid_user: Annotated[bool, Depends(valid_user)], id: int, new_weight: dict
+):
     collection = db.collection("weight").document(f"{id}").set(new_weight)
     docs_dict = [doc.to_dict() for doc in collection.stream()]
     return docs_dict
 
 
 @router.post("/recogida/weight/update/{id}", tags=["recogida"])
-async def update_weight(id: int, new_weight: dict):
+async def update_weight(
+    is_valid_user: Annotated[bool, Depends(valid_user)], id: int, new_weight: dict
+):
     collection = db.collection("weight").document(f"{id}").update(new_weight)
     docs_dict = [doc.to_dict() for doc in collection.stream()]
     return docs_dict
 
 
 @router.delete("/recogida/weight/delete/{id}", tags=["recogida"])
-async def delete_weight(id: int):
+async def delete_weight(is_valid_user: Annotated[bool, Depends(valid_user)], id: int):
     db.collection("weight").document(f"{id}").delete()
     return id
