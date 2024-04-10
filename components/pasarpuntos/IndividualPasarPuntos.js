@@ -22,11 +22,12 @@ const IndividualPasarPuntos = (props) => {
     useEffect(() => {
         if (!router.isReady) return;
 
-        fetch(`${API_URL}/pdr/get/${internal_id}?id_token_param=${sessionStorage.id_token}`, {
+        fetch(`${API_URL}/pdr/get/${internal_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json())).then((data) => {
             console.log(data)
@@ -38,6 +39,7 @@ const IndividualPasarPuntos = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json())).then((data) => {
             console.log(data)
@@ -61,6 +63,7 @@ const IndividualPasarPuntos = (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
+                'Authorization': 'Bearer ' + localStorage.token
 
             },
             body: JSON.stringify(payload)

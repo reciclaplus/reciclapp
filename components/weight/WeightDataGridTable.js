@@ -28,7 +28,7 @@ function EditToolbar(props) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + sessionStorage.id_token
+        'Authorization': 'Bearer ' + localStorage.token
       },
       body: JSON.stringify(newRow),
     }).then((response) => (response.json())).then((data) => { setWeight([...weight, data]) })
@@ -54,7 +54,7 @@ export default function WeightDataGridTable(props) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + sessionStorage.id_token
+        'Authorization': 'Bearer ' + localStorage.token
       }
     }).then((response) => (response.json())).then((data) => { setWeight(data) })
   }, [])
@@ -65,6 +65,7 @@ export default function WeightDataGridTable(props) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
       },
     }).then((response) => (response.json())).then((data) => { setWeight(weight.filter((row) => row.id !== id)) })
     setRowToDelete(null)
@@ -86,6 +87,7 @@ export default function WeightDataGridTable(props) {
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
+            'Authorization': 'Bearer ' + localStorage.token
           },
           body: JSON.stringify(newData),
         }).then((response) => (response.json()))

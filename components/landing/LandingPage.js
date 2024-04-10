@@ -15,25 +15,27 @@ export default function LandingPage() {
 
     useEffect(() => {
 
-        if (sessionStorage.getItem("id_token")) {
+        if (localStorage.getItem("id_token")) {
             router.push('/list')
         }
     })
 
     const login = useGoogleLogin({
         onSuccess: codeResponse => {
-            fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
+            fetch(`${API_URL}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
+                    'Authorization': 'Bearer ' + codeResponse.code,
                 }
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    sessionStorage.setItem("token", data[0])
-                    sessionStorage.setItem("id_token", data[1])
-                    console.log('Redirecting')
+                    localStorage.setItem("token", data["token"])
+                    localStorage.setItem("id_token", data["id_token"])
+                    localStorage.setItem("refresh_token", data["refresh_token"])
+                    localStorage.setItem("expiry", data["expiry"])
                     router.push('/list')
                 })
         },

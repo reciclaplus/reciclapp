@@ -37,11 +37,12 @@ export default function NewPdr(props) {
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
 
   useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+    fetch(`${API_URL}/pdr/get_all`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
       }
     }).then((response) => (response.json())).then((data) => {
       setPdr(data)
@@ -99,10 +100,11 @@ export default function NewPdr(props) {
       date_added: moment().format('DD/MM/YYYY')
     }
 
-    fetch(`${API_URL}/pdr/add?id_token_param=${sessionStorage.id_token}`, {
+    fetch(`${API_URL}/pdr/add`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
       },
       body: JSON.stringify(new_pdr)
     })

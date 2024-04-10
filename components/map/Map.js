@@ -23,11 +23,12 @@ export const MapComponent = (props) => {
   const zoomMap = (!isNaN(zoom)) ? Number(zoom) : 14
 
   useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all?id_token_param=${sessionStorage.id_token}`, {
+    fetch(`${API_URL}/pdr/get_all`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token
       }
     }).then((response) => (response.json())).then((data) => { setPdr(data) })
   }, [])

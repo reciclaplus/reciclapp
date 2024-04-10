@@ -3,6 +3,7 @@ uvicorn
 pandas
 gunicorn
 google-auth-oauthlib
+google-api-python-client
 google-cloud-storage
 itsdangerous
 firebase_admin
