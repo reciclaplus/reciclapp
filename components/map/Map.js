@@ -28,7 +28,7 @@ export const MapComponent = (props) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + sessionStorage.id_token
+        'Authorization': 'Bearer ' + localStorage.token
       }
     }).then((response) => (response.json())).then((data) => { setPdr(data) })
   }, [])

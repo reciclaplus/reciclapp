@@ -5,10 +5,11 @@ from fastapi import Depends, Header, HTTPException
 from firebase_admin import firestore
 from google.auth.transport import requests
 from google.oauth2 import id_token
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
 from pydantic import BaseModel
 
 db = firestore.client()
-
 with open("./client_secret_.json") as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
@@ -26,13 +27,17 @@ def get_current_user(authorization: Annotated[Union[str, None], Header()] = None
             status_code=403, detail="You are not authorized to access this resource"
         )
     token = authorization.split(" ")[1]
-    user = id_token.verify_oauth2_token(
-        token,
-        requests.Request(),
-        client_id,
-    )
 
-    profile = {"name": user["name"], "picture": user["picture"], "email": user["email"]}
+    creds = Credentials(token=token)
+
+    user_info_service = build("oauth2", "v2", credentials=creds)
+    user_info = user_info_service.userinfo().get().execute()
+
+    profile = {
+        "name": user_info["name"],
+        "picture": user_info["picture"],
+        "email": user_info["email"],
+    }
 
     return User(**profile)
 

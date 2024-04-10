@@ -26,7 +26,7 @@ export default function TimeSeries(props) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + sessionStorage.id_token
+        'Authorization': 'Bearer ' + localStorage.token
       }
     }).then((response) => response.json())
       .then(function (myJson) {
