@@ -1,4 +1,4 @@
 env: standard
 runtime: python310
 entrypoint: gunicorn -k uvicorn.workers.UvicornWorker main:app
-service: fastapi
+service: fastapi-dev
