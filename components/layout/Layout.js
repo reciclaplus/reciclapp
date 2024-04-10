@@ -12,12 +12,18 @@ import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import dayjs from 'dayjs';
+import * as CustomParseFormat from 'dayjs/plugin/customParseFormat';
+import * as UTC from 'dayjs/plugin/utc';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { API_URL } from '../../configuration';
 import { TownContext } from '../../context/TownContext';
 import SignInButton from '../gcloud/SignInButton';
 import { Navigation } from './Navigation';
+dayjs.extend(CustomParseFormat)
+dayjs.extend(UTC)
+
 const drawerWidth = 240
 
 function Layout({ children, ...props }) {
@@ -34,13 +40,36 @@ function Layout({ children, ...props }) {
   const [idToken, setIdToken] = useState()
 
   useEffect(() => {
-    if (sessionStorage.id_token) {
+
+    if (localStorage.refresh_token) {
+      const expiry_date = dayjs(localStorage.expiry, 'YYYY-MM-DD HH:mm:ss')
+      if (expiry_date.isBefore(dayjs().utc().format('YYYY-MM-DD HH:mm:ss'))) {
+
+        fetch(`${API_URL}/refresh-token`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + localStorage.refresh_token
+          }
+        }).then(function (response) { return response.json() }
+        ).then((data) => {
+
+          localStorage.setItem("token", data["token"])
+          localStorage.setItem("id_token", data["id_token"])
+          localStorage.setItem("refresh_token", data["refresh_token"])
+          localStorage.setItem("expiry", data["expiry"])
+        })
+      }
+    }
+
+    if (localStorage.token) {
       fetch(`${API_URL}/get-current-user`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          'Authorization': 'Bearer ' + sessionStorage.id_token
+          'Authorization': 'Bearer ' + localStorage.token
         }
       }).then(function (response) {
         return response.json()
@@ -51,7 +80,7 @@ function Layout({ children, ...props }) {
         })
     }
 
-  }, [idToken])
+  }, [])
 
   const handleClick = () => {
     setOpen(!open)
