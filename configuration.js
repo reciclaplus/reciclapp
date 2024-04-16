@@ -12,7 +12,7 @@ export const conf =
       { value: 'iglesia', label: 'Iglesia' }
     ],
     comunidades: [
-      { nombre: 'Sabana Yegua', center: '', barrios: ['Barrio Blanco', 'Barrio Pintado', 'Barrio Nuevo', 'Ojo de Agua', 'San Francisco', 'El Abanico', 'Los Cartones', 'Barrio Tranquilo', 'Las Mercedes'] },
+      { nombre: 'Sabana Yegua', center: '18.4606607,-70.8405734', barrios: ['Barrio Blanco', 'Barrio Pintado', 'Barrio Nuevo', 'Ojo de Agua', 'San Francisco', 'El Abanico', 'Los Cartones', 'Barrio Tranquilo', 'Las Mercedes'] },
       { nombre: 'Km 13', center: '18.453435,-70.853577', barrios: ['Km 13'] },
       { nombre: 'Km 15', center: '18.463566,-70.868628', barrios: ['Km 15'] },
       { nombre: 'Nature Village', center: '18.7146767,-71.0251952', barrios: ['Nature Village'] },

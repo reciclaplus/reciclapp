@@ -10,19 +10,19 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
-from googleapiclient.discovery import build
 
 cred = credentials.Certificate("./routers/firestore-service-account.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
 from dependencies import User, get_current_user
-from routers import pdr, recogida
+from routers import pdr, public, recogida
 
 app = FastAPI()
 
 
 app.include_router(pdr.router)
 app.include_router(recogida.router)
+app.include_router(public.router)
 
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
@@ -80,6 +80,7 @@ def authentication(authorization: Annotated[Union[str, None], Header()] = None):
 @app.get("/refresh-token")
 def refresh_token(authorization: Annotated[Union[str, None], Header()] = None):
     refresh_token = authorization.split(" ")[1]
+
     credentials = Credentials(
         token=None,
         refresh_token=refresh_token,
