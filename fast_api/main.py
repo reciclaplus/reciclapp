@@ -10,7 +10,6 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
-from googleapiclient.discovery import build
 
 cred = credentials.Certificate("./routers/firestore-service-account.json")
 firebase_app = firebase_admin.initialize_app(cred)

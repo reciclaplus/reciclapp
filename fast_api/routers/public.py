@@ -1,9 +1,5 @@
-from datetime import date, timedelta
-from typing import Annotated
-
 import pandas as pd
-from dependencies import valid_user
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from firebase_admin import firestore
 
 db = firestore.client()
