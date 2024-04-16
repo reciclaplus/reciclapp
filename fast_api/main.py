@@ -33,7 +33,7 @@ flow = Flow.from_client_secrets_file(
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="http://localhost:3000",
+    redirect_uri="https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
 )
 
 origins = [
