@@ -17,6 +17,9 @@ export default function MonthlyWeight() {
 
     const options = {
         legend: { show: true },
+        tooltip: {
+            trigger: 'item'
+        },
         xAxis: {
             type: 'category',
             data: weight.map((item) => item["month_year"])
@@ -29,7 +32,7 @@ export default function MonthlyWeight() {
                 data: weight.map((item) => item["plasticoduro"] + item["pet"] + item["galones"]),
                 type: 'bar',
                 name: 'Libras mensuales',
-                color: '#494791'
+                color: '#133651'
             }
         ]
     };

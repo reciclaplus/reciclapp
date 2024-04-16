@@ -5,7 +5,7 @@ export default function PieChartDemo(props) {
     const pdr = props.pdr
     const options = {
         title: {
-            text: 'Distribucion de puntos de recogida',
+            text: 'Distribución de puntos de recogida',
             // subtext: 'Living Expenses in Shenzhen',
             left: 'center'
         },
@@ -39,7 +39,7 @@ export default function PieChartDemo(props) {
                         fontWeight: 'bold'
                     }
                 },
-                color: ['#123456', '#789abc', '#def012', '#345678'],
+                color: ['#133651', '#4f772d', '#f6ae2d', '#008198'],
                 labelLine: {
                     show: false
                 },

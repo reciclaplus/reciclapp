@@ -17,6 +17,9 @@ export default function WeeklyCollection() {
 
     const options = {
         legend: { show: true },
+        tooltip: {
+            trigger: 'item'
+        },
         xAxis: {
             type: 'category',
             data: barData.map((item) => item["date"]).reverse()
@@ -29,7 +32,7 @@ export default function WeeklyCollection() {
                 data: barData.map((item) => Object.values(item).filter((item) => item["value"] == 'si').length).reverse(),
                 type: 'bar',
                 name: 'Número de puntos de recogida',
-                color: '#494791'
+                color: '#133651'
             }
         ]
     };
