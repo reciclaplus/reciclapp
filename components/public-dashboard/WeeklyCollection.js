@@ -32,7 +32,7 @@ export default function WeeklyCollection() {
                 data: barData.map((item) => Object.values(item).filter((item) => item["value"] == 'si').length).reverse(),
                 type: 'bar',
                 name: 'Número de puntos de recogida',
-                color: '#133651'
+                color: '#494791'
             }
         ]
     };

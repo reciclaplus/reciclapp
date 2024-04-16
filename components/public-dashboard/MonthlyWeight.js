@@ -32,7 +32,7 @@ export default function MonthlyWeight() {
                 data: weight.map((item) => item["plasticoduro"] + item["pet"] + item["galones"]),
                 type: 'bar',
                 name: 'Libras mensuales',
-                color: '#133651'
+                color: '#494791'
             }
         ]
     };

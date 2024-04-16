@@ -39,7 +39,7 @@ export default function PieChartDemo(props) {
                         fontWeight: 'bold'
                     }
                 },
-                color: ['#133651', '#4f772d', '#f6ae2d', '#008198'],
+                color: ['#494791', '#4f772d', '#f6ae2d', '#008198'],
                 labelLine: {
                     show: false
                 },
