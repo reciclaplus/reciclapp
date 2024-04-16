@@ -106,7 +106,7 @@ export default function DataGridTable() {
 
   const createQRcode = useCallback(
     (params) => () => {
-      const url = encodeURI(`https://quickchart.io/qr?text=https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com//recogida/${params.id}&size=300&margin=1`);
+      const url = encodeURI(`https://quickchart.io/qr?text=https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com//recogida/${params.id}&size=300&margin=3&caption=${params.row.id}-${params.row.barrio}`);
       window.open(url, '_blank');
     }, [])
 
