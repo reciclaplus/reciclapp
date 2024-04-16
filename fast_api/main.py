@@ -16,13 +16,14 @@ cred = credentials.Certificate("./routers/firestore-service-account.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
 from dependencies import User, get_current_user
-from routers import pdr, recogida
+from routers import pdr, public, recogida
 
 app = FastAPI()
 
 
 app.include_router(pdr.router)
 app.include_router(recogida.router)
+app.include_router(public.router)
 
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
@@ -32,7 +33,7 @@ flow = Flow.from_client_secrets_file(
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
+    redirect_uri="http://localhost:3000",
 )
 
 origins = [
@@ -80,6 +81,7 @@ def authentication(authorization: Annotated[Union[str, None], Header()] = None):
 @app.get("/refresh-token")
 def refresh_token(authorization: Annotated[Union[str, None], Header()] = None):
     refresh_token = authorization.split(" ")[1]
+
     credentials = Credentials(
         token=None,
         refresh_token=refresh_token,
