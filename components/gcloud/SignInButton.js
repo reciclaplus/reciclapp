@@ -22,7 +22,7 @@ function SignInButton(props) {
           localStorage.setItem("id_token", data["id_token"])
           localStorage.setItem("refresh_token", data["refresh_token"])
           localStorage.setItem("expiry", data["expiry"])
-          props.setIdToken(data[1])
+
         })
     },
     flow: 'auth-code',
