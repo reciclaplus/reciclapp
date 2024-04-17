@@ -19,7 +19,7 @@ export default function DataGridTable() {
   const [pdrUpdate, setPdrUpdate] = useState(false)
   const { town } = useContext(TownContext)
   const [rowToDelete, setRowToDelete] = useState(null)
-  const [last5, setLast5] = useState(null)
+  const [last5, setLast5] = useState([])
   const comunidades = []
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   const barrios = []
@@ -53,7 +53,6 @@ export default function DataGridTable() {
 
 
   function lastNweeks(params) {
-
     const last5weeks = last5.map(date => ({ "value": params.row.internal_id in date ? date[params.row.internal_id]["value"] : "", "date": date["date"] }))
     return last5weeks
   }
@@ -75,7 +74,7 @@ export default function DataGridTable() {
       } else {
         control = <Radio checked={false} color="default" size='small' sx={{ p: 0 }} />
       }
-      return <FormControlLabel control={control} label={<Typography variant="body2" color="textSecondary">{monday}</Typography>} labelPlacement="top" key={date} />
+      return <FormControlLabel control={control} label={<Typography variant="body2" color="textSecondary">{monday}</Typography>} labelPlacement="top" key={date.date} />
     }).reverse()
 
     return (
