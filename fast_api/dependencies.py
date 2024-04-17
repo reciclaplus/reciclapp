@@ -22,7 +22,7 @@ class User(BaseModel):
 
 
 def get_current_user(authorization: Annotated[Union[str, None], Header()] = None):
-    if authorization is None:
+    if authorization is None or "undefined" in authorization:
         raise HTTPException(
             status_code=403, detail="You are not authorized to access this resource"
         )

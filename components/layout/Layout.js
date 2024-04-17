@@ -30,14 +30,10 @@ function Layout({ children, ...props }) {
 
   const { window } = props
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [tokenClient, setTokenClient] = useState()
-  const [accessToken, setAccessToken] = useState()
-  const [GoogleAuth, setGoogleAuth] = useState()
   const [town, setTown] = useContext(TownContext)
   const [open, setOpen] = useState(false)
   const [user, setUser] = useState()
   const [picture, setPicture] = useState()
-  const [idToken, setIdToken] = useState()
 
   useEffect(() => {
 
@@ -80,7 +76,7 @@ function Layout({ children, ...props }) {
         })
     }
 
-  }, [])
+  })
 
   const handleClick = () => {
     setOpen(!open)
@@ -103,7 +99,7 @@ function Layout({ children, ...props }) {
       <Divider />
       <List>
         <ListItem>
-          <SignInButton setAccessToken={setAccessToken} user={user} picture={picture} setIdToken={setIdToken} />
+          <SignInButton user={user} picture={picture} />
         </ListItem>
 
         <Divider />

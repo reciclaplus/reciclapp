@@ -14,7 +14,6 @@ export default function LandingPage() {
     const router = useRouter()
 
     useEffect(() => {
-
         if (localStorage.getItem("id_token")) {
             router.push('/list')
         }
@@ -22,7 +21,7 @@ export default function LandingPage() {
 
     const login = useGoogleLogin({
         onSuccess: codeResponse => {
-            fetch(`${API_URL}`, {
+            fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,6 +35,7 @@ export default function LandingPage() {
                     localStorage.setItem("id_token", data["id_token"])
                     localStorage.setItem("refresh_token", data["refresh_token"])
                     localStorage.setItem("expiry", data["expiry"])
+                }).then(() => {
                     router.push('/list')
                 })
         },
