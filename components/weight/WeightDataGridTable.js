@@ -4,24 +4,26 @@ import { Box, Button } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridToolbarContainer, esES } from '@mui/x-data-grid'
 import dayjs from 'dayjs'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
+import * as WeekOfYear from 'dayjs/plugin/weekOfYear'
 import { useCallback, useEffect, useState } from 'react'
 import { API_URL } from '../../configuration'
 import DeleteRowDialog from '../DeleteRowDialog'
 dayjs.extend(CustomParseFormat)
+dayjs.extend(WeekOfYear)
 
 function EditToolbar(props) {
   const { weight, setWeight } = props
 
   const handleClick = () => {
 
-    currentWeek = dayjs().week()
-    currentYear = dayjs().year()
+    const currentWeek = dayjs().week()
+    const currentYear = dayjs().year()
 
     const rowIds = weight.map((row) => row.id);
     const maxRowId = Math.max(...rowIds);
     const nextRowId = maxRowId + 1;
 
-    newRow = { id: nextRowId, date: dayjs().toDate(), week: `${curr}`, pet: 0, galones: 0, plasticoduro: 0, basura: 0 }
+    const newRow = { id: nextRowId, date: dayjs().format('DD/MM/YYYY'), week: parseInt(`${currentYear}${currentWeek}`), pet: 0, galones: 0, plasticoduro: 0, basura: 0 }
 
     fetch(`${API_URL}/recogida/weight/set/${nextRowId}`, {
       method: 'POST',
@@ -56,7 +58,9 @@ export default function WeightDataGridTable(props) {
         Accept: 'application/json',
         'Authorization': 'Bearer ' + localStorage.token
       }
-    }).then((response) => (response.json())).then((data) => { setWeight(data) })
+    }).then((response) => (response.json())).then((data) => {
+      setWeight(data)
+    })
   }, [])
 
   const deleteRow = (id) => {
@@ -142,6 +146,11 @@ export default function WeightDataGridTable(props) {
         componentsProps={{
           toolbar: { weight, setWeight },
           footer: { "data-testid": "footer" }
+        }}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'date', sort: 'desc' }],
+          },
         }} />
       <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
     </Box>
