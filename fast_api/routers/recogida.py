@@ -166,18 +166,16 @@ async def get_weight(is_valid_user: Annotated[bool, Depends(valid_user)]):
 async def set_weight(
     is_valid_user: Annotated[bool, Depends(valid_user)], id: int, new_weight: dict
 ):
-    collection = db.collection("weight").document(f"{id}").set(new_weight)
-    docs_dict = [doc.to_dict() for doc in collection.stream()]
-    return docs_dict
+    db.collection("weight").document(f"{id}").set(new_weight)
+    return new_weight
 
 
 @router.post("/recogida/weight/update/{id}", tags=["recogida"])
 async def update_weight(
     is_valid_user: Annotated[bool, Depends(valid_user)], id: int, new_weight: dict
 ):
-    collection = db.collection("weight").document(f"{id}").update(new_weight)
-    docs_dict = [doc.to_dict() for doc in collection.stream()]
-    return docs_dict
+    db.collection("weight").document(f"{id}").update(new_weight)
+    return new_weight
 
 
 @router.delete("/recogida/weight/delete/{id}", tags=["recogida"])
