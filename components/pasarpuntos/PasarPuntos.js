@@ -4,22 +4,24 @@ import NativeSelect from '@mui/material/NativeSelect'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
+import * as WeekOfYear from 'dayjs/plugin/weekOfYear'
 import { useContext, useEffect, useState } from 'react'
 import { API_URL, conf } from '../../configuration'
-import { StatsContext } from '../../context/StatsContext'
 import { TownContext } from '../../context/TownContext'
-import { getWeekNumber } from '../../utils/dates'
+import { usePdr, useRecogidaGetWeek } from '../../hooks/queries'
 import CustomAlert from '../CustomAlert'
 import RadioButtonsGroup from '../RadioButtonsGroup'
 dayjs.extend(CustomParseFormat)
+dayjs.extend(WeekOfYear)
 
 export default function PasarPuntos() {
-  const [pdr, setPdr] = useState([])
+
+  const queryClient = useQueryClient()
   const { town } = useContext(TownContext)
-  const { stats } = useContext(StatsContext)
   const [alertMessage, setAlertMessage] = useState(null)
   const currentDate = dayjs()
 
@@ -27,42 +29,22 @@ export default function PasarPuntos() {
   const [barrio, setBarrio] = useState('')
 
   const [fecha, setFecha] = useState(currentDate)
-  const [semana, setSemana] = useState(getWeekNumber(currentDate))
   const comunidades = []
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const [visiblePdr, setVisiblePdr] = useState([])
   const [payload, setPayload] = useState({})
-  const [initialValues, setInitialValues] = useState({})
 
-  useEffect(() => {
-    const newPdr = fetch(`${API_URL}/pdr/get_all`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => { setPdr(data) })
-  }, [])
+  const pdrQuery = usePdr()
+  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
   useEffect(() => {
     setVisiblePdr([...pdr].filter(individualPdr => individualPdr.barrio === barrio))
   }, [barrio])
 
-  useEffect(() => {
-    fetch(`${API_URL}/recogida/get/${fecha.year()}/${fecha.week()}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => {
-      setInitialValues(data)
-    })
-  }, [fecha])
+  const recogidaGetWeekQuery = useRecogidaGetWeek(fecha.year(), fecha.week())
+  const initialValues = recogidaGetWeekQuery.status == 'success' ? recogidaGetWeekQuery.data : {}
 
   function pasarPunto(id, value) {
     setPayload({ ...payload, [id]: { "date": fecha.day(1).format('DD/MM/YYYY'), "internal_id": id, "value": value } })
@@ -86,7 +68,7 @@ export default function PasarPuntos() {
 
       },
       body: JSON.stringify(payload)
-    }).then((response) => (response.json())).then((data) => { })
+    }).then((response) => (response.json())).then(() => queryClient.invalidateQueries('weeklyCollection'))
   }
 
   return (
@@ -161,7 +143,8 @@ export default function PasarPuntos() {
         <br />
         <FormControl component="fieldset" role="form-field">
           {visiblePdr.map((element, index) => {
-            const initialValue = initialValues[element.internal_id] ? initialValues[element.internal_id] : ''
+            const initialValue = initialValues[element.internal_id] ? initialValues[element.internal_id]['value'] : ''
+            console.log(initialValue)
             return (
               <div key={index}>
                 <FormLabel sx={{ mt: 3 }} component="legend">{element.nombre} - {element.descripcion}</FormLabel>

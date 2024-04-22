@@ -1,19 +1,10 @@
 import ReactECharts from 'echarts-for-react';
-import { useEffect, useState } from 'react';
-import { API_URL } from '../../configuration';
+import { usePublicWeight } from '../../hooks/queries';
 
 export default function MonthlyWeight() {
 
-    const [weight, setWeight] = useState([])
-
-    useEffect(() => {
-        fetch(`${API_URL}/public/recogida/weight/get`, {
-            method: 'GET',
-        }).then((response) => response.json())
-            .then(function (myJson) {
-                setWeight(myJson)
-            })
-    }, [])
+    const weightQuery = usePublicWeight()
+    const weight = weightQuery.status == 'success' ? weightQuery.data : []
 
     const options = {
         legend: { show: true },

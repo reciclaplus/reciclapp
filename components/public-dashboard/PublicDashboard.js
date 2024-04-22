@@ -5,8 +5,8 @@ import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
-import { useEffect, useState } from 'react'
-import { API_URL, conf } from '../../configuration'
+import { conf } from '../../configuration'
+import { usePdr } from '../../hooks/queries'
 import { GOOGLE_API_KEY } from '../gcloud/google'
 import MonthlyWeight from './MonthlyWeight'
 import PieChartDemo from './PieChartDemo'
@@ -17,8 +17,6 @@ export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
     padding: theme.spacing(1),
-    // margin: theme.spacing(1),
-    // textAlign: 'center',
     color: theme.palette.primary.main,
     elevation: 0,
     height: '100%'
@@ -27,7 +25,6 @@ export const Item = styled(Paper)(({ theme }) => ({
 
 export default function PublicDashboard() {
 
-    const [pdr, setPdr] = useState([]);
     const comunidades = conf['sabanayegua']['comunidades']
 
     var url = 'https://maps.googleapis.com/maps/api/staticmap?center=18.4606607,-70.8405734&zoom=7&size=300x100&scale=2&maptype=roadmap'
@@ -36,18 +33,8 @@ export default function PublicDashboard() {
     })
     url = url.concat(`&key=${GOOGLE_API_KEY}`)
 
-    useEffect(() => {
-        fetch(`${API_URL}/public/pdr/get_all`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            }
-        }).then((response) => (response.json())).then((data) => {
-            setPdr(data)
-        })
-    }, [])
-
+    const pdrQuery = usePdr()
+    const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
     return (
         <Box sx={{ bgcolor: '#f4f4f6' }}>

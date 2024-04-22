@@ -2,18 +2,20 @@ import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { Box, Button } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridToolbarContainer, esES } from '@mui/x-data-grid'
+import { useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
 import * as WeekOfYear from 'dayjs/plugin/weekOfYear'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { API_URL } from '../../configuration'
+import { useWeight } from '../../hooks/queries'
 import DeleteRowDialog from '../DeleteRowDialog'
 dayjs.extend(CustomParseFormat)
 dayjs.extend(WeekOfYear)
 
 function EditToolbar(props) {
-  const { weight, setWeight } = props
-
+  const { weight } = props
+  const queryClient = useQueryClient()
   const handleClick = () => {
 
     const currentWeek = dayjs().week()
@@ -33,8 +35,8 @@ function EditToolbar(props) {
         'Authorization': 'Bearer ' + localStorage.token
       },
       body: JSON.stringify(newRow),
-    }).then((response) => (response.json())).then((data) => { setWeight([...weight, data]) })
-
+    }).then((response) => (response.json()))
+      .then(() => queryClient.invalidateQueries('weight'))
   }
 
   return (
@@ -48,20 +50,9 @@ function EditToolbar(props) {
 
 export default function WeightDataGridTable(props) {
   const [rowToDelete, setRowToDelete] = useState(null)
-  const [weight, setWeight] = useState([])
-
-  useEffect(() => {
-    fetch(`${API_URL}/recogida/weight/get`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => {
-      setWeight(data)
-    })
-  }, [])
+  const queryClient = useQueryClient()
+  const weightQuery = useWeight()
+  const weight = weightQuery.status == 'success' ? weightQuery.data : []
 
   const deleteRow = (id) => {
     fetch(`${API_URL}/recogida/weight/delete/${id}`, {
@@ -71,8 +62,10 @@ export default function WeightDataGridTable(props) {
         Accept: 'application/json',
         'Authorization': 'Bearer ' + localStorage.token
       },
-    }).then((response) => (response.json())).then((data) => { setWeight(weight.filter((row) => row.id !== id)) })
+    }).then((response) => (response.json()))
+      .then(() => queryClient.invalidateQueries('weight'))
     setRowToDelete(null)
+
   }
 
   const processRowDelete = useCallback(
@@ -96,9 +89,7 @@ export default function WeightDataGridTable(props) {
           body: JSON.stringify(newData),
         }).then((response) => (response.json()))
           .then((data) => {
-            setWeight(weight.map((row) => {
-              return row.id === rowId ? newData : row
-            }))
+            queryClient.invalidateQueries('weight')
           })
         resolve(newData)
       }, 200)
@@ -144,7 +135,7 @@ export default function WeightDataGridTable(props) {
         experimentalFeatures={{ newEditingApi: true }}
         components={{ Toolbar: EditToolbar }}
         componentsProps={{
-          toolbar: { weight, setWeight },
+          toolbar: { weight },
           footer: { "data-testid": "footer" }
         }}
         initialState={{

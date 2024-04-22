@@ -6,10 +6,12 @@ import InputLabel from '@mui/material/InputLabel'
 import NativeSelect from '@mui/material/NativeSelect'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
+import { useQueryClient } from '@tanstack/react-query'
 import moment from 'moment'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { API_URL, conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
+import { usePdr } from '../../hooks/queries'
 import { pdrExists, setNewInternalId } from '../../utils/pdr-management'
 import CustomAlert from '../CustomAlert'
 import { MapsWrapper } from '../map/MapsWrapper'
@@ -17,7 +19,6 @@ import NewPdrMap from './NewPdrMap'
 
 export default function NewPdr(props) {
   const { town } = useContext(TownContext)
-  const [pdr, setPdr] = useState([])
   const categories = conf[town].categories
   const [state, setState] = useState({
     zafacon: false,
@@ -35,19 +36,10 @@ export default function NewPdr(props) {
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const comunidades = []
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => {
-      setPdr(data)
-    })
-  }, [])
+  const pdrQuery = usePdr()
+  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
   function setNewId(barrio) {
     const allIds = []
@@ -127,7 +119,7 @@ export default function NewPdr(props) {
         setAlertMessage={setAlertMessage}
         severity='info' />
     )
-
+    queryClient.invalidateQueries('pdr')
     return false
   }
 
@@ -234,7 +226,7 @@ export default function NewPdr(props) {
         <br />
         <div>
           <FormControlLabel
-            required={true}
+            required={false}
             control={
               <Switch
                 checked={state.zafacon}

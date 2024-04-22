@@ -22,6 +22,7 @@
     "@mui/x-data-grid-generator": "^5.12.3",
     "@mui/x-date-pickers": "^6.19.6",
     "@react-oauth/google": "^0.11.1",
+    "@tanstack/react-query": "^5.29.2",
     "devextreme": "^21.2.5",
     "echarts-for-react": "^3.0.2",
     "eslint-plugin-unused-imports": "^2.0.0",

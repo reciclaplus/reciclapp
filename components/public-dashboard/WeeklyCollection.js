@@ -1,19 +1,10 @@
 import ReactECharts from 'echarts-for-react';
-import { useEffect, useState } from 'react';
-import { API_URL } from '../../configuration';
+import { usePublicWeeklyCollection } from '../../hooks/queries';
 
 export default function WeeklyCollection() {
 
-    const [barData, setBarData] = useState([])
-
-    useEffect(() => {
-        fetch(`${API_URL}/public/recogida/get/last_n?n=${104}`, {
-            method: 'GET',
-        }).then((response) => response.json())
-            .then(function (myJson) {
-                setBarData(myJson)
-            })
-    }, [])
+    const weeklyChartQuery = usePublicWeeklyCollection(104)
+    const barData = weeklyChartQuery.status == 'success' ? weeklyChartQuery.data : []
 
     const options = {
         legend: { show: true },

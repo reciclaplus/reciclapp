@@ -12,6 +12,7 @@ import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat';
 import * as UTC from 'dayjs/plugin/utc';
@@ -19,6 +20,7 @@ import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { API_URL } from '../../configuration';
 import { TownContext } from '../../context/TownContext';
+import { useCurrentUser } from '../../hooks/queries';
 import SignInButton from '../gcloud/SignInButton';
 import { Navigation } from './Navigation';
 dayjs.extend(CustomParseFormat)
@@ -32,8 +34,11 @@ function Layout({ children, ...props }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [town, setTown] = useContext(TownContext)
   const [open, setOpen] = useState(false)
-  const [user, setUser] = useState()
-  const [picture, setPicture] = useState()
+  const queryClient = useQueryClient()
+
+  const currentUserQuery = useCurrentUser()
+  const user = currentUserQuery.status == 'success' ? currentUserQuery.data['name'] : null
+  const picture = currentUserQuery.status == 'success' ? currentUserQuery.data['picture'] : null
 
   useEffect(() => {
 
@@ -55,25 +60,11 @@ function Layout({ children, ...props }) {
           localStorage.setItem("id_token", data["id_token"])
           localStorage.setItem("refresh_token", data["refresh_token"])
           localStorage.setItem("expiry", data["expiry"])
-        })
-      }
-    }
 
-    if (localStorage.token) {
-      fetch(`${API_URL}/get-current-user`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'Authorization': 'Bearer ' + localStorage.token
-        }
-      }).then(function (response) {
-        return response.json()
-      })
-        .then(function (user_profile) {
-          setUser(user_profile["name"])
-          setPicture(user_profile["picture"])
-        })
+        }).then(() => currentUserQuery.refetch())
+          .then(() => queryClient.invalidateQueries())
+
+      }
     }
 
   })

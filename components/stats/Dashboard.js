@@ -2,8 +2,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
-import { useEffect, useState } from 'react'
-import { API_URL } from '../../configuration'
+import { usePdr } from '../../hooks/queries'
 import MyPieChart from './PieChart'
 import RecentlyAdded from './RecentlyAdded'
 import TimeSeries from './TimeSeries'
@@ -22,19 +21,8 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Dashboard() {
 
-  const [pdr, setPdr] = useState([])
-
-  useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => { setPdr(data) })
-  }
-    , [])
+  const pdrQuery = usePdr()
+  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
   return (
     <Box sx={{ flexGrow: 1, p: 2 }}>

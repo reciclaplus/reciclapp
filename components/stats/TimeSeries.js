@@ -1,17 +1,14 @@
-import { useContext, useEffect, useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-
 import Grid from '@mui/material/Grid'
-import { API_URL, conf } from '../../configuration'
-import { StatsContext } from '../../context/StatsContext'
+import { useContext, useState } from 'react'
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
+import { useWeeklyCollection } from '../../hooks/queries'
 import CustomTooltip from './CustomTooltip'
 import Filter from './Filter'
 
 export default function TimeSeries(props) {
-  const [barData, setBarData] = useState()
   const { town } = useContext(TownContext)
-  const { stats } = useContext(StatsContext)
   const [categoria, setCategoria] = useState('all')
   const [nWeeks, setNWeeks] = useState(52)
   const [barrio, setBarrio] = useState('all')
@@ -20,19 +17,8 @@ export default function TimeSeries(props) {
   const barrios = conf[town].barrios
   barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
 
-  useEffect(() => {
-    fetch(`${API_URL}/recogida/get/last_n_by_barrio?n=${nWeeks}&category=${categoria}&barrio=${barrio}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => response.json())
-      .then(function (myJson) {
-        setBarData(myJson)
-      })
-  }, [categoria, nWeeks, barrio])
+  const weeklyChartQuery = useWeeklyCollection(nWeeks, categoria, barrio)
+  const barData = weeklyChartQuery.status == 'success' ? weeklyChartQuery.data : []
 
   return (
     <div>
