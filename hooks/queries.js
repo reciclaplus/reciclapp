@@ -106,5 +106,23 @@ const useRefreshToken = () => {
     })
 }
 
-export { useCurrentUser, useLastN, usePdr, useRecogidaGetWeek, useRefreshToken, useWeeklyCollection, useWeight }
+const usePublicWeeklyCollection = (nWeeks) => {
+    return useQuery({
+        queryKey: ['publicWeeklyCollection', nWeeks],
+        queryFn: () => fetch(`${API_URL}/public/recogida/get/last_n?n=${nWeeks}`, {
+            method: 'GET',
+        }).then((response) => response.json())
+    })
+}
+
+const usePublicWeight = () => {
+    return useQuery({
+        queryKey: ['publicWeeklyCollection'],
+        queryFn: () => fetch(`${API_URL}/public/recogida/weight/get`, {
+            method: 'GET',
+        }).then((response) => response.json())
+    })
+}
+
+export { useCurrentUser, useLastN, usePdr, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useWeeklyCollection, useWeight }
 
