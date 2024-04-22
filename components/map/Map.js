@@ -1,19 +1,19 @@
 /* eslint-disable no-undef */
 
-import { MarkerClusterer } from '@googlemaps/markerclusterer'
-import { useRouter } from 'next/router'
-import { useContext, useEffect, useRef, useState } from 'react'
-import initPolygonsP4 from '../../config/P4/P4Polygons'
-import initPolygonsSY from '../../config/SY/SYPolygons'
-import { API_URL, conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useRef, useState } from 'react';
+import initPolygonsP4 from '../../config/P4/P4Polygons';
+import initPolygonsSY from '../../config/SY/SYPolygons';
+import { conf } from '../../configuration';
+import { TownContext } from '../../context/TownContext';
+import { usePdr } from '../../hooks/queries';
 
 export const MapComponent = (props) => {
 
   const googleMapRef = useRef(null)
   const [googleMap, setGoogleMap] = useState(null)
 
-  const [pdr, setPdr] = useState([])
   const { town } = useContext(TownContext)
 
   const router = useRouter()
@@ -22,16 +22,8 @@ export const MapComponent = (props) => {
   const center = (!isNaN(lat)) ? ({ lat: Number(lat), lng: Number(lng) }) : conf[town].map_center
   const zoomMap = (!isNaN(zoom)) ? Number(zoom) : 14
 
-  useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => { setPdr(data) })
-  }, [])
+  const pdrQuery = usePdr()
+  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
   useEffect(() => {
 

@@ -1,12 +1,14 @@
 import { Avatar, Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { API_URL } from '../../configuration';
 
 function SignInButton(props) {
 
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   function logout() {
 
@@ -38,6 +40,7 @@ function SignInButton(props) {
           localStorage.setItem("expiry", data["expiry"])
 
         })
+        .then(() => queryClient.invalidateQueries())
     },
     flow: 'auth-code',
   });

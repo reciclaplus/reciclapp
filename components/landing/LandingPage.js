@@ -6,12 +6,14 @@ import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { API_URL } from '../../configuration';
 
 export default function LandingPage() {
     const router = useRouter()
+    const queryClient = useQueryClient()
 
     useEffect(() => {
         if (localStorage.getItem("id_token")) {
@@ -35,7 +37,9 @@ export default function LandingPage() {
                     localStorage.setItem("id_token", data["id_token"])
                     localStorage.setItem("refresh_token", data["refresh_token"])
                     localStorage.setItem("expiry", data["expiry"])
-                }).then(() => {
+                })
+                .then(() => queryClient.invalidateQueries())
+                .then(() => {
                     router.push('/list')
                 })
         },

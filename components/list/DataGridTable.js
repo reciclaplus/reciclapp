@@ -4,53 +4,31 @@ import { Button, FormControlLabel, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Radio from '@mui/material/Radio';
 import { DataGrid, GridActionsCellItem, GridToolbar, esES } from '@mui/x-data-grid';
+import { useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import Link from 'next/link';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { API_URL, conf } from '../../configuration';
-import { PdrContext } from '../../context/PdrContext';
 import { TownContext } from '../../context/TownContext';
+import { useLastN, usePdr } from '../../hooks/queries';
 import DeleteRowDialog from '../DeleteRowDialog';
 import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
 
 export default function DataGridTable() {
 
-  const { pdr, setPdr } = useContext(PdrContext)
-  const [pdrUpdate, setPdrUpdate] = useState(false)
   const { town } = useContext(TownContext)
   const [rowToDelete, setRowToDelete] = useState(null)
-  const [last5, setLast5] = useState([])
   const comunidades = []
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
   const categories = conf[town].categories
+  const queryClient = useQueryClient()
 
-
-  useEffect(() => {
-    fetch(`${API_URL}/pdr/get_all`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => { setPdr(data) })
-
-    fetch(`${API_URL}/recogida/get/last_n`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      },
-    }).then((response) => (response.json())).then((data) => {
-      setLast5(data)
-    }
-    )
-
-  }, [pdrUpdate])
-
+  const pdrQuery = usePdr()
+  const last5Query = useLastN(5)
+  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
+  const last5 = last5Query.status == 'success' ? last5Query.data : []
 
   function lastNweeks(params) {
     const last5weeks = last5.map(date => ({ "value": params.row.internal_id in date ? date[params.row.internal_id]["value"] : "", "date": date["date"] }))
@@ -91,9 +69,9 @@ export default function DataGridTable() {
         Accept: 'application/json',
         'Authorization': 'Bearer ' + localStorage.token
       }
-    })
+    }).then((response) => (response.json()))
+      .then(() => queryClient.invalidateQueries('pdr'))
     setRowToDelete(null)
-    setPdrUpdate(!pdrUpdate)
   }
 
   const processRowDelete = useCallback(
@@ -124,10 +102,8 @@ export default function DataGridTable() {
             'Authorization': 'Bearer ' + localStorage.token
           },
           body: JSON.stringify(newData),
-        }).then((response) => (response.json())).then((data) => {
-          setPdrUpdate(!pdrUpdate)
-          console.log(data)
-        })
+        }).then((response) => (response.json()))
+          .then(() => queryClient.invalidateQueries('pdr'))
         resolve(newData)
       }, 200)
     }

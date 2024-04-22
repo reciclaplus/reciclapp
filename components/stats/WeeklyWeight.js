@@ -1,23 +1,14 @@
 import dayjs from 'dayjs';
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { API_URL } from '../../configuration';
+import { useWeight } from '../../hooks/queries';
 dayjs.extend(CustomParseFormat)
 
 export default function WeeklyWeight(props) {
-  const [weight, setWeight] = useState([])
 
-  useEffect(() => {
-    fetch(`${API_URL}/recogida/weight/get`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
-      }
-    }).then((response) => (response.json())).then((data) => { setWeight(data) })
-  }, [])
+  const weightQuery = useWeight()
+  const weight = weightQuery.status == 'success' ? weightQuery.data : []
 
   const weightData = [...weight]
   weightData.sort(function (a, b) {
