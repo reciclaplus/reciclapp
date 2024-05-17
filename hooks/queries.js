@@ -15,6 +15,19 @@ const usePdr = () => {
     })
 }
 
+const usePublicPdr = () => {
+    return useQuery({
+        queryKey: ['publicPdr'],
+        queryFn: () => fetch(`${API_URL}/public/pdr/get_all`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            }
+        }).then((response) => (response.json()))
+    })
+}
+
 const useLastN = (n) => {
     return useQuery({
         queryKey: ['lastN', n],
@@ -31,7 +44,7 @@ const useLastN = (n) => {
 
 const useRecogidaGetWeek = (year, week) => {
     return useQuery({
-        queryKey: ['recogida_get', { 'year': year, 'week': week }],
+        queryKey: ['recogidaGet', { 'year': year, 'week': week }],
         queryFn: () => fetch(`${API_URL}/recogida/get/${year}/${week}`, {
             method: 'GET',
             headers: {
@@ -117,12 +130,12 @@ const usePublicWeeklyCollection = (nWeeks) => {
 
 const usePublicWeight = () => {
     return useQuery({
-        queryKey: ['publicWeeklyCollection'],
+        queryKey: ['publicWeight'],
         queryFn: () => fetch(`${API_URL}/public/recogida/weight/get`, {
             method: 'GET',
         }).then((response) => response.json())
     })
 }
 
-export { useCurrentUser, useLastN, usePdr, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useWeeklyCollection, useWeight }
+export { useCurrentUser, useLastN, usePdr, usePublicPdr, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useWeeklyCollection, useWeight }
 

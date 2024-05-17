@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
 import { conf } from '../../configuration'
-import { usePdr } from '../../hooks/queries'
+import { usePublicPdr } from '../../hooks/queries'
 import { GOOGLE_API_KEY } from '../gcloud/google'
 import MonthlyWeight from './MonthlyWeight'
 import PieChartDemo from './PieChartDemo'
@@ -33,7 +33,7 @@ export default function PublicDashboard() {
     })
     url = url.concat(`&key=${GOOGLE_API_KEY}`)
 
-    const pdrQuery = usePdr()
+    const pdrQuery = usePublicPdr()
     const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
     return (
