@@ -7,6 +7,9 @@ export default function WeeklyCollection() {
     const barData = weeklyChartQuery.status == 'success' ? weeklyChartQuery.data : []
 
     const options = {
+        textStyle: {
+            fontFamily: "Oswald"
+        },
         legend: { show: true },
         tooltip: {
             trigger: 'item'

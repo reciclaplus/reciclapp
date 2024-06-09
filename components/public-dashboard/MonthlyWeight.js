@@ -7,6 +7,9 @@ export default function MonthlyWeight() {
     const weight = weightQuery.status == 'success' ? weightQuery.data : []
 
     const options = {
+        textStyle: {
+            fontFamily: "Oswald"
+        },
         legend: { show: true },
         tooltip: {
             trigger: 'item'

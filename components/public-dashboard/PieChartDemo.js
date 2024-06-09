@@ -4,6 +4,9 @@ import ReactECharts from 'echarts-for-react';
 export default function PieChartDemo(props) {
     const pdr = props.pdr
     const options = {
+        textStyle: {
+            fontFamily: "Oswald"
+        },
         title: {
             text: 'Distribución de puntos de recogida',
             // subtext: 'Living Expenses in Shenzhen',

@@ -6,6 +6,7 @@ import {
   QueryClient,
   QueryClientProvider
 } from '@tanstack/react-query'
+import Head from 'next/head'
 import { useState } from 'react'
 import { GOOGLE_API_KEY } from '../components/gcloud/google'
 import { PdrContext } from '../context/PdrContext'
@@ -13,7 +14,6 @@ import { StatsContext } from '../context/StatsContext'
 import { TownContext } from '../context/TownContext'
 import { WeightContext } from '../context/WeightContext'
 import '../styles/globals.css'
-
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +24,11 @@ const queryClient = new QueryClient({
 })
 
 const theme = createTheme({
+  typography: {
+    fontFamily: [
+      // 'Oswald',
+    ].join(','),
+  },
   palette: {
     primary: {
       // Purple and green play nicely together.
@@ -55,6 +60,14 @@ function MyApp({ Component, pageProps }) {
             <PdrContext.Provider value={contextValue}>
               <WeightContext.Provider value={weightContextValue}>
                 <StatsContext.Provider value={statsContextValue}>
+                  <Head>
+                    <title>ReciclApp</title>
+                    <meta name="description" content="Listado de familias" />
+                    <link rel="icon" type="image/png" href="/logo.png" />
+                    <link rel="preconnect" href="https://fonts.googleapis.com" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet" />
+                  </Head>
                   <Component {...pageProps} />
                   <script async defer src={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}`}></script>
                 </StatsContext.Provider>
