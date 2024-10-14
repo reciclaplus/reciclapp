@@ -1,6 +1,6 @@
 env: standard
 runtime: nodejs18
-service: reciclapp-dev
+service: default
 handlers:
   - url: /.*
     secure: always

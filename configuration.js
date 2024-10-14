@@ -1,4 +1,4 @@
-export const API_URL = 'https://fastapi-dev-dot-norse-voice-343214.uc.r.appspot.com'
+export const API_URL = 'https://fastapi-dot-norse-voice-343214.uc.r.appspot.com'
 export const conf =
 {
   sabanayegua: {
