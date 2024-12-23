@@ -1,6 +1,6 @@
 import { getWeekNumber } from './dates'
 
-export function pdrExists (barrio, id, listofpdr) {
+export function pdrExists(barrio, id, listofpdr) {
   if (listofpdr.filter(pdr => pdr.barrio === barrio && pdr.id === id).length > 0) {
     return true
   } else {
@@ -8,10 +8,10 @@ export function pdrExists (barrio, id, listofpdr) {
   }
 }
 
-export function getActivePdr (pdr) {
+export function getActivePdr(pdr) {
   const a = pdr.filter(activeFilter)
 
-  function activeFilter (e) {
+  function activeFilter(e) {
     if (Boolean(e.active) === true) {
       return e
     }
@@ -19,7 +19,7 @@ export function getActivePdr (pdr) {
   return a
 }
 
-export function calculateAlert (params) {
+export function calculateAlert(params) {
   const pdr = params.row
   let alerta = pdr.recogida.length > 2
 
@@ -41,11 +41,10 @@ export function calculateAlert (params) {
   return alerta
 }
 
-export function setNewInternalId (pdr) {
+export function setNewInternalId(pdr) {
   if (pdr.length < 1) {
     return 1
   }
-  const internalIds = pdr.map(individualPdr => individualPdr.internalId)
-  console.log(internalIds)
+  const internalIds = pdr.map(individualPdr => individualPdr.internal_id)
   return Math.max(...internalIds) + 1
 }
