@@ -1,156 +1,165 @@
-import { Button, FormControl, FormLabel } from '@mui/material'
+import { Box, Button, FormControl, FormLabel } from '@mui/material'
 import InputLabel from '@mui/material/InputLabel'
 import NativeSelect from '@mui/material/NativeSelect'
-import moment from 'moment'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { useQueryClient } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import 'dayjs/locale/es'
+import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
+import * as WeekOfYear from 'dayjs/plugin/weekOfYear'
 import { useContext, useEffect, useState } from 'react'
-import { conf } from '../../configuration'
-import { PdrContext } from '../../context/PdrContext'
-import { StatsContext } from '../../context/StatsContext'
+import { API_URL, conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
-import { getMonday, getWeekNumber } from '../../utils/dates'
+import { usePdr, useRecogidaGetWeek } from '../../hooks/queries'
 import CustomAlert from '../CustomAlert'
 import RadioButtonsGroup from '../RadioButtonsGroup'
-import DatePicker from './DatePicker'
-export default function PasarPuntos () {
-  const { pdr } = useContext(PdrContext)
-  const { town } = useContext(TownContext)
-  const { stats } = useContext(StatsContext)
-  const [alertMessage, setAlertMessage] = useState(null)
-  const currentDate = new Date()
+dayjs.extend(CustomParseFormat)
+dayjs.extend(WeekOfYear)
 
+export default function PasarPuntos() {
+
+  const queryClient = useQueryClient()
+  const { town } = useContext(TownContext)
+  const [alertMessage, setAlertMessage] = useState(null)
+  const currentDate = dayjs()
+
+  const [comunidad, setComunidad] = useState('')
   const [barrio, setBarrio] = useState('')
 
   const [fecha, setFecha] = useState(currentDate)
-  const [semana, setSemana] = useState(getWeekNumber(currentDate))
+  const comunidades = []
+  conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   const barrios = []
   conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
-  const [todaysPdr, setTodaysPdr] = useState([])
+  const [visiblePdr, setVisiblePdr] = useState([])
+  const [payload, setPayload] = useState({})
+
+  const pdrQuery = usePdr()
+  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
   useEffect(() => {
-    setTodaysPdr([...pdr].filter(individualPdr => individualPdr.barrio === barrio))
+    setVisiblePdr([...pdr].filter(individualPdr => individualPdr.barrio === barrio))
   }, [barrio])
 
-  function pasarPunto (barrio, id, year, week, value) {
-    todaysPdr.forEach((el) => {
-      let alreadyChanged = false
-      if (el.id === id) {
-        el.recogida.forEach((diaDeRecogida) => {
-          if (diaDeRecogida.year === year && diaDeRecogida.week === week) {
-            diaDeRecogida.wasCollected = value
-            alreadyChanged = true
-          }
-        })
+  const recogidaGetWeekQuery = useRecogidaGetWeek(fecha.year(), fecha.week())
+  const initialValues = recogidaGetWeekQuery.status == 'success' ? recogidaGetWeekQuery.data : {}
 
-        if (!alreadyChanged) {
-          el.recogida.push({ date: moment(getMonday(fecha)).format('DD/MM/YYYY'), year, week, wasCollected: value })
-          alreadyChanged = true
-        }
-      }
-    })
+  function pasarPunto(id, value) {
+    setPayload({ ...payload, [id]: { "date": fecha.day(1).format('DD/MM/YYYY'), "internal_id": id, "value": value } })
+    console.log(payload)
   }
 
-  function datePickerDate (event) {
-    const dateString = event.target.value
-    const d = new Date(+dateString.substring(0, 4), +dateString.substring(5, 7) - 1, +dateString.substring(8, 10))
-
-    return d
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  function storeStats () {
-    const categories = conf[town].categories.map((cat) => { return cat.value })
-
-    categories.forEach(categoria => {
-      const catPdr = todaysPdr.filter(individualPdr => individualPdr.categoria === categoria)
-      const totalPdr = catPdr.length
-      const affirmativePdr = catPdr.map(individualPdr => {
-        const recogida = individualPdr.recogida.find(recogida => recogida.week === semana && recogida.year === fecha.getFullYear())
-        if (recogida) {
-          return recogida.wasCollected === 'si'
-        } else {
-          return false
-        }
-      }).filter(Boolean).length
-
-      const previousResult = stats.recogidaSemanal.find(element => element.barrio === barrio && element.date === moment(getMonday(fecha)).format('DD/MM/YYYY') && element.categoria === categoria)
-      if (previousResult) {
-        previousResult.totalPdr = totalPdr
-        previousResult.affirmativePdr = affirmativePdr
-      } else {
-        (
-          stats.recogidaSemanal.push({
-            barrio,
-            date: moment(getMonday(fecha)).format('DD/MM/YYYY'),
-            categoria,
-            totalPdr,
-            affirmativePdr
-          })
-        )
-      }
-    }
-    )
-  }
-
-  function handleSubmit (event) {
+  function handleSubmit(event) {
     event.preventDefault()
     setAlertMessage(
       <CustomAlert
-        message='Recuerda guardar los cambios'
+        message={`Se han pasado los puntos para la fecha ${fecha.format('DD/MM/YYYY')} de ${comunidad} - ${barrio}`}
         setAlertMessage={setAlertMessage}
-        severity='info'/>
+        severity='info' />
     )
-    storeStats()
-    return false
+    fetch(`${API_URL}/recogida/set/${fecha.year()}/${fecha.week()}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': 'Bearer ' + localStorage.token,
+
+      },
+      body: JSON.stringify(payload)
+    }).then((response) => (response.json())).then(() => queryClient.invalidateQueries('weeklyCollection'))
   }
 
   return (
-    <div>
+    <Box sx={{ p: 2 }}>
       {alertMessage}
-        <form onSubmit={handleSubmit} data-testid="pasar-puntos-form">
-            <FormControl role="form-field">
-              <DatePicker defaultDate={fecha} onChange={(event) => { setSemana(getWeekNumber(datePickerDate(event))); setFecha(datePickerDate(event)) }}/>
-            </FormControl>
-            <div>
-                <FormControl role="form-field">
-                    <InputLabel>Barrio</InputLabel>
-                    <NativeSelect
-                    inputProps={{
-                      name: 'barrio',
-                      id: 'barrio'
-                    }}
-                    id="barrio-select"
-                    value={barrio}
-                    onChange={(event) => setBarrio(event.target.value)}
-                    >
-                      <option value=""></option>
-                      {barrios.map(item => {
-                        return (<option value={item} key={item}>{item}</option>)
-                      })}
-                    </NativeSelect>
-                </FormControl>
-                </div>
-        <br/>
+      <form onSubmit={handleSubmit} data-testid="pasar-puntos-form">
+        <div>
+          <FormControl role="form-field">
+            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+              <DatePicker
+                label="Fecha"
+                value={fecha}
+                onChange={(newValue) => {
+                  setFecha(newValue)
+                  setPayload({})
+                }}
+              />
+            </LocalizationProvider>
+          </FormControl>
+        </div>
+        <br />
+        <div>
+          <FormControl role="form-field">
+            <InputLabel>Comunidad</InputLabel>
+            <NativeSelect
+              inputProps={{
+                name: 'comunidad',
+                id: 'comunidad'
+              }}
+              id="comunidad-select"
+              value={comunidad}
+              onChange={(event) => {
+                setComunidad(event.target.value)
+                setPayload({})
+              }}
+            >
+              <option value=""></option>
+              {comunidades.map(item => {
+                return (<option value={item} key={item}>{item}</option>)
+              })}
+            </NativeSelect>
+          </FormControl>
+        </div>
+        <br />
+        <div>
+          <FormControl role="form-field">
+            <InputLabel>Barrio</InputLabel>
+            <NativeSelect
+              inputProps={{
+                name: 'barrio',
+                id: 'barrio'
+              }}
+              id="barrio-select"
+              value={barrio}
+              onChange={(event) => {
+                setBarrio(event.target.value)
+                setPayload({})
+              }
+              }
+            >
+              <option value=""></option>
+              {
+                comunidad != '' ?
+                  conf[town].comunidades.find(obj => { return obj.nombre === comunidad }).barrios.map(item => {
+                    return (<option value={item} key={item}>{item}</option>)
+                  })
+                  : <></>
+              }
+            </NativeSelect>
+          </FormControl>
+        </div>
+        <br />
         <FormControl component="fieldset" role="form-field">
-            {todaysPdr.map((element, index) => {
-              const recogida = element.recogida.filter(weeks => weeks.year === fecha.getFullYear() && weeks.week === semana)
-              const initialValue = recogida.length > 0 ? recogida[0].wasCollected : ''
-
-              return (
-                <div key={index}>
-                    <FormLabel sx={{ mt: 3 }} component="legend">{element.nombre} - {element.descripcion}</FormLabel>
-                    <RadioButtonsGroup onChange={pasarPunto} barrio={element.barrio} id={element.id} year={fecha.getFullYear()} week={semana} initialValue={initialValue}/>
-                </div>)
-            }
-
-            )}
+          {visiblePdr.map((element, index) => {
+            const initialValue = initialValues[element.internal_id] ? initialValues[element.internal_id]['value'] : ''
+            console.log(initialValue)
+            return (
+              <div key={index}>
+                <FormLabel sx={{ mt: 3 }} component="legend">{element.nombre} - {element.descripcion}</FormLabel>
+                <RadioButtonsGroup onChange={pasarPunto} internal_id={element.internal_id} initialValue={initialValue} />
+              </div>)
+          }
+          )}
         </FormControl>
-        <br/>
-      <div>
-      <Button sx={{ my: 3 }} color="secondary" variant="contained" type="submit">
-        Pasar esos puntos
-      </Button>
-      </div>
-    </form>
-  </div>
+        <br />
+        <div>
+          <Button sx={{ my: 3 }} color="secondary" variant="contained" type="submit">
+            Pasar esos puntos
+          </Button>
+        </div>
+      </form>
+    </Box>
   )
 }

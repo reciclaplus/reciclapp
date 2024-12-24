@@ -1,11 +1,17 @@
 {
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true,
-        "source.organizeImports": true
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
     },
-    "eslint.validate": ["javascript"],
+    "eslint.validate": [
+        "javascript"
+    ],
     "eslint.format.enable": true,
     "eslint.enable": true,
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": false
+    "python.linting.enabled": false,
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "python.formatting.provider": "none"
 }

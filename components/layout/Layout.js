@@ -1,37 +1,73 @@
 /* eslint-disable no-undef */
-import MenuIcon from '@mui/icons-material/Menu'
-import { FormControl, InputLabel, ListItem, NativeSelect } from '@mui/material'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import CssBaseline from '@mui/material/CssBaseline'
-import Divider from '@mui/material/Divider'
-import Drawer from '@mui/material/Drawer'
-import IconButton from '@mui/material/IconButton'
-import List from '@mui/material/List'
-import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import Link from 'next/link'
-import PropTypes from 'prop-types'
-import * as React from 'react'
-import { TownContext } from '../../context/TownContext'
-import OpenFile from '../gcloud/OpenFile'
-import SignIn from '../gcloud/SignIn'
-import UploadFile from '../gcloud/UploadFile'
-
-import Button from '@mui/material/Button'
-
-import Script from 'next/script'
-import { CLIENT_ID, GOOGLE_API_KEY } from '../gcloud/google'
-import { Navigation } from './Navigation'
+/* global gapi */
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
+import { FormControl, InputLabel, ListItem, NativeSelect } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import * as CustomParseFormat from 'dayjs/plugin/customParseFormat';
+import * as UTC from 'dayjs/plugin/utc';
+import Link from 'next/link';
+import { useContext, useEffect, useState } from 'react';
+import { API_URL } from '../../configuration';
+import { TownContext } from '../../context/TownContext';
+import { useCurrentUser } from '../../hooks/queries';
+import SignInButton from '../gcloud/SignInButton';
+import { Navigation } from './Navigation';
+dayjs.extend(CustomParseFormat)
+dayjs.extend(UTC)
 
 const drawerWidth = 240
 
-function Layout ({ children, ...props }) {
+function Layout({ children, ...props }) {
+
   const { window } = props
-  const [mobileOpen, setMobileOpen] = React.useState(false)
-  const [GoogleAuth, setGoogleAuth] = React.useState()
-  const { town, setTown } = React.useContext(TownContext)
-  const [open, setOpen] = React.useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [town, setTown] = useContext(TownContext)
+  const [open, setOpen] = useState(false)
+  const queryClient = useQueryClient()
+
+  const currentUserQuery = useCurrentUser()
+  const user = currentUserQuery.status == 'success' ? currentUserQuery.data['name'] : null
+  const picture = currentUserQuery.status == 'success' ? currentUserQuery.data['picture'] : null
+
+  useEffect(() => {
+
+    if (localStorage.refresh_token) {
+      const expiry_date = dayjs(localStorage.expiry, 'YYYY-MM-DD HH:mm:ss')
+      if (expiry_date.isBefore(dayjs().utc().format('YYYY-MM-DD HH:mm:ss'))) {
+
+        fetch(`${API_URL}/refresh-token`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: 'Bearer ' + localStorage.refresh_token
+          }
+        }).then(function (response) { return response.json() }
+        ).then((data) => {
+
+          localStorage.setItem("token", data["token"])
+          localStorage.setItem("id_token", data["id_token"])
+          localStorage.setItem("refresh_token", data["refresh_token"])
+          localStorage.setItem("expiry", data["expiry"])
+
+        }).then(() => currentUserQuery.refetch())
+          .then(() => queryClient.invalidateQueries())
+
+      }
+    }
+
+  })
 
   const handleClick = () => {
     setOpen(!open)
@@ -45,34 +81,6 @@ function Layout ({ children, ...props }) {
     setMobileOpen(!mobileOpen)
   }
 
-  function handleClientLoad () {
-    // Load the API's client and auth2 modules.
-    // Call the initClient function after the modules load.
-    gapi.load('client:auth2', initClient)
-  }
-
-  function initClient () {
-    const SCOPE = 'https://www.googleapis.com/auth/devstorage.full_control'
-    // Initialize the gapi.client object, which app uses to make API requests.
-    // Get API key and client ID from API Console.
-    // 'scope' field specifies space-delimited list of access scopes.
-    try {
-      gapi.client.init({
-        apiKey: GOOGLE_API_KEY,
-        clientId: CLIENT_ID,
-        scope: SCOPE,
-        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
-      }).then(() => {
-      // GoogleAuth = gapi.auth2.getAuthInstance();
-        setGoogleAuth(gapi.auth2.getAuthInstance())
-        console.log(GoogleAuth)
-      }
-      )
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
   const drawer = (
     <div>
       <Toolbar />
@@ -80,20 +88,14 @@ function Layout ({ children, ...props }) {
       <Navigation handleClick={handleClick} open={open}></Navigation>
 
       <Divider />
-
       <List>
         <ListItem>
-            <SignIn googleauth={GoogleAuth} setgoogleauth={setGoogleAuth}/>
+          <SignInButton user={user} picture={picture} />
         </ListItem>
-        <ListItem>
-            <OpenFile googleauth={GoogleAuth}/>
-        </ListItem>
-        <ListItem>
-            <UploadFile googleauth={GoogleAuth}/>
-        </ListItem>
+
         <Divider />
         <ListItem>
-            <FormControl variant="standard">
+          <FormControl variant="standard">
             <InputLabel id="demo-simple-select-standard-label">Pueblo</InputLabel>
             <NativeSelect
               inputProps={{
@@ -104,7 +106,6 @@ function Layout ({ children, ...props }) {
               onChange={handleTownChange}
             >
               <option value={'sabanayegua'}>Sabana Yegua</option>
-              <option value={'sabanayegua_cardboard'}>Sabana Yegua - Cartón</option>
               <option value={'sample'}>Ejemplo</option>
             </NativeSelect>
           </FormControl>
@@ -116,8 +117,8 @@ function Layout ({ children, ...props }) {
   const container = window !== undefined ? () => window().document.body : undefined
 
   return (
-    <>
-    <Box sx={{ display: { xs: 'block', sm: 'flex' } }}>
+
+    <Box sx={{ display: { xs: 'block', sm: 'flex' }, height: '100%' }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -136,12 +137,13 @@ function Layout ({ children, ...props }) {
           >
             <MenuIcon />
           </IconButton>
-          <Link href="/">
-            <Button style={{ color: '#FFF' }}>
-              <Typography variant="h6" noWrap component="div">
-                Recicla+
-              </Typography>
-            </Button>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Recicla+
+          </Typography>
+          <Link href="/info">
+            <IconButton aria-label="info" color="inherit">
+              <InfoOutlinedIcon />
+            </IconButton>
           </Link>
         </Toolbar>
       </AppBar>
@@ -179,25 +181,18 @@ function Layout ({ children, ...props }) {
       </Box>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+        sx={{ height: '100vh', width: { sm: `calc(100% - ${drawerWidth}px)` }, display: 'flex', flexDirection: 'column' }}
       >
-          <Toolbar/>
+        <Toolbar />
 
-        {children}
+        <Box sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
+          {children}
+        </Box>
       </Box>
     </Box>
-    <Script src='https://apis.google.com/js/api.js' onLoad={handleClientLoad}></Script>
-    <Script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></Script>
-    </>
+
   )
 }
 
-Layout.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window: PropTypes.func
-}
 
 export default Layout
