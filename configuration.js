@@ -18,7 +18,8 @@ export const conf =
       { nombre: 'Nature Village', center: '18.7146767,-71.0251952', barrios: ['Nature Village'] },
       { nombre: 'Proyecto 2C', center: '18.3760099,-70.8560015', barrios: ['Proyecto 2C'] },
       { nombre: 'Los Negros', center: '18.3573766,-70.8458091', barrios: ['Los Negros'] },
-      { nombre: 'Barrera', center: '18.322873,-70.901599', barrios: ['Barrera'] }
+      { nombre: 'Barrera', center: '18.322873,-70.901599', barrios: ['Barrera'] },
+      { nombre: 'Km 8', center: '18.4413061,-70.8126939', barrios: ['Km 8'] }
     ],
     barrios: [
       { nombre: 'Barrio Blanco', color: '#FF95C5', center: '18.4562141,-70.829' },
@@ -30,12 +31,8 @@ export const conf =
       { nombre: 'Los Cartones', color: '#C8C6C6', center: '18.4604671,-70.8372607' },
       { nombre: 'Barrio Tranquilo', color: '#FF5C58', center: '18.4649761,-70.8411297' },
       { nombre: 'Las Mercedes', color: '#5D5B5B', center: '18.4671061,-70.8334927' },
-      { nombre: 'Km 13', color: '#C8C6C6', center: '18.453435,-70.853577' },
-      { nombre: 'Km 15', color: '#FF5C58', center: '18.463566,-70.868628' },
-      { nombre: 'Nature Village', color: '#5D5B5B', center: '18.7146767,-71.0251952' },
-      { nombre: 'Proyecto 2C', color: '#C8C6C6', center: '18.3760099,-70.8560015' },
-      { nombre: 'Los Negros', color: '#FF5C58', center: '18.3573766,-70.8458091' },
-      { nombre: 'Barrera', color: '#5D5B5B', center: '18.3229344,-70.913229' }]
+      { nombre: 'km 8', color: '#41521F', center: '18.4413061,-70.8126939' }
+    ]
   },
   proyecto4: {
     nombre: 'Proyecto 4',

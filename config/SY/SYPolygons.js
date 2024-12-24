@@ -1,4 +1,3 @@
-// Construct the polygon.
 function newPolygon (coordinates, color) {
   return new window.google.maps.Polygon({
     paths: coordinates,
@@ -11,7 +10,6 @@ function newPolygon (coordinates, color) {
 }
 
 export default function initPolygonsSY (map) {
-  // Define the LatLng coordinates for the polygon's path.
   const barrioBlancoCoords = [
     { lat: 18.454438, lng: -70.827624 },
     { lat: 18.458503, lng: -70.826734 },
@@ -91,6 +89,13 @@ export default function initPolygonsSY (map) {
     { lat: 18.4695071, lng: -70.8310287 }
   ]
 
+  const km8Coords = [
+    { lat: 18.4449187, lng: -70.8144249 },
+    { lat: 18.4506031, lng: -70.8112539 },
+    { lat: 18.4378711, lng: -70.8112699 },
+    { lat: 18.4367981, lng: -70.8154179 }
+  ]
+
   const barrioBlanco = newPolygon(barrioBlancoCoords, '#ff8da1')
   const barrioNuevo = newPolygon(barrioNuevoCoords, '#90ee90')
   const barrioPintado = newPolygon(barrioPintadoCoords, '#1e90ff')
@@ -101,6 +106,7 @@ export default function initPolygonsSY (map) {
   const barrioTranquilo = newPolygon(barrioTranquiloCoords, '#d3d3d3')
   const cubaLinda = newPolygon(cubaLindaCoords, '#8b4513')
   const lasMercedes = newPolygon(lasMercedesCoords, '#5D5B5B')
+  const km8 = newPolygon(km8Coords, '#41521F')
 
   barrioBlanco.setMap(map)
   barrioNuevo.setMap(map)
@@ -112,4 +118,5 @@ export default function initPolygonsSY (map) {
   barrioTranquilo.setMap(map)
   cubaLinda.setMap(map)
   lasMercedes.setMap(map)
+  km8.setMap(map)
 }
