@@ -18,7 +18,8 @@ export const conf =
       { nombre: 'Nature Village', center: '18.7146767,-71.0251952', barrios: ['Nature Village'] },
       { nombre: 'Proyecto 2C', center: '18.3760099,-70.8560015', barrios: ['Proyecto 2C'] },
       { nombre: 'Los Negros', center: '18.3573766,-70.8458091', barrios: ['Los Negros'] },
-      { nombre: 'Barrera', center: '18.322873,-70.901599', barrios: ['Barrera'] }
+      { nombre: 'Barrera', center: '18.322873,-70.901599', barrios: ['Barrera'] },
+      { nombre: 'Km 8', center: '18.4413061,-70.8126939', barrios: ['Km 8'] }
     ],
     barrios: [
       { nombre: 'Barrio Blanco', color: '#FF95C5', center: '18.4562141,-70.829' },
