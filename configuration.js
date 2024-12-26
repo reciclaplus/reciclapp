@@ -31,7 +31,13 @@ export const conf =
       { nombre: 'Los Cartones', color: '#C8C6C6', center: '18.4604671,-70.8372607' },
       { nombre: 'Barrio Tranquilo', color: '#FF5C58', center: '18.4649761,-70.8411297' },
       { nombre: 'Las Mercedes', color: '#5D5B5B', center: '18.4671061,-70.8334927' },
-      { nombre: 'km 8', color: '#41521F', center: '18.4413061,-70.8126939' }
+      { nombre: 'Km 8', color: '#41521F', center: '18.4413061,-70.8126939' },
+      { nombre: "Km 13", color: "#000000", center: "18.453435,-70.853577" },
+      { nombre: "Km 15", color: "#000000", center: "18.463566,-70.868628" },
+      { nombre: "Nature Village", color: "#000000", center: "18.7146767,-71.0251952" },
+      { nombre: "Proyecto 2C", color: "#000000", center: "18.3760099,-70.8560015" },
+      { nombre: "Los Negros", color: "#000000", center: "18.3573766,-70.8458091" },
+      { nombre: "Barrera", color: "#000000", center: "18.322873,-70.901599" }
     ]
   },
   proyecto4: {
