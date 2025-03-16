@@ -23,6 +23,15 @@ class Pdr(BaseModel):
     lng: float
 
 
+def log_pdr_action(action: str, pdr: Pdr):
+    log_entry = {
+        "action": action,
+        "pdr": pdr.dict(),
+        "timestamp": firestore.SERVER_TIMESTAMP,
+    }
+    db.collection("pdr_logs").add(log_entry)
+
+
 @router.get("/pdr/get_all", tags=["pdr"])
 async def get_pdrs(is_valid_user: Annotated[bool, Depends(valid_user)]):
     collection = db.collection("pdr")
@@ -44,6 +53,7 @@ async def update_pdr(
     internal_id: str, new_data: Pdr, is_valid_user: Annotated[bool, Depends(valid_user)]
 ):
     db.collection("pdr").document(f"{str(internal_id)}").update(new_data.dict())
+    log_pdr_action("update", new_data)
     return new_data
 
 
@@ -52,6 +62,7 @@ async def add_pdr(
     new_pdr: Pdr, is_valid_user: Annotated[bool, Depends(valid_user)]
 ) -> Pdr:
     db.collection("pdr").document(str(new_pdr.internal_id)).set(new_pdr.dict())
+    log_pdr_action("add", new_pdr)
     return new_pdr
 
 
@@ -59,5 +70,10 @@ async def add_pdr(
 async def delete_pdr(
     internal_id: str, is_valid_user: Annotated[bool, Depends(valid_user)]
 ):
-    db.collection("pdr").document(f"{str(internal_id)}").delete()
+    doc_ref = db.collection("pdr").document(f"{str(internal_id)}")
+    doc = doc_ref.get()
+    if doc.exists:
+        pdr_data = doc.to_dict()
+        db.collection("pdr").document(f"{str(internal_id)}").delete()
+        log_pdr_action("delete", Pdr(**pdr_data))
     return internal_id
