@@ -1,3 +1,4 @@
+import time
 from typing import Annotated
 
 from dependencies import valid_user
@@ -29,7 +30,8 @@ def log_pdr_action(action: str, pdr: Pdr):
         "pdr": pdr.dict(),
         "timestamp": firestore.SERVER_TIMESTAMP,
     }
-    db.collection("pdr_logs").add(log_entry)
+    log_id = str(int(time.time()))
+    db.collection("pdr_logs").document(log_id).set(log_entry)
 
 
 @router.get("/pdr/get_all", tags=["pdr"])
@@ -76,4 +78,5 @@ async def delete_pdr(
         pdr_data = doc.to_dict()
         db.collection("pdr").document(f"{str(internal_id)}").delete()
         log_pdr_action("delete", Pdr(**pdr_data))
+    return internal_id
     return internal_id
