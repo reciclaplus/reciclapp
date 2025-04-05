@@ -53,6 +53,7 @@ export function Navigation (props) {
         <NavigationItem href="/pasarPuntos" name="Pasar Puntos" icon={<PlaylistAddCheckCircleIcon />} />
         <NavigationItem href="/pesada" name="Pesada" icon={<ScaleIcon />} />
         <NavigationItem href="/stats" name="Estadísticas" icon={<AnalyticsIcon />} />
+        <NavigationItem href="/addWeight" name="Añadir Peso" icon={<AddCircleOutlineIcon />} />
 
       </List>
   )

@@ -15,7 +15,7 @@ cred = credentials.Certificate("./routers/firestore-service-account.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
 from dependencies import User, get_current_user
-from routers import pdr, public, recogida
+from routers import pdr, public, recogida, weight
 
 app = FastAPI()
 
@@ -23,6 +23,7 @@ app = FastAPI()
 app.include_router(pdr.router)
 app.include_router(recogida.router)
 app.include_router(public.router)
+app.include_router(weight.router)
 
 
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
