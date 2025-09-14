@@ -64,10 +64,10 @@ export default function DataGridTable() {
   const deleteRow = (internal_id) => {
     fetch(`${API_URL}/pdr/delete/${internal_id}`, {
       method: 'DELETE',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
       }
     }).then((response) => (response.json()))
       .then(() => queryClient.invalidateQueries('pdr'))
@@ -96,10 +96,10 @@ export default function DataGridTable() {
 
         const new_data = fetch(`${API_URL}/pdr/update/${newData.internal_id}`, {
           method: 'POST',
+          credentials: 'include', // Include cookies
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            'Authorization': 'Bearer ' + localStorage.token
           },
           body: JSON.stringify(newData),
         }).then((response) => (response.json()))

@@ -1,7 +1,7 @@
 import json
 from typing import Annotated, Union
 
-from fastapi import Depends, Header, HTTPException
+from fastapi import Depends, Header, HTTPException, Request
 from firebase_admin import firestore
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -21,12 +21,20 @@ class User(BaseModel):
     email: str
 
 
-def get_current_user(authorization: Annotated[Union[str, None], Header()] = None):
-    if authorization is None or "undefined" in authorization:
+def get_current_user(
+    request: Request,
+    authorization: Annotated[Union[str, None], Header()] = None
+):
+    # Try to get token from cookie first, then fallback to header for backward compatibility
+    token = request.cookies.get("access_token")
+    
+    if not token and authorization and "undefined" not in authorization:
+        token = authorization.split(" ")[1]
+    
+    if not token or "undefined" in str(token):
         raise HTTPException(
             status_code=403, detail="You are not authorized to access this resource"
         )
-    token = authorization.split(" ")[1]
 
     creds = Credentials(token=token)
 

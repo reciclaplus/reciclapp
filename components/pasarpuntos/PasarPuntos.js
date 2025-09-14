@@ -61,10 +61,10 @@ export default function PasarPuntos() {
     )
     fetch(`${API_URL}/recogida/set/${fecha.year()}/${fecha.week()}`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token,
 
       },
       body: JSON.stringify(payload)

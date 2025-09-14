@@ -3,7 +3,7 @@ import os
 from typing import Annotated, Union
 
 import firebase_admin
-from fastapi import Depends, FastAPI, Header
+from fastapi import Depends, FastAPI, Header, Response, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from firebase_admin import credentials
 from google.auth.transport import requests
@@ -60,7 +60,7 @@ async def root():
 
 
 @app.get("/auth")
-def authentication(authorization: Annotated[Union[str, None], Header()] = None):
+def authentication(response: Response, authorization: Annotated[Union[str, None], Header()] = None):
     code = authorization.split(" ")[1]
     flow.fetch_token(code=code)
     credentials = flow.credentials
@@ -70,21 +70,57 @@ def authentication(authorization: Annotated[Union[str, None], Header()] = None):
         client_id,
     )
 
+    # Determine if we're in production (HTTPS) or development (HTTP)
+    is_production = os.environ.get("ENV") == "production"
+    
+    # Set secure HTTP-only cookies
+    response.set_cookie(
+        key="access_token",
+        value=credentials.token,
+        httponly=True,
+        secure=is_production,  # Only secure in production (HTTPS)
+        samesite="lax" if not is_production else "strict",  # More lenient for development
+        max_age=3600  # 1 hour
+    )
+    response.set_cookie(
+        key="id_token",
+        value=credentials.id_token,
+        httponly=True,
+        secure=is_production,
+        samesite="lax" if not is_production else "strict",
+        max_age=3600  # 1 hour
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=credentials.refresh_token,
+        httponly=True,
+        secure=is_production,
+        samesite="lax" if not is_production else "strict",
+        max_age=2592000  # 30 days
+    )
+
     return {
         "token": credentials.token,
         "id_token": credentials.id_token,
         "refresh_token": credentials.refresh_token,
         "expiry": credentials.expiry.strftime("%Y-%m-%d %H:%M:%S"),
+        "message": "Authentication successful, tokens set in cookies"
     }
 
 
 @app.get("/refresh-token")
-def refresh_token(authorization: Annotated[Union[str, None], Header()] = None):
-    refresh_token = authorization.split(" ")[1]
+def refresh_token(request: Request, response: Response, authorization: Annotated[Union[str, None], Header()] = None):
+    # Try to get refresh token from cookie first, then fallback to header
+    refresh_token_value = request.cookies.get("refresh_token")
+    if not refresh_token_value and authorization:
+        refresh_token_value = authorization.split(" ")[1]
+    
+    if not refresh_token_value:
+        raise HTTPException(status_code=401, detail="No refresh token provided")
 
     credentials = Credentials(
         token=None,
-        refresh_token=refresh_token,
+        refresh_token=refresh_token_value,
         token_uri="https://oauth2.googleapis.com/token",
         client_id=client_id,
         client_secret=data["web"]["client_secret"],
@@ -102,14 +138,53 @@ def refresh_token(authorization: Annotated[Union[str, None], Header()] = None):
         client_id,
     )
 
+    # Determine if we're in production
+    is_production = os.environ.get("ENV") == "production"
+
+    # Set updated cookies
+    response.set_cookie(
+        key="access_token",
+        value=credentials.token,
+        httponly=True,
+        secure=is_production,
+        samesite="lax" if not is_production else "strict",
+        max_age=3600  # 1 hour
+    )
+    response.set_cookie(
+        key="id_token",
+        value=credentials.id_token,
+        httponly=True,
+        secure=is_production,
+        samesite="lax" if not is_production else "strict",
+        max_age=3600  # 1 hour
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=credentials.refresh_token,
+        httponly=True,
+        secure=is_production,
+        samesite="lax" if not is_production else "strict",
+        max_age=2592000  # 30 days
+    )
+
     return {
         "token": credentials.token,
         "id_token": credentials.id_token,
         "refresh_token": credentials.refresh_token,
         "expiry": credentials.expiry.strftime("%Y-%m-%d %H:%M:%S"),
+        "message": "Tokens refreshed and updated in cookies"
     }
 
 
 @app.get("/get-current-user")
 def get_active_user(current_user: Annotated[User, Depends(get_current_user)]):
     return current_user.dict()
+
+
+@app.post("/logout")
+def logout(response: Response):
+    """Clear authentication cookies"""
+    response.delete_cookie(key="access_token")
+    response.delete_cookie(key="id_token")
+    response.delete_cookie(key="refresh_token")
+    return {"message": "Logged out successfully"}

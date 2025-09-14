@@ -24,10 +24,10 @@ const IndividualPasarPuntos = (props) => {
 
         fetch(`${API_URL}/pdr/get/${internal_id}`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json())).then((data) => {
             console.log(data)
@@ -36,10 +36,10 @@ const IndividualPasarPuntos = (props) => {
 
         fetch(`${API_URL}/recogida/get/${fecha.year()}/${fecha.week()}/${internal_id}`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json())).then((data) => {
             console.log(data)
@@ -60,10 +60,10 @@ const IndividualPasarPuntos = (props) => {
         event.preventDefault()
         fetch(`${API_URL}/recogida/set/${fecha.year()}/${fecha.week()}`, {
             method: 'POST',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
 
             },
             body: JSON.stringify(payload)
