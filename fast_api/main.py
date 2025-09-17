@@ -14,8 +14,8 @@ from google_auth_oauthlib.flow import Flow
 cred = credentials.Certificate("./routers/firestore-service-account.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
-from dependencies import User, get_current_user
-from routers import pdr, public, recogida, users
+from .dependencies import User, get_current_user
+from .routers import pdr, public, recogida, users
 
 app = FastAPI()
 
@@ -33,7 +33,7 @@ flow = Flow.from_client_secrets_file(
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="https://sabanayegua.reciclaplus.com",
+    redirect_uri="http://localhost:3000",
 )
 
 origins = [

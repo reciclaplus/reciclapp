@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import {
   Box,
   Button,
   Card,
-  CardContent,
   Chip,
   Dialog,
   DialogActions,
@@ -13,41 +12,30 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
-  Typography,
-  Checkbox,
-  FormControlLabel,
-  FormGroup
+  Typography
 } from '@mui/material'
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material'
-import Layout from '../components/layout/Layout'
+import { DataGrid } from '@mui/x-data-grid'
+import { useEffect, useState } from 'react'
 import { PermissionGuard } from '../components/common/PermissionGuard'
+import Layout from '../components/layout/Layout'
 import { API_URL } from '../configuration'
 
-const PERMISSIONS = [
-  { key: 'read_pdr', label: 'Leer PDR' },
-  { key: 'write_pdr', label: 'Escribir PDR' },
-  { key: 'delete_pdr', label: 'Eliminar PDR' },
-  { key: 'read_recogida', label: 'Leer Recogida' },
-  { key: 'write_recogida', label: 'Escribir Recogida' },
-  { key: 'read_weight', label: 'Leer Peso' },
-  { key: 'write_weight', label: 'Escribir Peso' },
-  { key: 'manage_users', label: 'Gestionar Usuarios' }
-]
-
 const ROLES = [
-  { key: 'viewer', label: 'Visualizador' },
-  { key: 'editor', label: 'Editor' },
+  { key: 'read', label: 'Lectura' },
+  { key: 'write', label: 'Escritura' },
   { key: 'admin', label: 'Administrador' }
 ]
+
+const getRoleColor = (role) => {
+  switch (role) {
+    case 'admin': return 'error'
+    case 'write': return 'warning'
+    case 'read': return 'default'
+    default: return 'default'
+  }
+}
 
 export default function UsersPage() {
   const [users, setUsers] = useState([])
@@ -57,8 +45,7 @@ export default function UsersPage() {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
-    role: 'viewer',
-    permissions: []
+    role: 'read'
   })
 
   useEffect(() => {
@@ -83,25 +70,27 @@ export default function UsersPage() {
     }
   }
 
+  // Only use dialog for creating a new user
+  const handleOpenDialog = () => {
+    setEditingUser(null)
+    setFormData({
+      email: '',
+      name: '',
+      role: 'read'
+    })
+    setDialogOpen(true)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const url = editingUser 
-        ? `${API_URL}/users/${editingUser.email}`
-        : `${API_URL}/users`
-      
-      const method = editingUser ? 'PUT' : 'POST'
-      const body = editingUser 
-        ? { role: formData.role, permissions: formData.permissions }
-        : formData
-
-      const response = await fetch(url, {
-        method,
+      const response = await fetch(`${API_URL}/users`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.token
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(formData)
       })
 
       if (response.ok) {
@@ -113,6 +102,11 @@ export default function UsersPage() {
     }
   }
 
+  const handleCloseDialog = () => {
+    setDialogOpen(false)
+    setEditingUser(null)
+  }
+
   const handleDelete = async (userEmail) => {
     if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
       try {
@@ -122,9 +116,9 @@ export default function UsersPage() {
             'Authorization': 'Bearer ' + localStorage.token
           }
         })
-        
+
         if (response.ok) {
-          await fetchUsers()
+          await fetchUsers() // Now this works correctly!
         }
       } catch (error) {
         console.error('Error deleting user:', error)
@@ -132,52 +126,64 @@ export default function UsersPage() {
     }
   }
 
-  const handleOpenDialog = (user = null) => {
-    if (user) {
-      setEditingUser(user)
-      setFormData({
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        permissions: user.permissions || []
-      })
-    } else {
-      setEditingUser(null)
-      setFormData({
-        email: '',
-        name: '',
-        role: 'viewer',
-        permissions: []
-      })
+  const columns = [
+    { field: 'email', headerName: 'Email', flex: 1 }, // Not editable
+    { field: 'name', headerName: 'Nombre', flex: 1, editable: true },
+    {
+      field: 'role',
+      headerName: 'Rol',
+      flex: 1,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: ROLES.map(r => r.key),
+      renderCell: (params) => (
+        <Chip
+          label={ROLES.find(r => r.key === params.value)?.label || params.value}
+          color={getRoleColor(params.value)}
+          size="small"
+        />
+      )
+    },
+    {
+      field: 'actions',
+      headerName: 'Acciones',
+      flex: 1,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => handleDelete(params.row.email)}>
+          <DeleteIcon />
+        </IconButton>
+      )
     }
-    setDialogOpen(true)
-  }
+  ]
 
-  const handleCloseDialog = () => {
-    setDialogOpen(false)
-    setEditingUser(null)
-  }
-
-  const handlePermissionChange = (permission) => {
-    setFormData(prev => ({
-      ...prev,
-      permissions: prev.permissions.includes(permission)
-        ? prev.permissions.filter(p => p !== permission)
-        : [...prev.permissions, permission]
-    }))
-  }
-
-  const getRoleColor = (role) => {
-    switch (role) {
-      case 'admin': return 'error'
-      case 'editor': return 'warning'
-      case 'viewer': return 'default'
-      default: return 'default'
+  // Handler for inline edits
+  const processRowUpdate = async (newRow, oldRow) => {
+    try {
+      // Only allow editing name and role
+      const response = await fetch(`${API_URL}/users/${newRow.email}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.token
+        },
+        body: JSON.stringify({
+          name: newRow.name,
+          role: newRow.role
+        })
+      })
+      if (!response.ok) throw new Error('Error updating user')
+      await fetchUsers()
+      return newRow
+    } catch (error) {
+      console.error(error)
+      return oldRow
     }
   }
 
   return (
-    <PermissionGuard permission="manage_users" fallback={
+    <PermissionGuard role="admin" fallback={
       <Layout>
         <Box p={3}>
           <Typography variant="h4">Acceso Denegado</Typography>
@@ -192,92 +198,48 @@ export default function UsersPage() {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => handleOpenDialog()}
+              onClick={handleOpenDialog}
             >
               Nuevo Usuario
             </Button>
           </Box>
 
           <Card>
-            <CardContent>
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Email</TableCell>
-                      <TableCell>Nombre</TableCell>
-                      <TableCell>Rol</TableCell>
-                      <TableCell>Permisos</TableCell>
-                      <TableCell>Acciones</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.email}>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.name}</TableCell>
-                        <TableCell>
-                          <Chip 
-                            label={ROLES.find(r => r.key === user.role)?.label || user.role}
-                            color={getRoleColor(user.role)}
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Box display="flex" flexWrap="wrap" gap={0.5}>
-                            {(user.permissions || []).map(permission => (
-                              <Chip
-                                key={permission}
-                                label={PERMISSIONS.find(p => p.key === permission)?.label || permission}
-                                size="small"
-                                variant="outlined"
-                              />
-                            ))}
-                          </Box>
-                        </TableCell>
-                        <TableCell>
-                          <IconButton onClick={() => handleOpenDialog(user)}>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton onClick={() => handleDelete(user.email)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
+            <Box sx={{ height: 500, width: '100%' }}>
+              <DataGrid
+                rows={users.map(u => ({ ...u, id: u.email }))}
+                columns={columns}
+                loading={loading}
+                disableRowSelectionOnClick
+                pageSize={10}
+                rowsPerPageOptions={[10, 25, 50]}
+                processRowUpdate={processRowUpdate}
+                experimentalFeatures={{ newEditingApi: true }}
+              />
+            </Box>
           </Card>
 
+          {/* Dialog only for new user */}
           <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
             <form onSubmit={handleSubmit}>
-              <DialogTitle>
-                {editingUser ? 'Editar Usuario' : 'Nuevo Usuario'}
-              </DialogTitle>
+              <DialogTitle>Nuevo Usuario</DialogTitle>
               <DialogContent>
                 <Box display="flex" flexDirection="column" gap={2} pt={1}>
-                  {!editingUser && (
-                    <>
-                      <TextField
-                        label="Email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                      <TextField
-                        label="Nombre"
-                        value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                        required
-                        fullWidth
-                      />
-                    </>
-                  )}
-                  
+                  <TextField
+                    label="Email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    required
+                    fullWidth
+                  />
+                  <TextField
+                    label="Nombre"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    required
+                    fullWidth
+                  />
                   <FormControl fullWidth>
                     <InputLabel>Rol</InputLabel>
                     <Select
@@ -292,28 +254,12 @@ export default function UsersPage() {
                       ))}
                     </Select>
                   </FormControl>
-
-                  <Typography variant="h6">Permisos</Typography>
-                  <FormGroup>
-                    {PERMISSIONS.map(permission => (
-                      <FormControlLabel
-                        key={permission.key}
-                        control={
-                          <Checkbox
-                            checked={formData.permissions.includes(permission.key)}
-                            onChange={() => handlePermissionChange(permission.key)}
-                          />
-                        }
-                        label={permission.label}
-                      />
-                    ))}
-                  </FormGroup>
                 </Box>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseDialog}>Cancelar</Button>
                 <Button type="submit" variant="contained">
-                  {editingUser ? 'Actualizar' : 'Crear'}
+                  Crear
                 </Button>
               </DialogActions>
             </form>

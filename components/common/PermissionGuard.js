@@ -1,42 +1,26 @@
-import React from 'react'
-import { useUser } from '../../context/UserContext'
+import { Box, Typography } from '@mui/material';
+import { useUser } from '../../context/UserContext';
+import Layout from '../layout/Layout';
+
+const NoAccess = () => (
+  <Layout>
+    <Box p={3}>
+      <Typography variant="h4">Acceso Denegado</Typography>
+      <Typography>No tienes permiso.</Typography>
+    </Box>
+  </Layout>
+);
 
 /**
  * Component that conditionally renders children based on user permissions
  */
-export const PermissionGuard = ({ 
-  permission, 
-  role, 
-  resource, 
-  action = 'read',
-  fallback = null, 
-  children 
+export const PermissionGuard = ({
+  role,
+  fallback = null,
+  children
 }) => {
-  const { hasPermission, hasRole, canRead, canWrite, canDelete } = useUser()
-
-  let hasAccess = false
-
-  if (permission) {
-    hasAccess = hasPermission(permission)
-  } else if (role) {
-    hasAccess = hasRole(role)
-  } else if (resource && action) {
-    switch (action) {
-      case 'read':
-        hasAccess = canRead(resource)
-        break
-      case 'write':
-        hasAccess = canWrite(resource)
-        break
-      case 'delete':
-        hasAccess = canDelete(resource)
-        break
-      default:
-        hasAccess = false
-    }
-  }
-
-  return hasAccess ? children : fallback
+  const { hasRole } = useUser()
+  return hasRole(role) ? children : fallback
 }
 
 /**
@@ -44,7 +28,7 @@ export const PermissionGuard = ({
  */
 export const usePermissions = () => {
   const { hasPermission, hasRole, canRead, canWrite, canDelete, canManageUsers } = useUser()
-  
+
   return {
     hasPermission,
     hasRole,

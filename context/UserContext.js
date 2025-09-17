@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 
 const UserContext = createContext()
 
@@ -13,42 +13,16 @@ export const useUser = () => {
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
 
-  const hasPermission = (permission) => {
-    if (!user) return false
-    if (user.role === 'admin') return true
-    return user.permissions && user.permissions.includes(permission)
-  }
-
   const hasRole = (role) => {
     if (!user) return false
-    return user.role === role || user.role === 'admin'
-  }
-
-  const canRead = (resource) => {
-    return hasPermission(`read_${resource}`)
-  }
-
-  const canWrite = (resource) => {
-    return hasPermission(`write_${resource}`)
-  }
-
-  const canDelete = (resource) => {
-    return hasPermission(`delete_${resource}`)
-  }
-
-  const canManageUsers = () => {
-    return hasPermission('manage_users')
+    const roleOrder = { read: 1, write: 2, admin: 3 }
+    return roleOrder[user.role] >= roleOrder[role]
   }
 
   const value = {
     user,
     setUser,
-    hasPermission,
-    hasRole,
-    canRead,
-    canWrite,
-    canDelete,
-    canManageUsers
+    hasRole
   }
 
   return (
