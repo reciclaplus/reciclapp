@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
 import { useEffect, useState } from 'react'
-import { PermissionGuard } from '../components/common/PermissionGuard'
+import { NoAccess, PermissionGuard } from '../components/common/PermissionGuard'
 import Layout from '../components/layout/Layout'
 import { API_URL } from '../configuration'
 
@@ -183,14 +183,7 @@ export default function UsersPage() {
   }
 
   return (
-    <PermissionGuard role="admin" fallback={
-      <Layout>
-        <Box p={3}>
-          <Typography variant="h4">Acceso Denegado</Typography>
-          <Typography>No tienes permisos para gestionar usuarios.</Typography>
-        </Box>
-      </Layout>
-    }>
+    <PermissionGuard role="admin" fallback={<NoAccess />}>
       <Layout>
         <Box p={3}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>

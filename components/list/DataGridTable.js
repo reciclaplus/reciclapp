@@ -1,6 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import { Button, FormControlLabel, Typography } from '@mui/material';
+import { Alert, Button, FormControlLabel, Snackbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Radio from '@mui/material/Radio';
 import { DataGrid, GridActionsCellItem, GridToolbar, esES } from '@mui/x-data-grid';
@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useCallback, useContext, useState } from 'react';
 import { API_URL, conf } from '../../configuration';
 import { TownContext } from '../../context/TownContext';
+import { useUser } from '../../context/UserContext';
 import { useLastN, usePdr } from '../../hooks/queries';
 import DeleteRowDialog from '../DeleteRowDialog';
 import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
@@ -17,7 +18,9 @@ import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
 export default function DataGridTable() {
 
   const { town } = useContext(TownContext)
+  const { hasRole } = useUser();
   const [rowToDelete, setRowToDelete] = useState(null)
+  const [error403, setError403] = useState(false)
   const comunidades = []
   conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
   const barrios = []
@@ -69,9 +72,16 @@ export default function DataGridTable() {
         Accept: 'application/json',
         'Authorization': 'Bearer ' + localStorage.token
       }
-    }).then((response) => (response.json()))
-      .then(() => queryClient.invalidateQueries('pdr'))
-    setRowToDelete(null)
+    })
+      .then(async (response) => {
+        if (response.status === 403) {
+          setError403(true);
+          return;
+        }
+        await response.json();
+        queryClient.invalidateQueries('pdr');
+      })
+      .finally(() => setRowToDelete(null));
   }
 
   const processRowDelete = useCallback(
@@ -94,7 +104,7 @@ export default function DataGridTable() {
         delete newData.alerta
         delete newData.zafacon
 
-        const new_data = fetch(`${API_URL}/pdr/update/${newData.internal_id}`, {
+        fetch(`${API_URL}/pdr/update/${newData.internal_id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -102,12 +112,22 @@ export default function DataGridTable() {
             'Authorization': 'Bearer ' + localStorage.token
           },
           body: JSON.stringify(newData),
-        }).then((response) => (response.json()))
-          .then(() => queryClient.invalidateQueries('pdr'))
-        resolve(newData)
+        })
+          .then(async (response) => {
+            if (response.status === 403) {
+              setError403(true);
+              reject(new Error('No tienes permiso para actualizar este PDR.'));
+              return;
+            }
+            await response.json();
+            queryClient.invalidateQueries('pdr');
+            resolve(newData);
+          })
+          .catch((err) => {
+            reject(err);
+          });
       }, 200)
-    }
-    )
+    })
 
   const columns = [
     {
@@ -149,35 +169,37 @@ export default function DataGridTable() {
       headerName: 'Ubicación',
       editable: false,
       renderCell: (params) => {
-        return (<>
-          <Link href={{
-            pathname: '/map',
-            query: {
-              lat: params.row.lat,
-              lng: params.row.lng,
-              zoom: 17,
-              editable: false
-            }
-          }}
-          >
-            <Button variant="outlined" color="secondary" sx={{ m: 1 }}>
-              Ver
-            </Button>
-          </Link>
-          <Link href={{
-            pathname: '/map',
-            query: {
-              lat: params.row.lat,
-              lng: params.row.lng,
-              zoom: 17,
-              editable: true
-            }
-          }}>
-            <Button variant="outlined" color="secondary" sx={{ m: 1 }}>
-              Editar
-            </Button>
-          </Link>
-        </>
+        return (
+          <>
+            <Link href={{
+              pathname: '/map',
+              query: {
+                lat: params.row.lat,
+                lng: params.row.lng,
+                zoom: 17,
+                editable: false
+              }
+            }}>
+              <Button variant="outlined" color="secondary" sx={{ m: 1 }}>
+                Ver
+              </Button>
+            </Link>
+            {hasRole && hasRole('write') && (
+              <Link href={{
+                pathname: '/map',
+                query: {
+                  lat: params.row.lat,
+                  lng: params.row.lng,
+                  zoom: 17,
+                  editable: true
+                }
+              }}>
+                <Button variant="outlined" color="secondary" sx={{ m: 1 }}>
+                  Editar
+                </Button>
+              </Link>
+            )}
+          </>
         )
       },
       width: 200
@@ -228,6 +250,12 @@ export default function DataGridTable() {
         experimentalFeatures={{ newEditingApi: true }} />
 
       <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
+
+      <Snackbar open={error403} autoHideDuration={4000} onClose={() => setError403(false)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={() => setError403(false)} severity="error" sx={{ width: '100%' }}>
+          No tienes permiso para realizar esta acción.
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

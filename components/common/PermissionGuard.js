@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material';
 import { useUser } from '../../context/UserContext';
 import Layout from '../layout/Layout';
 
-const NoAccess = () => (
+export const NoAccess = () => (
   <Layout>
     <Box p={3}>
       <Typography variant="h4">Acceso Denegado</Typography>
