@@ -129,33 +129,42 @@ export default function DataGridTable() {
       }, 200)
     })
 
+  const canEdit = hasRole && hasRole('write');
   const columns = [
     {
       field: 'actions',
       type: 'actions',
       width: 80,
-      getActions: (params) =>
-        // eslint-disable-next-line react/jsx-key
-        [<GridActionsCellItem
-          icon={<DeleteIcon />}
-          label="Delete"
-          onClick={processRowDelete(params.id)}
-        />,
-        <GridActionsCellItem
-          icon={<QrCode2Icon />}
-          label="Create QR code"
-          onClick={createQRcode(params)}
-        />]
+      getActions: (params) => {
+        const actions = [];
+        if (canEdit) {
+          actions.push(
+            <GridActionsCellItem
+              icon={<DeleteIcon />}
+              label="Delete"
+              onClick={processRowDelete(params.id)}
+            />
+          );
+        }
+        actions.push(
+          <GridActionsCellItem
+            icon={<QrCode2Icon />}
+            label="Create QR code"
+            onClick={createQRcode(params)}
+          />
+        );
+        return actions;
+      }
     },
-    { field: 'id', headerName: 'Id', editable: true, type: 'number', width: 50 },
-    { field: 'nombre', headerName: 'Nombre', editable: true, width: 200 },
-    { field: 'descripcion', headerName: 'Descripción', editable: true, width: 350 },
-    { field: 'comunidad', headerName: 'Comunidad', editable: true, type: 'singleSelect', valueOptions: comunidades, width: 125 },
-    { field: 'barrio', headerName: 'Barrio', editable: true, type: 'singleSelect', valueOptions: barrios, width: 125 },
+    { field: 'id', headerName: 'Id', editable: canEdit, type: 'number', width: 50 },
+    { field: 'nombre', headerName: 'Nombre', editable: canEdit, width: 200 },
+    { field: 'descripcion', headerName: 'Descripción', editable: canEdit, width: 350 },
+    { field: 'comunidad', headerName: 'Comunidad', editable: canEdit, type: 'singleSelect', valueOptions: comunidades, width: 125 },
+    { field: 'barrio', headerName: 'Barrio', editable: canEdit, type: 'singleSelect', valueOptions: barrios, width: 125 },
     {
       field: 'categoria',
       headerName: 'Categoría',
-      editable: true,
+      editable: canEdit,
       type: 'singleSelect',
       valueOptions: categories.map((cat) => { return cat.value }),
       valueFormatter: (params) => {
@@ -163,7 +172,7 @@ export default function DataGridTable() {
       },
       width: 150
     },
-    { field: 'zafacon', headerName: 'Zafacón', editable: true, type: 'boolean', width: 100 },
+    { field: 'zafacon', headerName: 'Zafacón', editable: canEdit, type: 'boolean', width: 100 },
     {
       field: 'ubicacion',
       headerName: 'Ubicación',
@@ -207,7 +216,7 @@ export default function DataGridTable() {
     {
       field: 'date_added',
       headerName: 'Añadido el día',
-      editable: true,
+      editable: canEdit,
       type: 'date',
       width: 150,
       valueGetter: (params) => { return moment(params.value, 'DD/MM/YYYY') },
