@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { API_URL } from '../../configuration';
 import { TownContext } from '../../context/TownContext';
+import { useUser } from '../../context/UserContext';
 import { useCurrentUser } from '../../hooks/queries';
 import SignInButton from '../gcloud/SignInButton';
 import { Navigation } from './Navigation';
@@ -35,10 +36,18 @@ function Layout({ children, ...props }) {
   const [town, setTown] = useContext(TownContext)
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
+  const { setUser } = useUser()
 
   const currentUserQuery = useCurrentUser()
   const user = currentUserQuery.status == 'success' ? currentUserQuery.data['name'] : null
   const picture = currentUserQuery.status == 'success' ? currentUserQuery.data['picture'] : null
+
+  // Update user context when current user data changes
+  useEffect(() => {
+    if (currentUserQuery.status === 'success') {
+      setUser(currentUserQuery.data)
+    }
+  }, [currentUserQuery.data, currentUserQuery.status, setUser])
 
   useEffect(() => {
     // Token refresh is now handled automatically by the server

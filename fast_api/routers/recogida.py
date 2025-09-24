@@ -2,9 +2,10 @@ from datetime import date, timedelta
 from typing import Annotated
 
 import pandas as pd
-from dependencies import valid_user
 from fastapi import APIRouter, Depends
 from firebase_admin import firestore
+
+from ..dependencies import User, require_role, valid_user
 
 db = firestore.client()
 
@@ -12,7 +13,10 @@ router = APIRouter()
 
 
 @router.get("/recogida/get/last_n", tags=["recogida"])
-async def last_n(is_valid_user: Annotated[bool, Depends(valid_user)], n: int = 5):
+async def last_n(
+    current_user: Annotated[User, Depends(require_role("read"))],
+    n: int = 5,
+):
     collection = db.collection("recogida")
     docs = (
         collection.order_by("week", direction=firestore.Query.DESCENDING)
@@ -26,7 +30,10 @@ async def last_n(is_valid_user: Annotated[bool, Depends(valid_user)], n: int = 5
 
 @router.get("/recogida/get/{year}/{week}/{id}", tags=["recogida"])
 async def get_individual_id_week(
-    is_valid_user: Annotated[bool, Depends(valid_user)], year: int, week: int, id: str
+    current_user: Annotated[User, Depends(require_role("read"))],
+    year: int,
+    week: int,
+    id: str,
 ):
     if week < 10:
         week = f"0{week}"
@@ -38,7 +45,9 @@ async def get_individual_id_week(
 
 @router.get("/recogida/get/{year}/{week}", tags=["recogida"])
 async def get_week(
-    is_valid_user: Annotated[bool, Depends(valid_user)], year: int, week: int
+    current_user: Annotated[User, Depends(require_role("read"))],
+    year: int,
+    week: int,
 ):
     if week < 10:
         week = f"0{week}"
@@ -50,7 +59,7 @@ async def get_week(
 
 @router.post("/recogida/set/{year}/{week}", tags=["recogida"])
 async def set_week(
-    is_valid_user: Annotated[bool, Depends(valid_user)],
+    current_user: Annotated[User, Depends(require_role("write"))],
     year: int,
     week: int,
     recogida: dict,
@@ -71,7 +80,7 @@ async def set_week(
 
 @router.get("/recogida/get/last_n_by_barrio", tags=["recogida"])
 async def last_n_by_barrio(
-    is_valid_user: Annotated[bool, Depends(valid_user)],
+    current_user: Annotated[User, Depends(require_role("read"))],
     n: int = 5,
     category: str = None,
     barrio: str = None,
@@ -156,7 +165,9 @@ async def last_n_by_barrio(
 
 
 @router.get("/recogida/weight/get", tags=["recogida"])
-async def get_weight(is_valid_user: Annotated[bool, Depends(valid_user)]):
+async def get_weight(
+    current_user: Annotated[User, Depends(require_role("read"))],
+):
     collection = db.collection("weight")
     docs_dict = [doc.to_dict() for doc in collection.stream()]
     return docs_dict
@@ -164,7 +175,9 @@ async def get_weight(is_valid_user: Annotated[bool, Depends(valid_user)]):
 
 @router.post("/recogida/weight/set/{id}", tags=["recogida"])
 async def set_weight(
-    is_valid_user: Annotated[bool, Depends(valid_user)], id: int, new_weight: dict
+    current_user: Annotated[User, Depends(require_role("write"))],
+    id: int,
+    new_weight: dict,
 ):
     db.collection("weight").document(f"{id}").set(new_weight)
     return new_weight
@@ -172,13 +185,18 @@ async def set_weight(
 
 @router.post("/recogida/weight/update/{id}", tags=["recogida"])
 async def update_weight(
-    is_valid_user: Annotated[bool, Depends(valid_user)], id: int, new_weight: dict
+    current_user: Annotated[User, Depends(require_role("write"))],
+    id: int,
+    new_weight: dict,
 ):
     db.collection("weight").document(f"{id}").update(new_weight)
     return new_weight
 
 
 @router.delete("/recogida/weight/delete/{id}", tags=["recogida"])
-async def delete_weight(is_valid_user: Annotated[bool, Depends(valid_user)], id: int):
+async def delete_weight(
+    current_user: Annotated[User, Depends(require_role("write"))],
+    id: int,
+):
     db.collection("weight").document(f"{id}").delete()
     return id

@@ -5,21 +5,24 @@ import DashboardSample from '../components/sample/DashboardSample'
 import Dashboard from '../components/stats/Dashboard'
 import styles from '../styles/Home.module.css'
 
+import { NoAccess, PermissionGuard } from '../components/common/PermissionGuard'
 import { TownContext } from '../context/TownContext'
 
-export default function Stats () {
+export default function Stats() {
   const { town } = useContext(TownContext)
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>ReciclApp</title>
-        <meta name="description" content="Mapa de familias" />
-        <link rel="icon" type="image/png" href="/logo.png" />
-      </Head>
-      <Layout>
-        {town === 'sample' ? <DashboardSample /> : <Dashboard />}
-      </Layout>
-    </div>
+    <PermissionGuard role="read" fallback={<NoAccess />}>
+      <div className={styles.container}>
+        <Head>
+          <title>ReciclApp</title>
+          <meta name="description" content="Mapa de familias" />
+          <link rel="icon" type="image/png" href="/logo.png" />
+        </Head>
+        <Layout>
+          {town === 'sample' ? <DashboardSample /> : <Dashboard />}
+        </Layout>
+      </div>
+    </PermissionGuard>
   )
 }
