@@ -2,6 +2,9 @@ import pandas as pd
 from fastapi import APIRouter
 from firebase_admin import firestore
 
+# Import environment configuration
+from ..config import config
+
 db = firestore.client()
 
 router = APIRouter()
@@ -9,7 +12,9 @@ router = APIRouter()
 
 @router.get("/public/recogida/get/last_n", tags=["public"])
 async def last_n(n: int = 5):
-    collection = db.collection("recogida")
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("recogida")
+    collection = db.collection(collection_name)
     docs = (
         collection.order_by("week", direction=firestore.Query.DESCENDING)
         .limit(n)
@@ -21,7 +26,9 @@ async def last_n(n: int = 5):
 
 @router.get("/public/pdr/get_all", tags=["public"])
 async def get_pdrs():
-    collection = db.collection("pdr")
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("pdr")
+    collection = db.collection(collection_name)
     docs = collection.stream()
 
     keys = [
@@ -36,7 +43,9 @@ async def get_pdrs():
 
 @router.get("/public/recogida/weight/get", tags=["recogida"])
 async def get_weight():
-    collection = db.collection("weight")
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("weight")
+    collection = db.collection(collection_name)
     docs_dict = [doc.to_dict() for doc in collection.stream()]
 
     df = pd.DataFrame(docs_dict)

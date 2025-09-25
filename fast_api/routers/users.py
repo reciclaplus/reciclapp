@@ -5,6 +5,8 @@ from firebase_admin import firestore
 from pydantic import BaseModel
 
 from ..dependencies import User, require_role, valid_user
+# Import environment configuration
+from ..config import config
 
 db = firestore.client()
 
@@ -27,7 +29,7 @@ async def list_users(
     current_user: Annotated[User, Depends(require_role("admin"))],
 ):
     """List all users - requires admin role"""
-    collection = db.collection("users")
+    collection = db.collection(config.get_collection_name("users"))
     docs = collection.stream()
     users = [doc.to_dict() for doc in docs]
     return users
@@ -40,7 +42,7 @@ async def create_user(
 ):
     """Create a new user - requires admin role"""
     # Check if user already exists
-    existing_user = db.collection("users").where("email", "==", user_data.email).get()
+    existing_user = db.collection(config.get_collection_name("users")).where("email", "==", user_data.email).get()
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
@@ -53,8 +55,8 @@ async def create_user(
         "created_at": firestore.SERVER_TIMESTAMP,
     }
 
-    db.collection("users").document(user_data.email).set(user_doc)
-    created_doc = db.collection("users").document(user_data.email).get()
+    db.collection(config.get_collection_name("users")).document(user_data.email).set(user_doc)
+    created_doc = db.collection(config.get_collection_name("users")).document(user_data.email).get()
 
     return created_doc.to_dict()
 
@@ -66,7 +68,7 @@ async def update_user(
     current_user: Annotated[User, Depends(require_role("admin"))],
 ):
     """Update user role and permissions - requires admin role"""
-    user_ref = db.collection("users").document(user_email)
+    user_ref = db.collection(config.get_collection_name("users")).document(user_email)
     user_doc = user_ref.get()
 
     if not user_doc.exists:
@@ -96,7 +98,7 @@ async def delete_user(
     if user_email == current_user.email:
         raise HTTPException(status_code=400, detail="Cannot delete your own account")
 
-    user_ref = db.collection("users").document(user_email)
+    user_ref = db.collection(config.get_collection_name("users")).document(user_email)
     user_doc = user_ref.get()
 
     if not user_doc.exists:

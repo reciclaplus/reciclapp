@@ -33,6 +33,12 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# Environment-specific service accounts and secrets
+client_secret_.json
+client_secret_dev.json
+fast_api/routers/firestore-service-account.json
+fast_api/routers/firestore-service-account-dev.json
+
 # vercel
 .vercel
 
@@ -42,6 +48,5 @@ yarn-error.log*
 #pycache
 /api/__pycache__/
 /fastapi/__pycache__/
+/fast_api/__pycache__/
 *.pyc
-
-client_secret_.json

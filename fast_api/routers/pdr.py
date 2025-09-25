@@ -6,6 +6,8 @@ from firebase_admin import firestore
 from pydantic import BaseModel
 
 from ..dependencies import User, require_role, valid_user
+# Import environment configuration
+from ..config import config
 
 db = firestore.client()
 
@@ -32,14 +34,18 @@ def log_pdr_action(action: str, pdr: Pdr):
         "timestamp": firestore.SERVER_TIMESTAMP,
     }
     log_id = str(int(time.time()))
-    db.collection("pdr_logs").document(log_id).set(log_entry)
+    # Use environment-aware collection name
+    log_collection = config.get_collection_name("pdr_logs")
+    db.collection(log_collection).document(log_id).set(log_entry)
 
 
 @router.get("/pdr/get_all", tags=["pdr"])
 async def get_pdrs(
     current_user: Annotated[User, Depends(require_role("read"))],
 ):
-    collection = db.collection("pdr")
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("pdr")
+    collection = db.collection(collection_name)
     docs = collection.stream()
     return [doc.to_dict() for doc in docs]
 
@@ -49,7 +55,9 @@ async def get_pdr(
     internal_id: str,
     current_user: Annotated[User, Depends(require_role("read"))],
 ):
-    doc_ref = db.collection("pdr").document(internal_id)
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("pdr")
+    doc_ref = db.collection(collection_name).document(internal_id)
     doc = doc_ref.get()
     return doc.to_dict()
 
@@ -60,7 +68,9 @@ async def update_pdr(
     new_data: Pdr,
     current_user: Annotated[User, Depends(require_role("write"))],
 ):
-    db.collection("pdr").document(f"{str(internal_id)}").update(new_data.dict())
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("pdr")
+    db.collection(collection_name).document(f"{str(internal_id)}").update(new_data.dict())
     log_pdr_action("update", new_data)
     return new_data
 
@@ -70,7 +80,9 @@ async def add_pdr(
     new_pdr: Pdr,
     current_user: Annotated[User, Depends(require_role("write"))],
 ) -> Pdr:
-    db.collection("pdr").document(str(new_pdr.internal_id)).set(new_pdr.dict())
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("pdr")
+    db.collection(collection_name).document(str(new_pdr.internal_id)).set(new_pdr.dict())
     log_pdr_action("add", new_pdr)
     return new_pdr
 
@@ -80,10 +92,12 @@ async def delete_pdr(
     internal_id: str,
     current_user: Annotated[User, Depends(require_role("write"))],
 ):
-    doc_ref = db.collection("pdr").document(f"{str(internal_id)}")
+    # Use environment-aware collection name
+    collection_name = config.get_collection_name("pdr")
+    doc_ref = db.collection(collection_name).document(f"{str(internal_id)}")
     doc = doc_ref.get()
     if doc.exists:
         pdr_data = doc.to_dict()
-        db.collection("pdr").document(f"{str(internal_id)}").delete()
+        db.collection(collection_name).document(f"{str(internal_id)}").delete()
         log_pdr_action("delete", Pdr(**pdr_data))
     return internal_id

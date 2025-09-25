@@ -6,6 +6,8 @@ from fastapi import APIRouter, Depends
 from firebase_admin import firestore
 
 from ..dependencies import User, require_role, valid_user
+# Import environment configuration
+from ..config import config
 
 db = firestore.client()
 
@@ -17,7 +19,7 @@ async def last_n(
     current_user: Annotated[User, Depends(require_role("read"))],
     n: int = 5,
 ):
-    collection = db.collection("recogida")
+    collection = db.collection(config.get_collection_name("recogida"))
     docs = (
         collection.order_by("week", direction=firestore.Query.DESCENDING)
         .limit(n)
@@ -37,7 +39,7 @@ async def get_individual_id_week(
 ):
     if week < 10:
         week = f"0{week}"
-    doc = db.collection("recogida").document(f"{year}{week}").get()
+    doc = db.collection(config.get_collection_name("recogida")).document(f"{year}{week}").get()
     if not doc.exists:
         return {}
     return doc.to_dict()[id]
@@ -51,7 +53,7 @@ async def get_week(
 ):
     if week < 10:
         week = f"0{week}"
-    doc = db.collection("recogida").document(f"{year}{week}").get()
+    doc = db.collection(config.get_collection_name("recogida")).document(f"{year}{week}").get()
     if not doc.exists:
         return {}
     return doc.to_dict()
@@ -66,14 +68,14 @@ async def set_week(
 ):
     if week < 10:
         week = f"0{week}"
-    week_doc = db.collection("recogida").document(f"{year}{week}").get()
+    week_doc = db.collection(config.get_collection_name("recogida")).document(f"{year}{week}").get()
     if not week_doc.exists:
-        db.collection("recogida").document(f"{year}{week}").set(recogida)
-        db.collection("recogida").document(f"{year}{week}").update(
+        db.collection(config.get_collection_name("recogida")).document(f"{year}{week}").set(recogida)
+        db.collection(config.get_collection_name("recogida")).document(f"{year}{week}").update(
             {"week": int(f"{year}{week}"), "date": list(recogida.values())[0]["date"]}
         )
     else:
-        db.collection("recogida").document(f"{year}{week}").update(recogida)
+        db.collection(config.get_collection_name("recogida")).document(f"{year}{week}").update(recogida)
 
     return recogida
 
@@ -106,14 +108,14 @@ async def last_n_by_barrio(
         pdrs = pd.DataFrame(
             [
                 doc.to_dict()
-                for doc in db.collection("pdr")
+                for doc in db.collection(config.get_collection_name("pdr"))
                 .where("categoria", "==", category)
                 .where("barrio", "==", barrio)
                 .stream()
             ]
         )
     else:
-        pdrs = pd.DataFrame([doc.to_dict() for doc in db.collection("pdr").stream()])
+        pdrs = pd.DataFrame([doc.to_dict() for doc in db.collection(config.get_collection_name("pdr")).stream()])
 
     if category != "all":
         pdrs = pdrs[pdrs["categoria"] == category]
@@ -122,7 +124,7 @@ async def last_n_by_barrio(
 
     docs = [
         doc.to_dict()
-        for doc in db.collection("recogida")
+        for doc in db.collection(config.get_collection_name("recogida"))
         .where("week", ">", int(f"{start_year}{start_week}"))
         .stream()
     ]

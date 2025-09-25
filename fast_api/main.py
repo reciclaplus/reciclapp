@@ -11,7 +11,11 @@ from google.oauth2 import id_token
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 
-cred = credentials.Certificate("./routers/firestore-service-account.json")
+# Import environment configuration
+from .config import config
+
+# Initialize Firebase with environment-aware credentials
+cred = credentials.Certificate(config.firestore_service_account_file)
 firebase_app = firebase_admin.initialize_app(cred)
 
 from .dependencies import User, get_current_user
@@ -26,21 +30,19 @@ app.include_router(public.router)
 app.include_router(users.router)
 
 
+# Environment-aware OAuth flow setup
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
 flow = Flow.from_client_secrets_file(
-    "./client_secret_.json",
+    config.client_secret_file,
     scopes=[
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="http://localhost:3000",
+    redirect_uri=config.oauth_redirect_uri,
 )
 
-origins = [
-    "https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
-    "https://sabanayegua.reciclaplus.com",
-    "http://localhost:3000",
-]
+# Environment-aware CORS origins
+origins = config.allowed_origins
 
 app.add_middleware(
     CORSMiddleware,
@@ -50,7 +52,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("./client_secret_.json") as f:
+# Load client secrets with environment-aware path
+with open(config.client_secret_file) as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
 
