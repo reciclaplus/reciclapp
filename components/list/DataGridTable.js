@@ -109,7 +109,7 @@ export default function DataGridTable() {
           credentials: 'include', // Include cookies
           headers: {
             'Content-Type': 'application/json',
-            Accept: 'application/json',
+            'Accept': 'application/json',
           },
           body: JSON.stringify(newData),
         })
