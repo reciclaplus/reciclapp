@@ -16,10 +16,16 @@ import ScaleIcon from '@mui/icons-material/Scale'
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import StarBorder from '@mui/icons-material/StarBorder'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import Collapse from '@mui/material/Collapse'
 import NavigationItem from './NavigationItem'
+import { useCurrentUser } from '../../hooks/queries'
 
 export function Navigation (props) {
+  const currentUserQuery = useCurrentUser()
+  const user = currentUserQuery.status === 'success' ? currentUserQuery.data : null
+  const isAdmin = user?.role === 'admin'
+
   return (
     <List sx={{ m: 1, ml: 2 }} disablePadding={true}>
 
@@ -53,6 +59,10 @@ export function Navigation (props) {
         <NavigationItem href="/pasarPuntos" name="Pasar Puntos" icon={<PlaylistAddCheckCircleIcon />} />
         <NavigationItem href="/pesada" name="Pesada" icon={<ScaleIcon />} />
         <NavigationItem href="/stats" name="Estadísticas" icon={<AnalyticsIcon />} />
+
+        {isAdmin && (
+          <NavigationItem href="/admin" name="Admin Panel" icon={<AdminPanelSettingsIcon />} />
+        )}
 
       </List>
   )

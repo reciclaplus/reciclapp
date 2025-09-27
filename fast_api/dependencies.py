@@ -19,6 +19,7 @@ class User(BaseModel):
     name: str
     picture: str
     email: str
+    role: str = "user"  # Default role
 
 
 def get_current_user(authorization: Annotated[Union[str, None], Header()] = None):
@@ -33,10 +34,18 @@ def get_current_user(authorization: Annotated[Union[str, None], Header()] = None
     user_info_service = build("oauth2", "v2", credentials=creds)
     user_info = user_info_service.userinfo().get().execute()
 
+    # Get user role from database
+    user_doc = db.collection("users").document(user_info["email"]).get()
+    role = "user"  # default role
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+        role = user_data.get("role", "user")
+
     profile = {
         "name": user_info["name"],
         "picture": user_info["picture"],
         "email": user_info["email"],
+        "role": role,
     }
 
     return User(**profile)
@@ -52,3 +61,18 @@ def valid_user(current_user: Annotated[User, Depends(get_current_user)]):
         raise HTTPException(
             status_code=403, detail="You are not authorized to access this resource"
         )
+
+
+def admin_user(current_user: Annotated[User, Depends(get_current_user)]):
+    """Check if the user is an admin"""
+    if not valid_user(current_user):
+        raise HTTPException(
+            status_code=403, detail="You are not authorized to access this resource"
+        )
+    
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=403, detail="Admin access required"
+        )
+    
+    return current_user
