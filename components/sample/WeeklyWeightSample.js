@@ -16,8 +16,7 @@ export default function WeeklyWeightSample (props) {
       .then(function (myJson) {
         setData(myJson.reverse())
       })
-  }
-  )
+  }, [])
   return (
     <ResponsiveContainer width="100%" height={300} id="chart">
       <BarChart

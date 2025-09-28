@@ -19,7 +19,7 @@ export default function LandingPage() {
         if (localStorage.getItem("id_token")) {
             router.push('/list')
         }
-    })
+    }, [router])
 
     const login = useGoogleLogin({
         onSuccess: codeResponse => {

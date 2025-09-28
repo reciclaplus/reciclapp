@@ -14,11 +14,19 @@ import { StatsContext } from '../context/StatsContext'
 import { TownContext } from '../context/TownContext'
 import { WeightContext } from '../context/WeightContext'
 import '../styles/globals.css'
-// Create a client
+// Create a client with optimized defaults
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60000,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes  
+      retry: 1,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: 'always',
+    },
+    mutations: {
+      retry: 1,
     },
   },
 })
@@ -65,8 +73,12 @@ function MyApp({ Component, pageProps }) {
                     <meta name="description" content="Listado de familias" />
                     <link rel="icon" type="image/png" href="/logo.png" />
                     <link rel="preconnect" href="https://fonts.googleapis.com" />
-                    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-                    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet" />
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+                    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="preload" as="style" />
+                    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet" media="print" onLoad="this.media='all'" />
+                    <noscript>
+                      <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet" />
+                    </noscript>
                   </Head>
                   <Component {...pageProps} />
                   <script async defer src={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}`}></script>

@@ -41,7 +41,6 @@ function Layout({ children, ...props }) {
   const picture = currentUserQuery.status == 'success' ? currentUserQuery.data['picture'] : null
 
   useEffect(() => {
-
     if (localStorage.refresh_token) {
       const expiry_date = dayjs(localStorage.expiry, 'YYYY-MM-DD HH:mm:ss')
       if (expiry_date.isBefore(dayjs().utc().format('YYYY-MM-DD HH:mm:ss'))) {
@@ -66,8 +65,7 @@ function Layout({ children, ...props }) {
 
       }
     }
-
-  })
+  }, [queryClient, currentUserQuery])
 
   const handleClick = () => {
     setOpen(!open)

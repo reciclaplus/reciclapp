@@ -5,13 +5,30 @@ import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
+import dynamic from 'next/dynamic'
 import { conf } from '../../configuration'
 import { usePublicPdr } from '../../hooks/queries'
 import { GOOGLE_API_KEY } from '../gcloud/google'
-import MonthlyWeight from './MonthlyWeight'
-import PieChartDemo from './PieChartDemo'
-import SingleStat from './SingleStat'
-import WeeklyCollection from './WeeklyCollection'
+
+// Dynamic imports for heavy chart components
+const MonthlyWeight = dynamic(() => import('./MonthlyWeight'), {
+    loading: () => <div>Loading chart...</div>,
+    ssr: false
+})
+
+const PieChartDemo = dynamic(() => import('./PieChartDemo'), {
+    loading: () => <div>Loading chart...</div>,
+    ssr: false
+})
+
+const WeeklyCollection = dynamic(() => import('./WeeklyCollection'), {
+    loading: () => <div>Loading chart...</div>,
+    ssr: false
+})
+
+const SingleStat = dynamic(() => import('./SingleStat'), {
+    loading: () => <div>Loading...</div>
+})
 
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
