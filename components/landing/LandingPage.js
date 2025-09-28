@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { API_URL } from '../../configuration';
@@ -47,8 +48,30 @@ export default function LandingPage() {
     })
 
     return (
-        <div style={{ backgroundImage: `url(/landing.jpg)`, height: '100vh', width: '100%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
-            <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ position: 'relative', height: '100vh', width: '100%' }}>
+            {/* Optimized background image using Next.js Image */}
+            <Image
+                src="/landing.jpg"
+                alt="Landing background"
+                fill
+                style={{
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                }}
+                priority
+                sizes="100vw"
+            />
+            
+            {/* Content overlay */}
+            <Box sx={{ 
+                position: 'relative', 
+                zIndex: 1, 
+                height: '100%', 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)' // Slight overlay for better text contrast
+            }}>
 
                 <Grid container justify="center" alignItems="center" direction="column">
                     <Grid item xs={12}>
@@ -64,19 +87,21 @@ export default function LandingPage() {
                                 </Typography>
                                 <Grid container spacing={2} alignItems="center">
                                     <Grid item>
-                                        <CardMedia
-                                            component="img"
-                                            height="40"
-                                            image="/logo.png"
-                                            sx={{ objectFit: "contain" }}
+                                        <Image
+                                            src="/logo.png"
+                                            alt="Logo"
+                                            width={40}
+                                            height={40}
+                                            style={{ objectFit: 'contain' }}
                                         />
                                     </Grid>
                                     <Grid item>
-                                        <CardMedia
-                                            component="img"
-                                            height="60"
-                                            image="/logo_npf_no_bg.png"
-                                            sx={{ objectFit: "contain" }}
+                                        <Image
+                                            src="/logo_npf_no_bg.png"
+                                            alt="NPF Logo"
+                                            width={60}
+                                            height={60}
+                                            style={{ objectFit: 'contain' }}
                                         />
                                     </Grid>
                                 </Grid>
