@@ -11,13 +11,35 @@ function SignInButton(props) {
   const queryClient = useQueryClient()
 
   function logout() {
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("refresh_token");
-    localStorage.removeItem("expiry");
-
-    router.push('/')
+    // Call the backend logout endpoint to clear cookies
+    fetch(`${API_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include', // Include cookies
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      }
+    })
+    .then(() => {
+      // Clear any remaining localStorage items (for backward compatibility)
+      localStorage.removeItem("token");
+      localStorage.removeItem("id_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("expiry");
+      
+      // Invalidate queries and redirect
+      queryClient.clear()
+      router.push('/')
+    })
+    .catch((error) => {
+      console.error('Logout error:', error)
+      // Even if logout fails, clear local data and redirect
+      localStorage.removeItem("token");
+      localStorage.removeItem("id_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("expiry");
+      router.push('/')
+    })
   }
 
   const login = useGoogleLogin({
@@ -25,6 +47,7 @@ function SignInButton(props) {
 
       fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
         method: 'GET',
+        credentials: 'include', // Include cookies
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
@@ -33,14 +56,13 @@ function SignInButton(props) {
       })
         .then((response) => response.json())
         .then((data) => {
-
-          localStorage.setItem("token", data["token"])
-          localStorage.setItem("id_token", data["id_token"])
-          localStorage.setItem("refresh_token", data["refresh_token"])
-          localStorage.setItem("expiry", data["expiry"])
-
+          console.log('Authentication successful:', data.message)
+          // No need to manually store tokens - they are in HTTP-only cookies
         })
         .then(() => queryClient.invalidateQueries())
+        .catch((error) => {
+          console.error('Authentication failed:', error)
+        })
     },
     flow: 'auth-code',
   });

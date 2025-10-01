@@ -50,33 +50,10 @@ function Layout({ children, ...props }) {
   }, [currentUserQuery.data, currentUserQuery.status, setUser])
 
   useEffect(() => {
-
-    if (localStorage.refresh_token) {
-      const expiry_date = dayjs(localStorage.expiry, 'YYYY-MM-DD HH:mm:ss')
-      if (expiry_date.isBefore(dayjs().utc().format('YYYY-MM-DD HH:mm:ss'))) {
-
-        fetch(`${API_URL}/refresh-token`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + localStorage.refresh_token
-          }
-        }).then(function (response) { return response.json() }
-        ).then((data) => {
-
-          localStorage.setItem("token", data["token"])
-          localStorage.setItem("id_token", data["id_token"])
-          localStorage.setItem("refresh_token", data["refresh_token"])
-          localStorage.setItem("expiry", data["expiry"])
-
-        }).then(() => currentUserQuery.refetch())
-          .then(() => queryClient.invalidateQueries())
-
-      }
-    }
-
-  })
+    // Token refresh is now handled automatically by the server
+    // We just need to check if the user is still authenticated
+    // No need to manually manage token expiry with localStorage
+  }, [])
 
   const handleClick = () => {
     setOpen(!open)

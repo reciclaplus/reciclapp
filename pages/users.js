@@ -55,8 +55,11 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       const response = await fetch(`${API_URL}/users`, {
+        method: 'GET',
+        credentials: 'include', // Include cookies
         headers: {
-          'Authorization': 'Bearer ' + localStorage.token
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
         }
       })
       if (response.ok) {
@@ -86,9 +89,9 @@ export default function UsersPage() {
     try {
       const response = await fetch(`${API_URL}/users`, {
         method: 'POST',
+        credentials: 'include', // Include cookies
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.token
         },
         body: JSON.stringify(formData)
       })
@@ -112,8 +115,9 @@ export default function UsersPage() {
       try {
         const response = await fetch(`${API_URL}/users/${userEmail}`, {
           method: 'DELETE',
+          credentials: 'include', // Include cookies
           headers: {
-            'Authorization': 'Bearer ' + localStorage.token
+            'Accept': 'application/json',
           }
         })
 
@@ -164,9 +168,10 @@ export default function UsersPage() {
       // Only allow editing name and role
       const response = await fetch(`${API_URL}/users/${newRow.email}`, {
         method: 'PUT',
+        credentials: 'include', // Include cookies
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.token
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           name: newRow.name,

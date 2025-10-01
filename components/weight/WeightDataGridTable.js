@@ -29,10 +29,10 @@ function EditToolbar(props) {
 
     fetch(`${API_URL}/recogida/weight/set/${nextRowId}`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
       },
       body: JSON.stringify(newRow),
     }).then((response) => (response.json()))
@@ -57,10 +57,10 @@ export default function WeightDataGridTable(props) {
   const deleteRow = (id) => {
     fetch(`${API_URL}/recogida/weight/delete/${id}`, {
       method: 'DELETE',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
       },
     }).then((response) => (response.json()))
       .then(() => queryClient.invalidateQueries('weight'))
@@ -81,10 +81,10 @@ export default function WeightDataGridTable(props) {
         const rowId = oldData.id
         fetch(`${API_URL}/recogida/weight/update/${rowId}`, {
           method: 'POST',
+          credentials: 'include', // Include cookies
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            'Authorization': 'Bearer ' + localStorage.token
           },
           body: JSON.stringify(newData),
         }).then((response) => (response.json()))
