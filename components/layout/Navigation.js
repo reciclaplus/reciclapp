@@ -5,6 +5,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import AnalyticsIcon from '@mui/icons-material/Analytics'
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import MyLocationIcon from '@mui/icons-material/MyLocation'
@@ -72,7 +73,7 @@ export function Navigation(props) {
       </PermissionGuard>
 
       <PermissionGuard role="admin">
-        <NavigationItem href="/users" name="Usuarios" icon={<PeopleIcon />} />
+        <NavigationItem href="/admin" name="Panel Admin" icon={<AdminPanelSettingsIcon />} />
       </PermissionGuard>
 
     </List>
