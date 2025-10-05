@@ -1,4 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ReciclApp
+
+This is a [Next.js](https://nextjs.org/) project for the Recicla+ project by Nature Power Foundation.
+
+## Configuration
+
+The application can be configured for different towns/deployments using environment variables. Create a `.env.local` file based on `.env.example`:
+
+```bash
+cp .env.example .env.local
+```
+
+### Environment Variables
+
+- `NEXT_PUBLIC_TOWN`: Specifies which town configuration to use. Valid values are:
+  - `sabanayegua` (default)
+  - `proyecto4`
+  - `sample`
+
+Each town has different deployments to different subdomains, so this value should be set based on the deployment environment.
 
 ## Getting Started
 
