@@ -135,5 +135,32 @@ const usePublicWeight = () => {
     })
 }
 
-export { useCurrentUser, useLastN, usePdr, usePublicPdr, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useWeeklyCollection, useWeight }
+const usePublicPdrByCategoria = () => {
+    return useQuery({
+        queryKey: ['publicPdrByCategoria'],
+        queryFn: () => fetch(`${API_URL}/public/pdr/count_by_categoria`, {
+            method: 'GET',
+        }).then((response) => response.json())
+    })
+}
+
+const usePublicSuccessfulRecogidas = () => {
+    return useQuery({
+        queryKey: ['publicSuccessfulRecogidas'],
+        queryFn: () => fetch(`${API_URL}/public/recogida/successful_count`, {
+            method: 'GET',
+        }).then((response) => response.json())
+    })
+}
+
+const usePublicTotalWeightByType = () => {
+    return useQuery({
+        queryKey: ['publicTotalWeightByType'],
+        queryFn: () => fetch(`${API_URL}/public/recogida/weight/total_by_type`, {
+            method: 'GET',
+        }).then((response) => response.json())
+    })
+}
+
+export { useCurrentUser, useLastN, usePdr, usePublicPdr, usePublicPdrByCategoria, usePublicSuccessfulRecogidas, usePublicTotalWeightByType, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useWeeklyCollection, useWeight }
 
