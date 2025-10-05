@@ -9,6 +9,7 @@ import {
 import Head from 'next/head'
 import { useState } from 'react'
 import { GOOGLE_API_KEY } from '../components/gcloud/google'
+import { TOWN } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { StatsContext } from '../context/StatsContext'
 import { TownContext } from '../context/TownContext'
@@ -46,12 +47,13 @@ const theme = createTheme({
 function MyApp({ Component, pageProps }) {
   const [pdr, setPdr] = useState([])
   const contextValue = { pdr, setPdr }
-  const [town, setTown] = useState('sabanayegua')
-  const townContextValue = { town, setTown }
   const [weight, setWeight] = useState([])
   const weightContextValue = { weight, setWeight }
   const [stats, setStats] = useState([])
   const statsContextValue = { stats, setStats }
+
+  // Town is now a constant from environment/deployment configuration
+  const townContextValue = { town: TOWN }
 
   return (
     <QueryClientProvider client={queryClient}>

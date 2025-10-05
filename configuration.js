@@ -1,4 +1,8 @@
 export const API_URL = 'http://localhost:8000';
+
+// Get the town from environment variable, defaulting to 'sabanayegua'
+export const TOWN = process.env.NEXT_PUBLIC_TOWN || 'sabanayegua';
+
 export const conf =
 {
   sabanayegua: {
