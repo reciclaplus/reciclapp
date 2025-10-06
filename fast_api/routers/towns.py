@@ -19,16 +19,16 @@ class Category(BaseModel):
     label: str
 
 
-class Comunidad(BaseModel):
-    nombre: str
-    center: str
-    barrios: List[str]
-
-
 class Barrio(BaseModel):
     nombre: str
     color: str
     center: str
+
+
+class Comunidad(BaseModel):
+    nombre: str
+    center: str
+    barrios: List[Barrio]
 
 
 class Town(BaseModel):
@@ -38,7 +38,6 @@ class Town(BaseModel):
     map_center: Optional[MapCenter]
     categories: Optional[List[Category]]
     comunidades: Optional[List[Comunidad]]
-    barrios: Optional[List[Barrio]]
 
 
 @router.get("/towns", response_model=List[Town])

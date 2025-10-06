@@ -1,11 +1,11 @@
-import { Dashboard as DashboardIcon, LocationCity as LocationCityIcon, People as PeopleIcon } from '@mui/icons-material'
+import { Dashboard as DashboardIcon, LocationOn as LocationOnIcon, People as PeopleIcon } from '@mui/icons-material'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { useState } from 'react'
+import GlobalStatistics from '../components/admin/GlobalStatistics'
+import TownDetails from '../components/admin/TownDetails'
+import UserManagement from '../components/admin/UserManagement'
 import { NoAccess, PermissionGuard } from '../components/common/PermissionGuard'
 import Layout from '../components/layout/Layout'
-import GlobalStatistics from '../components/admin/GlobalStatistics'
-import TownManagement from '../components/admin/TownManagement'
-import UserManagement from '../components/admin/UserManagement'
 
 function TabPanel({ children, value, index }) {
   return (
@@ -33,7 +33,7 @@ export default function AdminPanel() {
           <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
             <Tabs value={activeTab} onChange={handleTabChange}>
               <Tab icon={<PeopleIcon />} label="Usuarios" />
-              <Tab icon={<LocationCityIcon />} label="Pueblos y Barrios" />
+              <Tab icon={<LocationOnIcon />} label="Detalles del Pueblo" />
               <Tab icon={<DashboardIcon />} label="Estadísticas Globales" />
             </Tabs>
           </Box>
@@ -43,7 +43,7 @@ export default function AdminPanel() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <TownManagement />
+            <TownDetails />
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
