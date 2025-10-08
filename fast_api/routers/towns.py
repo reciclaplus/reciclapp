@@ -40,7 +40,7 @@ class Town(BaseModel):
     comunidades: Optional[List[Comunidad]]
 
 
-@router.get("/towns", response_model=List[Town])
+@router.get("/towns", response_model=List[Town], tags=["towns"])
 def get_towns():
     towns_ref = db.collection("towns")
     docs = towns_ref.stream()
@@ -52,7 +52,7 @@ def get_towns():
     return towns
 
 
-@router.get("/towns/{town_id}", response_model=Town)
+@router.get("/towns/{town_id}", response_model=Town, tags=["towns"])
 def get_town(town_id: str):
     doc_ref = db.collection("towns").document(town_id)
     doc = doc_ref.get()
@@ -63,21 +63,21 @@ def get_town(town_id: str):
     return data
 
 
-@router.put("/towns/{town_id}", response_model=Town)
+@router.put("/towns/{town_id}", response_model=Town, tags=["towns"])
 def update_town(town_id: str, town: Town):
     doc_ref = db.collection("towns").document(town_id)
     doc_ref.set(town.dict(exclude_unset=True))
     return town
 
 
-@router.post("/towns", response_model=Town)
+@router.post("/towns", response_model=Town, tags=["towns"])
 def create_town(town: Town):
     doc_ref = db.collection("towns").document()
     doc_ref.set(town.dict(exclude_unset=True))
     return town
 
 
-@router.delete("/towns/{town_id}")
+@router.delete("/towns/{town_id}", tags=["towns"])
 def delete_town(town_id: str):
     doc_ref = db.collection("towns").document(town_id)
     doc_ref.delete()
