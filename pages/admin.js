@@ -1,7 +1,6 @@
-import { Dashboard as DashboardIcon, LocationOn as LocationOnIcon, People as PeopleIcon } from '@mui/icons-material'
+import { LocationOn as LocationOnIcon, People as PeopleIcon } from '@mui/icons-material'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { useState } from 'react'
-import GlobalStatistics from '../components/admin/GlobalStatistics'
 import TownDetails from '../components/admin/TownDetails'
 import UserManagement from '../components/admin/UserManagement'
 import { NoAccess, PermissionGuard } from '../components/common/PermissionGuard'
@@ -34,7 +33,6 @@ export default function AdminPanel() {
             <Tabs value={activeTab} onChange={handleTabChange}>
               <Tab icon={<PeopleIcon />} label="Usuarios" />
               <Tab icon={<LocationOnIcon />} label="Detalles del Pueblo" />
-              <Tab icon={<DashboardIcon />} label="Estadísticas Globales" />
             </Tabs>
           </Box>
 
@@ -44,10 +42,6 @@ export default function AdminPanel() {
 
           <TabPanel value={activeTab} index={1}>
             <TownDetails />
-          </TabPanel>
-
-          <TabPanel value={activeTab} index={2}>
-            <GlobalStatistics />
           </TabPanel>
         </Box>
       </Layout>
