@@ -5,15 +5,15 @@ from firebase_admin import firestore
 # Import environment configuration
 from ..config import config
 
-db = firestore.client()
+# Environment-aware Firestore client
+from ..main import firestore_client as db
 
 router = APIRouter()
 
 
 @router.get("/public/recogida/get/last_n", tags=["public"])
 async def last_n(n: int = 5):
-    # Use environment-aware collection name
-    collection_name = config.get_collection_name("recogida")
+    collection_name = "recogida"
     collection = db.collection(collection_name)
     docs = (
         collection.order_by("week", direction=firestore.Query.DESCENDING)
@@ -26,8 +26,7 @@ async def last_n(n: int = 5):
 
 @router.get("/public/pdr/get_all", tags=["public"])
 async def get_pdrs():
-    # Use environment-aware collection name
-    collection_name = config.get_collection_name("pdr")
+    collection_name = "pdr"
     collection = db.collection(collection_name)
     docs = collection.stream()
 
@@ -43,8 +42,7 @@ async def get_pdrs():
 
 @router.get("/public/recogida/weight/get", tags=["recogida"])
 async def get_weight():
-    # Use environment-aware collection name
-    collection_name = config.get_collection_name("weight")
+    collection_name = "weight"
     collection = db.collection(collection_name)
     docs_dict = [doc.to_dict() for doc in collection.stream()]
 

@@ -2,7 +2,6 @@ import json
 from typing import Annotated, Union
 
 from fastapi import Depends, Header, HTTPException
-from firebase_admin import firestore
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from pydantic import BaseModel
@@ -11,7 +10,7 @@ from pydantic import BaseModel
 from .config import config
 
 # Environment-aware Firestore client
-db = firestore.client()
+from .main import firestore_client as db
 
 # Load client secrets with environment-aware path
 with open(config.client_secret_file) as f:
@@ -39,9 +38,10 @@ def get_current_user(authorization: Annotated[Union[str, None], Header()] = None
     user_info = user_info_service.userinfo().get().execute()
 
     # Get user from Firestore to include role and permissions
-    # Use environment-aware collection name
-    users_collection = config.get_collection_name("users")
-    user_doc = db.collection(users_collection).where("email", "==", user_info["email"]).get()
+    users_collection = "users"
+    user_doc = (
+        db.collection(users_collection).where("email", "==", user_info["email"]).get()
+    )
 
     if user_doc:
         user_data = user_doc[0].to_dict()
@@ -65,8 +65,10 @@ def get_current_user(authorization: Annotated[Union[str, None], Header()] = None
 def valid_user(current_user: Annotated[User, Depends(get_current_user)]):
     """Check if the user is a valid user"""
     # Use environment-aware collection name
-    users_collection = config.get_collection_name("users")
-    valid_users = [doc.to_dict()["email"] for doc in db.collection(users_collection).stream()]
+    users_collection = "users"
+    valid_users = [
+        doc.to_dict()["email"] for doc in db.collection(users_collection).stream()
+    ]
 
     if current_user.email in valid_users:
         return current_user

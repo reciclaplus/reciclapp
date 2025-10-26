@@ -2,21 +2,28 @@ import json
 import os
 from typing import Annotated, Union
 
-import firebase_admin
 from fastapi import Depends, FastAPI, Header
 from fastapi.middleware.cors import CORSMiddleware
-from firebase_admin import credentials
 from google.auth.transport import requests
-from google.oauth2 import id_token
+from google.cloud import firestore
+from google.oauth2 import id_token, service_account
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 
 # Import environment configuration
 from .config import config
 
-# Initialize Firebase with environment-aware credentials
-cred = credentials.Certificate(config.firestore_service_account_file)
-firebase_app = firebase_admin.initialize_app(cred)
+# Create a google-cloud Firestore client so we can target a non-default database
+# Use the same service account file configured in `config`.
+gcloud_creds = service_account.Credentials.from_service_account_file(
+    config.firestore_service_account_file
+)
+# Expose `firestore_client` for other modules to import from this package.
+firestore_client = firestore.Client(
+    project=config.firebase_project_id,
+    credentials=gcloud_creds,
+    database=config.firestore_database_id,
+)
 
 from .dependencies import User, get_current_user
 from .routers import pdr, public, recogida, users
