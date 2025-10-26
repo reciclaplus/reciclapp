@@ -6,7 +6,8 @@ from pydantic import BaseModel
 
 from ..dependencies import User, require_role, valid_user
 
-db = firestore.client()
+# Environment-aware Firestore client
+from ..main import firestore_client as db
 
 router = APIRouter()
 
@@ -43,7 +44,6 @@ async def create_user(
     existing_user = db.collection("users").where("email", "==", user_data.email).get()
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
-
     # Create user document
     user_doc = {
         "email": user_data.email,

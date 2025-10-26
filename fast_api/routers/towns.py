@@ -4,7 +4,8 @@ from fastapi import APIRouter, HTTPException
 from firebase_admin import firestore
 from pydantic import BaseModel
 
-db = firestore.client()
+# Environment-aware Firestore client
+from ..main import firestore_client as db
 
 router = APIRouter()
 
