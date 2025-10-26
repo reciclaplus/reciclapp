@@ -1,3 +1,5 @@
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { PermissionGuard } from '../common/PermissionGuard';
 /* eslint-disable no-undef */
 /* global gapi */
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -18,7 +20,6 @@ import * as CustomParseFormat from 'dayjs/plugin/customParseFormat';
 import * as UTC from 'dayjs/plugin/utc';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
-import { API_URL } from '../../configuration';
 import { TownContext } from '../../context/TownContext';
 import { useUser } from '../../context/UserContext';
 import { useCurrentUser } from '../../hooks/queries';
@@ -50,33 +51,10 @@ function Layout({ children, ...props }) {
   }, [currentUserQuery.data, currentUserQuery.status, setUser])
 
   useEffect(() => {
-
-    if (localStorage.refresh_token) {
-      const expiry_date = dayjs(localStorage.expiry, 'YYYY-MM-DD HH:mm:ss')
-      if (expiry_date.isBefore(dayjs().utc().format('YYYY-MM-DD HH:mm:ss'))) {
-
-        fetch(`${API_URL}/refresh-token`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: 'Bearer ' + localStorage.refresh_token
-          }
-        }).then(function (response) { return response.json() }
-        ).then((data) => {
-
-          localStorage.setItem("token", data["token"])
-          localStorage.setItem("id_token", data["id_token"])
-          localStorage.setItem("refresh_token", data["refresh_token"])
-          localStorage.setItem("expiry", data["expiry"])
-
-        }).then(() => currentUserQuery.refetch())
-          .then(() => queryClient.invalidateQueries())
-
-      }
-    }
-
-  })
+    // Token refresh is now handled automatically by the server
+    // We just need to check if the user is still authenticated
+    // No need to manually manage token expiry with localStorage
+  }, [])
 
   const handleClick = () => {
     setOpen(!open)
@@ -154,6 +132,13 @@ function Layout({ children, ...props }) {
               <InfoOutlinedIcon />
             </IconButton>
           </Link>
+          <PermissionGuard role="admin">
+            <Link href="/admin">
+              <IconButton aria-label="admin panel" color="inherit">
+                <AdminPanelSettingsIcon />
+              </IconButton>
+            </Link>
+          </PermissionGuard>
         </Toolbar>
       </AppBar>
       <Box

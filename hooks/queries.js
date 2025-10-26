@@ -6,10 +6,10 @@ const usePdr = () => {
         queryKey: ['pdr'],
         queryFn: () => fetch(`${API_URL}/pdr/get_all`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json()))
     })
@@ -33,10 +33,10 @@ const useLastN = (n) => {
         queryKey: ['lastN', n],
         queryFn: () => fetch(`${API_URL}/recogida/get/last_n?n=${n}`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             },
         }).then((response) => (response.json()))
     })
@@ -47,10 +47,10 @@ const useRecogidaGetWeek = (year, week) => {
         queryKey: ['recogidaGet', { 'year': year, 'week': week }],
         queryFn: () => fetch(`${API_URL}/recogida/get/${year}/${week}`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json()))
     })
@@ -61,10 +61,10 @@ const useWeeklyCollection = (nWeeks, categoria, barrio) => {
         queryKey: ['weeklyCollection', { 'n': nWeeks, 'category': categoria, 'barrio': barrio }],
         queryFn: () => fetch(`${API_URL}/recogida/get/last_n_by_barrio?n=${nWeeks}&category=${categoria}&barrio=${barrio}`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json())), staleTime: 300000
     })
@@ -75,10 +75,10 @@ const useWeight = () => {
         queryKey: ['weight'],
         queryFn: () => fetch(`${API_URL}/recogida/weight/get`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json()))
     })
@@ -89,10 +89,10 @@ const useCurrentUser = () => {
         queryKey: ['currentUser'],
         queryFn: () => fetch(`${API_URL}/get-current-user`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Authorization': 'Bearer ' + localStorage.token
             }
         }).then((response) => (response.json()))
     })
@@ -103,18 +103,16 @@ const useRefreshToken = () => {
         queryKey: ['refreshToken'],
         queryFn: () => fetch(`${API_URL}/refresh-token`, {
             method: 'GET',
+            credentials: 'include', // Include cookies
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Authorization: 'Bearer ' + localStorage.refresh_token
             }
         }).then(function (response) { return response.json() }
         ).then((data) => {
-
-            localStorage.setItem("token", data["token"])
-            localStorage.setItem("id_token", data["id_token"])
-            localStorage.setItem("refresh_token", data["refresh_token"])
-            localStorage.setItem("expiry", data["expiry"])
+            console.log('Token refreshed:', data.message)
+            // No need to manually update localStorage since tokens are in cookies
+            return data
         })
     })
 }

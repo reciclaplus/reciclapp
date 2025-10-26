@@ -94,9 +94,9 @@ export default function NewPdr(props) {
 
     fetch(`${API_URL}/pdr/add`, {
       method: 'POST',
+      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + localStorage.token
       },
       body: JSON.stringify(new_pdr)
     })

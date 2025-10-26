@@ -16,15 +16,31 @@ export default function LandingPage() {
     const queryClient = useQueryClient()
 
     useEffect(() => {
-        if (localStorage.getItem("id_token")) {
-            router.push('/list')
-        }
-    })
+        // Check if user is already authenticated by trying to get current user
+        fetch(`${API_URL}/get-current-user`, {
+            method: 'GET',
+            credentials: 'include', // Include cookies in the request
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // User is authenticated, redirect to list page
+                router.push('/list')
+            }
+        })
+        .catch(() => {
+            // User is not authenticated, stay on landing page
+        })
+    }, [router])
 
     const login = useGoogleLogin({
         onSuccess: codeResponse => {
             fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
                 method: 'GET',
+                credentials: 'include', // Include cookies in the request
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
@@ -33,14 +49,16 @@ export default function LandingPage() {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    localStorage.setItem("token", data["token"])
-                    localStorage.setItem("id_token", data["id_token"])
-                    localStorage.setItem("refresh_token", data["refresh_token"])
-                    localStorage.setItem("expiry", data["expiry"])
+                    console.log('Authentication successful:', data.message)
+                    // No need to manually store tokens in localStorage anymore
+                    // Tokens are now stored as HTTP-only cookies
                 })
                 .then(() => queryClient.invalidateQueries())
                 .then(() => {
                     router.push('/list')
+                })
+                .catch((error) => {
+                    console.error('Authentication failed:', error)
                 })
         },
         flow: 'auth-code',

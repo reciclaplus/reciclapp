@@ -8,7 +8,6 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import AnalyticsIcon from '@mui/icons-material/Analytics'
 import ListAltIcon from '@mui/icons-material/ListAlt'
 import MyLocationIcon from '@mui/icons-material/MyLocation'
-import PeopleIcon from '@mui/icons-material/People'
 import PlaylistAddCheckCircleIcon from '@mui/icons-material/PlaylistAddCheckCircle'
 import Link from 'next/link'
 
@@ -69,10 +68,6 @@ export function Navigation(props) {
 
       <PermissionGuard role="read">
         <NavigationItem href="/stats" name="Estadísticas" icon={<AnalyticsIcon />} />
-      </PermissionGuard>
-
-      <PermissionGuard role="admin">
-        <NavigationItem href="/users" name="Usuarios" icon={<PeopleIcon />} />
       </PermissionGuard>
 
     </List>
