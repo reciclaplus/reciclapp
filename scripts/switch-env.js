@@ -25,19 +25,17 @@ try {
   fs.writeFileSync(envPath, envContent);
   console.log(`✅ Environment switched to: ${environment}`);
   console.log(`📁 Updated .env file with NODE_ENV=${environment}`);
-  
+
   if (environment === 'development') {
     console.log('🔧 Development mode:');
     console.log('   - API URL: http://localhost:8000');
     console.log('   - Firebase Project: reciclapp-dev-23776');
-    console.log('   - Collection prefix: dev_');
   } else {
     console.log('🚀 Production mode:');
     console.log('   - API URL: https://fastapi-dot-norse-voice-343214.uc.r.appspot.com');
     console.log('   - Firebase Project: norse-voice-343214');
-    console.log('   - Collection prefix: (none)');
   }
-  
+
   console.log('\nℹ️  Restart your development server to apply changes.');
 } catch (error) {
   console.error('❌ Error updating environment:', error.message);

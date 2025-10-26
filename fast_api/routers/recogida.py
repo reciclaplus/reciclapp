@@ -5,9 +5,7 @@ import pandas as pd
 from fastapi import APIRouter, Depends
 from firebase_admin import firestore
 
-# Import environment configuration
-from ..config import config
-from ..dependencies import User, require_role, valid_user
+from ..dependencies import User, require_role
 
 # Environment-aware Firestore client
 from ..main import firestore_client as db

@@ -4,8 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from firebase_admin import firestore
 from pydantic import BaseModel
 
-# Import environment configuration
-from ..config import config
 from ..dependencies import User, require_role, valid_user
 
 # Environment-aware Firestore client
