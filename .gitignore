@@ -47,3 +47,5 @@ fast_api/routers/firestore-service-account-dev.json
 /fastapi/__pycache__/
 /fast_api/__pycache__/
 *.pyc
+
+fast_api/routers/firestore_playground.py
