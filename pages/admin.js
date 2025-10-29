@@ -1,12 +1,21 @@
 import { LocationOn as LocationOnIcon, People as PeopleIcon } from '@mui/icons-material'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import TownDetails from '../components/admin/TownDetails'
-import UserManagement from '../components/admin/UserManagement'
 import { NoAccess, PermissionGuard } from '../components/common/PermissionGuard'
 import Layout from '../components/layout/Layout'
 
-function TabPanel({ children, value, index }) {
+// Lazy load admin components to improve initial page load
+const UserManagement = dynamic(() => import('../components/admin/UserManagement'), {
+  loading: () => <Box sx={{ p: 3 }}>Cargando...</Box>,
+  ssr: false
+})
+const TownDetails = dynamic(() => import('../components/admin/TownDetails'), {
+  loading: () => <Box sx={{ p: 3 }}>Cargando...</Box>,
+  ssr: false
+})
+
+function TabPanel ({ children, value, index }) {
   return (
     <div role="tabpanel" hidden={value !== index}>
       {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}

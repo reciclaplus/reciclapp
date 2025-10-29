@@ -27,9 +27,15 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { API_URL } from '../../configuration';
-import MapPicker from './MapPicker';
+
+// Lazy load MapPicker only when needed
+const MapPicker = dynamic(() => import('./MapPicker'), {
+    loading: () => <Box sx={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Cargando mapa...</Box>,
+    ssr: false
+});
 
 export default function TownDetails() {
     const [town, setTown] = useState(null);
@@ -94,23 +100,23 @@ export default function TownDetails() {
     };
 
     // Comunidad CRUD functions
-    const handleAddComunidad = () => {
+    const handleAddComunidad = useCallback(() => {
         setComunidadDialog({
             open: true,
             comunidad: { nombre: '', center: '', barrios: [] },
             index: null
         });
-    };
+    }, []);
 
-    const handleEditComunidad = (comunidad, index) => {
+    const handleEditComunidad = useCallback((comunidad, index) => {
         setComunidadDialog({
             open: true,
             comunidad: { ...comunidad },
             index
         });
-    };
+    }, []);
 
-    const handleSaveComunidad = async (comunidadData) => {
+    const handleSaveComunidad = useCallback(async (comunidadData) => {
         const updatedTown = { ...town };
 
         if (comunidadDialog.index !== null) {
@@ -124,44 +130,44 @@ export default function TownDetails() {
 
         await saveTown(updatedTown);
         setComunidadDialog({ open: false, comunidad: null, index: null });
-    };
+    }, [town, comunidadDialog.index]);
 
-    const handleDeleteComunidad = (index) => {
+    const handleDeleteComunidad = useCallback((index) => {
         setDeleteDialog({
             open: true,
             type: 'comunidad',
             comunidadIndex: index,
             barrioIndex: null
         });
-    };
+    }, []);
 
-    const confirmDeleteComunidad = async () => {
+    const confirmDeleteComunidad = useCallback(async () => {
         const updatedTown = { ...town };
         updatedTown.comunidades.splice(deleteDialog.comunidadIndex, 1);
         await saveTown(updatedTown);
         setDeleteDialog({ open: false, type: null, comunidadIndex: null, barrioIndex: null });
-    };
+    }, [town, deleteDialog.comunidadIndex]);
 
     // Barrio CRUD functions
-    const handleAddBarrio = (comunidadIndex) => {
+    const handleAddBarrio = useCallback((comunidadIndex) => {
         setBarrioDialog({
             open: true,
             barrio: { nombre: '', color: '#000000', center: '' },
             comunidadIndex,
             barrioIndex: null
         });
-    };
+    }, []);
 
-    const handleEditBarrio = (barrio, comunidadIndex, barrioIndex) => {
+    const handleEditBarrio = useCallback((barrio, comunidadIndex, barrioIndex) => {
         setBarrioDialog({
             open: true,
             barrio: { ...barrio },
             comunidadIndex,
             barrioIndex
         });
-    };
+    }, []);
 
-    const handleSaveBarrio = async (barrioData) => {
+    const handleSaveBarrio = useCallback(async (barrioData) => {
         const updatedTown = { ...town };
         const comunidad = updatedTown.comunidades[barrioDialog.comunidadIndex];
 
@@ -176,23 +182,23 @@ export default function TownDetails() {
 
         await saveTown(updatedTown);
         setBarrioDialog({ open: false, barrio: null, comunidadIndex: null, barrioIndex: null });
-    };
+    }, [town, barrioDialog.comunidadIndex, barrioDialog.barrioIndex]);
 
-    const handleDeleteBarrio = (comunidadIndex, barrioIndex) => {
+    const handleDeleteBarrio = useCallback((comunidadIndex, barrioIndex) => {
         setDeleteDialog({
             open: true,
             type: 'barrio',
             comunidadIndex,
             barrioIndex
         });
-    };
+    }, []);
 
-    const confirmDeleteBarrio = async () => {
+    const confirmDeleteBarrio = useCallback(async () => {
         const updatedTown = { ...town };
         updatedTown.comunidades[deleteDialog.comunidadIndex].barrios.splice(deleteDialog.barrioIndex, 1);
         await saveTown(updatedTown);
         setDeleteDialog({ open: false, type: null, comunidadIndex: null, barrioIndex: null });
-    };
+    }, [town, deleteDialog.comunidadIndex, deleteDialog.barrioIndex]);
 
     if (loading) {
         return <Typography>Cargando detalles del pueblo...</Typography>;
@@ -472,8 +478,8 @@ export default function TownDetails() {
     );
 }
 
-// Comunidad Dialog Component
-function ComunidadDialog({ open, comunidad, onClose, onSave, saving }) {
+// Comunidad Dialog Component - memoized for performance
+const ComunidadDialog = memo(function ComunidadDialog({ open, comunidad, onClose, onSave, saving }) {
     const [formData, setFormData] = useState({ nombre: '', center: '', barrios: [] });
     const [errors, setErrors] = useState({});
 
@@ -484,7 +490,7 @@ function ComunidadDialog({ open, comunidad, onClose, onSave, saving }) {
         setErrors({});
     }, [comunidad, open]);
 
-    const validateForm = () => {
+    const validateForm = useCallback(() => {
         const newErrors = {};
         if (!formData.nombre.trim()) {
             newErrors.nombre = 'El nombre es requerido';
@@ -494,13 +500,13 @@ function ComunidadDialog({ open, comunidad, onClose, onSave, saving }) {
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [formData.nombre, formData.center]);
 
-    const handleSubmit = () => {
+    const handleSubmit = useCallback(() => {
         if (validateForm()) {
             onSave(formData);
         }
-    };
+    }, [validateForm, onSave, formData]);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -552,10 +558,10 @@ function ComunidadDialog({ open, comunidad, onClose, onSave, saving }) {
             </DialogActions>
         </Dialog>
     );
-}
+});
 
-// Barrio Dialog Component
-function BarrioDialog({ open, barrio, onClose, onSave, saving }) {
+// Barrio Dialog Component - memoized for performance
+const BarrioDialog = memo(function BarrioDialog({ open, barrio, onClose, onSave, saving }) {
     const [formData, setFormData] = useState({ nombre: '', color: '#000000', center: '' });
     const [errors, setErrors] = useState({});
 
@@ -566,7 +572,7 @@ function BarrioDialog({ open, barrio, onClose, onSave, saving }) {
         setErrors({});
     }, [barrio, open]);
 
-    const validateForm = () => {
+    const validateForm = useCallback(() => {
         const newErrors = {};
         if (!formData.nombre.trim()) {
             newErrors.nombre = 'El nombre es requerido';
@@ -576,13 +582,13 @@ function BarrioDialog({ open, barrio, onClose, onSave, saving }) {
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
-    };
+    }, [formData.nombre, formData.center]);
 
-    const handleSubmit = () => {
+    const handleSubmit = useCallback(() => {
         if (validateForm()) {
             onSave(formData);
         }
-    };
+    }, [validateForm, onSave, formData]);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -659,4 +665,4 @@ function BarrioDialog({ open, barrio, onClose, onSave, saving }) {
             </DialogActions>
         </Dialog>
     );
-}
+});

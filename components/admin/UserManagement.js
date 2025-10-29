@@ -17,7 +17,7 @@ import {
   Typography
 } from '@mui/material'
 import { DataGrid } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { API_URL } from '../../configuration'
 
 const ROLES = [
@@ -104,7 +104,7 @@ export default function UserManagement() {
     setDialogOpen(false)
   }
 
-  const handleDelete = async (userEmail) => {
+  const handleDelete = useCallback(async (userEmail) => {
     if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
       try {
         const response = await fetch(`${API_URL}/users/${userEmail}`, {
@@ -122,9 +122,9 @@ export default function UserManagement() {
         console.error('Error deleting user:', error)
       }
     }
-  }
+  }, [])
 
-  const processRowUpdate = async (newRow, oldRow) => {
+  const processRowUpdate = useCallback(async (newRow, oldRow) => {
     try {
       const response = await fetch(`${API_URL}/users/${newRow.email}`, {
         method: 'PUT',
@@ -145,7 +145,7 @@ export default function UserManagement() {
       console.error(error)
       return oldRow
     }
-  }
+  }, [])
 
   const columns = [
     { field: 'email', headerName: 'Email', flex: 1 },

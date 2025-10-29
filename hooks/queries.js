@@ -11,7 +11,9 @@ const usePdr = () => {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             }
-        }).then((response) => (response.json()))
+        }).then((response) => (response.json())),
+        staleTime: 5 * 60 * 1000, // 5 minutes - main data is relatively static
+        cacheTime: 10 * 60 * 1000, // 10 minutes
     })
 }
 
@@ -24,7 +26,9 @@ const usePublicPdr = () => {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             }
-        }).then((response) => (response.json()))
+        }).then((response) => (response.json())),
+        staleTime: 10 * 60 * 1000, // 10 minutes - public data changes less frequently
+        cacheTime: 15 * 60 * 1000, // 15 minutes
     })
 }
 
@@ -38,7 +42,9 @@ const useLastN = (n) => {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
-        }).then((response) => (response.json()))
+        }).then((response) => (response.json())),
+        staleTime: 2 * 60 * 1000, // 2 minutes - collection data updates more frequently
+        cacheTime: 5 * 60 * 1000, // 5 minutes
     })
 }
 
@@ -94,7 +100,10 @@ const useCurrentUser = () => {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             }
-        }).then((response) => (response.json()))
+        }).then((response) => (response.json())),
+        staleTime: 15 * 60 * 1000, // 15 minutes - user data rarely changes
+        cacheTime: 30 * 60 * 1000, // 30 minutes
+        retry: 2, // Retry auth calls a bit more
     })
 }
 
