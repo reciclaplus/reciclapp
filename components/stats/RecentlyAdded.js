@@ -3,23 +3,26 @@ import { DataGrid, esES, GridToolbar } from '@mui/x-data-grid'
 
 import dayjs from 'dayjs'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
-import { useContext, useState } from 'react'
+import { memo, useContext, useMemo, useState } from 'react'
 import { conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
 import Filter from './Filter'
 dayjs.extend(CustomParseFormat)
 
-export default function RecentlyAdded(props) {
+const RecentlyAdded = memo(function RecentlyAdded (props) {
   const pdr = props.pdr
   const { town } = useContext(TownContext)
   const categories = conf[town].categories
-  const barrios = []
-  conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
+  const barrios = useMemo(() => {
+    return conf[town].barrios.map(barrio => barrio.nombre)
+  }, [town])
   const [nWeeks, setNWeeks] = useState(4)
 
-  const recentlyAddedPdr = pdr.filter(ipdr => dayjs().diff(dayjs(ipdr.date_added, 'DD/MM/YYYY'), 'days') < 7 * nWeeks)
+  const recentlyAddedPdr = useMemo(() => {
+    return pdr.filter(ipdr => dayjs().diff(dayjs(ipdr.date_added, 'DD/MM/YYYY'), 'days') < 7 * nWeeks)
+  }, [pdr, nWeeks])
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       field: 'date_added',
       headerName: 'Añadido el día',
@@ -43,7 +46,7 @@ export default function RecentlyAdded(props) {
       },
       width: 150
     }
-  ]
+  ], [barrios, categories])
 
   const localeObj = {
     ...esES.components.MuiDataGrid.defaultProps.localeText,
@@ -83,4 +86,6 @@ export default function RecentlyAdded(props) {
       </div>
     </div>
   )
-}
+})
+
+export default RecentlyAdded

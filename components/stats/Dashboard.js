@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
+import { memo } from 'react'
 import { usePdr } from '../../hooks/queries'
 import MyPieChart from './PieChart'
 import RecentlyAdded from './RecentlyAdded'
@@ -19,10 +20,10 @@ const Item = styled(Paper)(({ theme }) => ({
 
 }))
 
-export default function Dashboard() {
+export default function Dashboard () {
 
   const pdrQuery = usePdr()
-  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
+  const pdr = pdrQuery.status === 'success' ? pdrQuery.data : []
 
   return (
     <Box sx={{ flexGrow: 1, p: 2 }}>

@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Grid'
-import { useContext, useState } from 'react'
+import { memo, useContext, useMemo, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
@@ -7,18 +7,20 @@ import { useWeeklyCollection } from '../../hooks/queries'
 import CustomTooltip from './CustomTooltip'
 import Filter from './Filter'
 
-export default function TimeSeries(props) {
+const TimeSeries = memo(function TimeSeries (props) {
   const { town } = useContext(TownContext)
   const [categoria, setCategoria] = useState('all')
   const [nWeeks, setNWeeks] = useState(52)
   const [barrio, setBarrio] = useState('all')
   const categories = conf[town].categories
-  const barriosList = []
   const barrios = conf[town].barrios
-  barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
+  
+  const barriosList = useMemo(() => {
+    return barrios.map(barrio => ({ value: barrio.nombre, label: barrio.nombre }))
+  }, [barrios])
 
   const weeklyChartQuery = useWeeklyCollection(nWeeks, categoria, barrio)
-  const barData = weeklyChartQuery.status == 'success' ? weeklyChartQuery.data : []
+  const barData = weeklyChartQuery.status === 'success' ? weeklyChartQuery.data : []
 
   return (
     <div>
@@ -38,7 +40,7 @@ export default function TimeSeries(props) {
           currentValue={barrio}
           setCurrentValue={setBarrio}
           filterName='Barrio'
-          values={[...barrios.map(b => { return { value: b.nombre, label: b.nombre } }), { value: 'all', label: 'Todo' }]}></Filter>
+          values={[...barriosList, { value: 'all', label: 'Todo' }]}></Filter>
 
       </Grid>
       <ResponsiveContainer width="100%" height={300} id="chart">
@@ -58,4 +60,6 @@ export default function TimeSeries(props) {
       </ResponsiveContainer>
     </div>
   )
-}
+})
+
+export default TimeSeries

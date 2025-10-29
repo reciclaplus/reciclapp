@@ -7,7 +7,7 @@ import { DataGrid, GridActionsCellItem, GridToolbar, esES } from '@mui/x-data-gr
 import { useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import Link from 'next/link';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { API_URL, conf } from '../../configuration';
 import { TownContext } from '../../context/TownContext';
 import { useUser } from '../../context/UserContext';
@@ -15,30 +15,35 @@ import { useLastN, usePdr } from '../../hooks/queries';
 import DeleteRowDialog from '../DeleteRowDialog';
 import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
 
-export default function DataGridTable() {
+export default function DataGridTable () {
 
   const { town } = useContext(TownContext)
   const { hasRole } = useUser();
   const [rowToDelete, setRowToDelete] = useState(null)
   const [error403, setError403] = useState(false)
-  const comunidades = []
-  conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
-  const barrios = []
-  conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
+  
+  const comunidades = useMemo(() => {
+    return conf[town].comunidades.map(comunidad => comunidad.nombre)
+  }, [town])
+  
+  const barrios = useMemo(() => {
+    return conf[town].barrios.map(barrio => barrio.nombre)
+  }, [town])
+  
   const categories = conf[town].categories
   const queryClient = useQueryClient()
 
   const pdrQuery = usePdr()
   const last5Query = useLastN(5)
-  const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
-  const last5 = last5Query.status == 'success' ? last5Query.data : []
+  const pdr = pdrQuery.status === 'success' ? pdrQuery.data : []
+  const last5 = last5Query.status === 'success' ? last5Query.data : []
 
-  function lastNweeks(params) {
-    const last5weeks = last5.map(date => ({ "value": params.row.internal_id in date ? date[params.row.internal_id]["value"] : "", "date": date["date"] }))
+  const lastNweeks = useCallback((params) => {
+    const last5weeks = last5.map(date => ({ value: params.row.internal_id in date ? date[params.row.internal_id].value : '', date: date.date }))
     return last5weeks
-  }
+  }, [last5])
 
-  function renderLastNweeks(params) {
+  const renderLastNweeks = useCallback((params) => {
 
     const result = params.value.map(date => {
       const value = date.value
@@ -63,7 +68,7 @@ export default function DataGridTable() {
         {result}
       </Box>
     )
-  }
+  }, [])
   const deleteRow = (internal_id) => {
     fetch(`${API_URL}/pdr/delete/${internal_id}`, {
       method: 'DELETE',

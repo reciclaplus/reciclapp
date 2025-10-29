@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { memo, useContext, useEffect, useMemo, useState } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import { conf } from '../../configuration'
 import { TownContext } from '../../context/TownContext'
 
-export default function MyPieChart(props) {
+const MyPieChart = memo(function MyPieChart (props) {
   const [data, setData] = useState([])
   const pdr = props.pdr
   const { town } = useContext(TownContext)
 
   const barrios = conf[town].barrios
-  const barriosList = []
-  barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
+  const barriosList = useMemo(() => {
+    return barrios.map(barrio => barrio.nombre)
+  }, [barrios])
 
   const RADIAN = Math.PI / 180
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -39,7 +40,7 @@ export default function MyPieChart(props) {
     const res = Object.values(result)
 
     setData(res)
-  }, [pdr])
+  }, [pdr, barrios])
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -60,4 +61,6 @@ export default function MyPieChart(props) {
       </PieChart>
     </ResponsiveContainer>
   )
-}
+})
+
+export default MyPieChart
