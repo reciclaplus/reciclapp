@@ -1,10 +1,32 @@
-export const API_URL = 'http://localhost:8000';
+/**
+ * Centralized Environment Configuration (moved from config/environment.js)
+ * This file consolidates runtime config for the application. Keep exports
+ * compatible with older code: { config, API_URL, conf }
+ */
 
-// Get the town from environment variable, defaulting to 'sabanayegua'
-export const TOWN = process.env.NEXT_PUBLIC_TOWN || 'sabanayegua';
+// Get the current environment
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-export const conf =
-{
+// Environment-specific configuration
+const config = {
+  // Current environment
+  environment: NODE_ENV,
+
+  // API URLs
+  apiUrl: process.env.NEXT_PUBLIC_API_URL || (NODE_ENV === 'production'
+    ? 'https://fastapi-dot-norse-voice-343214.uc.r.appspot.com'
+    : 'http://localhost:8000'),
+
+  // Helper functions
+  isDevelopment: () => NODE_ENV === 'development',
+  isProduction: () => NODE_ENV === 'production',
+};
+
+// Environment-aware API URL
+const API_URL = config.apiUrl;
+
+// Keep the existing conf object for backward compatibility
+const conf = {
   sabanayegua: {
     nombre: 'Sabana Yegua',
     file: 'Puntos_SY.json',
@@ -47,10 +69,12 @@ export const conf =
   proyecto4: {
     nombre: 'Proyecto 4',
     file: 'Puntos_P4.json',
-    barrios: [{ nombre: 'P4 Viejo Oeste', color: '#FF95C5', center: '18.412643,-70.828455' },
-    { nombre: 'P4 Viejo Este', color: '#8884d8', center: '18.412103,-70.823498' },
-    { nombre: 'P4 Nuevo Oeste', color: '#82ca9d', center: '18.421417,-70.829368' },
-    { nombre: 'P4 Nuevo Este', color: '#FFC898', center: '18.420669,-70.824762' }],
+    barrios: [
+      { nombre: 'P4 Viejo Oeste', color: '#FF95C5', center: '18.412643,-70.828455' },
+      { nombre: 'P4 Viejo Este', color: '#8884d8', center: '18.412103,-70.823498' },
+      { nombre: 'P4 Nuevo Oeste', color: '#82ca9d', center: '18.421417,-70.829368' },
+      { nombre: 'P4 Nuevo Este', color: '#FFC898', center: '18.420669,-70.824762' }
+    ],
     map_center: { lat: 18.416482964779416, lng: -70.82662731805073 }
   },
   sample: {
@@ -72,6 +96,13 @@ export const conf =
       { nombre: 'El Abanico', color: '#ffff94', center: '18.4629935,-70.8337693' },
       { nombre: 'Los Cartones', color: '#C8C6C6', center: '18.4604671,-70.8372607' },
       { nombre: 'Barrio Tranquilo', color: '#FF5C58', center: '18.4649761,-70.8411297' },
-      { nombre: 'Las Mercedes', color: '#5D5B5B', center: '18.4671061,-70.8334927' }]
+      { nombre: 'Las Mercedes', color: '#5D5B5B', center: '18.4671061,-70.8334927' }
+    ]
   }
-}
+};
+
+// Exports (CommonJS)
+module.exports = { config, API_URL, conf };
+module.exports.default = config;
+module.exports.API_URL = API_URL;
+module.exports.conf = conf;

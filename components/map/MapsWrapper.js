@@ -1,10 +1,10 @@
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 import { CircularProgress } from "@mui/material";
-import { GOOGLE_API_KEY } from '../gcloud/google';
 
+const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 const render = (status) => {
   if (status === Status.FAILURE) return <ErrorComponent />;
-  return <CircularProgress size={130} thickness={6} sx={{ ml: 2 }}/>;
+  return <CircularProgress size={130} thickness={6} sx={{ ml: 2 }} />;
 };
 
 export const MapsWrapper = ({ children }) => (

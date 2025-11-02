@@ -2,7 +2,7 @@
     "env": {
         "browser": true,
         "es2021": true,
-        "jest/globals": true
+        "jest": true
     },
     "extends": [
         "plugin:react/recommended",
@@ -17,8 +17,7 @@
     },
     "plugins": [
         "react",
-        "unused-imports",
-        "jest"
+        "unused-imports"
     ],
     "rules": {
         "react/react-in-jsx-scope": "off",

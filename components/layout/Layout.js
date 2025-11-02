@@ -1,3 +1,5 @@
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { PermissionGuard } from '../common/PermissionGuard';
 /* eslint-disable no-undef */
 /* global gapi */
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -106,6 +108,13 @@ function Layout({ children, ...props }) {
               <InfoOutlinedIcon />
             </IconButton>
           </Link>
+          <PermissionGuard role="admin">
+            <Link href="/admin">
+              <IconButton aria-label="admin panel" color="inherit">
+                <AdminPanelSettingsIcon />
+              </IconButton>
+            </Link>
+          </PermissionGuard>
         </Toolbar>
       </AppBar>
       <Box

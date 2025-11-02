@@ -2,20 +2,31 @@ import json
 import os
 from typing import Annotated, Union
 
-import firebase_admin
-from fastapi import Depends, FastAPI, Header, Response, Request, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from firebase_admin import credentials
 from google.auth.transport import requests
-from google.oauth2 import id_token
+from google.cloud import firestore
+from google.oauth2 import id_token, service_account
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 
-cred = credentials.Certificate("./routers/firestore-service-account.json")
-firebase_app = firebase_admin.initialize_app(cred)
+# Import environment configuration
+from .config import config
+
+# Create a google-cloud Firestore client so we can target a non-default database
+# Use the same service account file configured in `config`.
+gcloud_creds = service_account.Credentials.from_service_account_file(
+    config.firestore_service_account_file
+)
+# Expose `firestore_client` for other modules to import from this package.
+firestore_client = firestore.Client(
+    project=config.firebase_project_id,
+    credentials=gcloud_creds,
+    database=config.firestore_database_id,
+)
 
 from .dependencies import User, get_current_user
-from .routers import pdr, public, recogida, users
+from .routers import pdr, public, recogida, towns, users
 
 app = FastAPI()
 
@@ -24,23 +35,22 @@ app.include_router(pdr.router)
 app.include_router(recogida.router)
 app.include_router(public.router)
 app.include_router(users.router)
+app.include_router(towns.router)
 
 
+# Environment-aware OAuth flow setup
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
 flow = Flow.from_client_secrets_file(
-    "./client_secret_.json",
+    config.client_secret_file,
     scopes=[
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
     ],
-    redirect_uri="http://localhost:3000",
+    redirect_uri=config.oauth_redirect_uri,
 )
 
-origins = [
-    "https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com",
-    "https://sabanayegua.reciclaplus.com",
-    "http://localhost:3000",
-]
+# Environment-aware CORS origins
+origins = config.allowed_origins
 
 app.add_middleware(
     CORSMiddleware,
@@ -50,7 +60,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-with open("./client_secret_.json") as f:
+# Load client secrets with environment-aware path
+with open(config.client_secret_file) as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
 
@@ -61,7 +72,9 @@ async def root():
 
 
 @app.get("/auth")
-def authentication(response: Response, authorization: Annotated[Union[str, None], Header()] = None):
+def authentication(
+    response: Response, authorization: Annotated[Union[str, None], Header()] = None
+):
     code = authorization.split(" ")[1]
     flow.fetch_token(code=code)
     credentials = flow.credentials
@@ -73,15 +86,17 @@ def authentication(response: Response, authorization: Annotated[Union[str, None]
 
     # Determine if we're in production (HTTPS) or development (HTTP)
     is_production = os.environ.get("ENV") == "production"
-    
+
     # Set secure HTTP-only cookies
     response.set_cookie(
         key="access_token",
         value=credentials.token,
         httponly=True,
         secure=is_production,  # Only secure in production (HTTPS)
-        samesite="lax" if not is_production else "strict",  # More lenient for development
-        max_age=3600  # 1 hour
+        samesite="lax"
+        if not is_production
+        else "strict",  # More lenient for development
+        max_age=3600,  # 1 hour
     )
     response.set_cookie(
         key="id_token",
@@ -89,7 +104,7 @@ def authentication(response: Response, authorization: Annotated[Union[str, None]
         httponly=True,
         secure=is_production,
         samesite="lax" if not is_production else "strict",
-        max_age=3600  # 1 hour
+        max_age=3600,  # 1 hour
     )
     response.set_cookie(
         key="refresh_token",
@@ -97,7 +112,7 @@ def authentication(response: Response, authorization: Annotated[Union[str, None]
         httponly=True,
         secure=is_production,
         samesite="lax" if not is_production else "strict",
-        max_age=2592000  # 30 days
+        max_age=2592000,  # 30 days
     )
 
     return {
@@ -105,17 +120,21 @@ def authentication(response: Response, authorization: Annotated[Union[str, None]
         "id_token": credentials.id_token,
         "refresh_token": credentials.refresh_token,
         "expiry": credentials.expiry.strftime("%Y-%m-%d %H:%M:%S"),
-        "message": "Authentication successful, tokens set in cookies"
+        "message": "Authentication successful, tokens set in cookies",
     }
 
 
 @app.get("/refresh-token")
-def refresh_token(request: Request, response: Response, authorization: Annotated[Union[str, None], Header()] = None):
+def refresh_token(
+    request: Request,
+    response: Response,
+    authorization: Annotated[Union[str, None], Header()] = None,
+):
     # Try to get refresh token from cookie first, then fallback to header
     refresh_token_value = request.cookies.get("refresh_token")
     if not refresh_token_value and authorization:
         refresh_token_value = authorization.split(" ")[1]
-    
+
     if not refresh_token_value:
         raise HTTPException(status_code=401, detail="No refresh token provided")
 
@@ -149,7 +168,7 @@ def refresh_token(request: Request, response: Response, authorization: Annotated
         httponly=True,
         secure=is_production,
         samesite="lax" if not is_production else "strict",
-        max_age=3600  # 1 hour
+        max_age=3600,  # 1 hour
     )
     response.set_cookie(
         key="id_token",
@@ -157,7 +176,7 @@ def refresh_token(request: Request, response: Response, authorization: Annotated
         httponly=True,
         secure=is_production,
         samesite="lax" if not is_production else "strict",
-        max_age=3600  # 1 hour
+        max_age=3600,  # 1 hour
     )
     response.set_cookie(
         key="refresh_token",
@@ -165,7 +184,7 @@ def refresh_token(request: Request, response: Response, authorization: Annotated
         httponly=True,
         secure=is_production,
         samesite="lax" if not is_production else "strict",
-        max_age=2592000  # 30 days
+        max_age=2592000,  # 30 days
     )
 
     return {
@@ -173,7 +192,7 @@ def refresh_token(request: Request, response: Response, authorization: Annotated
         "id_token": credentials.id_token,
         "refresh_token": credentials.refresh_token,
         "expiry": credentials.expiry.strftime("%Y-%m-%d %H:%M:%S"),
-        "message": "Tokens refreshed and updated in cookies"
+        "message": "Tokens refreshed and updated in cookies",
     }
 
 

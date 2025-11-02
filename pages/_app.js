@@ -8,7 +8,6 @@ import {
 } from '@tanstack/react-query'
 import Head from 'next/head'
 import { useState } from 'react'
-import { GOOGLE_API_KEY } from '../components/gcloud/google'
 import { TOWN } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { StatsContext } from '../context/StatsContext'
@@ -73,7 +72,7 @@ function MyApp({ Component, pageProps }) {
                       <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet" />
                     </Head>
                     <Component {...pageProps} />
-                    <script async defer src={`https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}`}></script>
+                    <script async defer src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}></script>
                   </StatsContext.Provider>
                 </WeightContext.Provider>
               </PdrContext.Provider>

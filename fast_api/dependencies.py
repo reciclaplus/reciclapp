@@ -2,13 +2,18 @@ import json
 from typing import Annotated, Union
 
 from fastapi import Depends, Header, HTTPException, Request
-from firebase_admin import firestore
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from pydantic import BaseModel
 
-db = firestore.client()
-with open("./client_secret_.json") as f:
+# Import environment configuration
+from .config import config
+
+# Environment-aware Firestore client
+from .main import firestore_client as db
+
+# Load client secrets with environment-aware path
+with open(config.client_secret_file) as f:
     data = json.load(f)
     client_id = data["web"]["client_id"]
 
@@ -21,15 +26,14 @@ class User(BaseModel):
 
 
 def get_current_user(
-    request: Request,
-    authorization: Annotated[Union[str, None], Header()] = None
+    request: Request, authorization: Annotated[Union[str, None], Header()] = None
 ):
     # Try to get token from cookie first, then fallback to header for backward compatibility
     token = request.cookies.get("access_token")
-    
+
     if not token and authorization and "undefined" not in authorization:
         token = authorization.split(" ")[1]
-    
+
     if not token or "undefined" in str(token):
         raise HTTPException(
             status_code=403, detail="You are not authorized to access this resource"
@@ -41,7 +45,10 @@ def get_current_user(
     user_info = user_info_service.userinfo().get().execute()
 
     # Get user from Firestore to include role and permissions
-    user_doc = db.collection("users").where("email", "==", user_info["email"]).get()
+    users_collection = "users"
+    user_doc = (
+        db.collection(users_collection).where("email", "==", user_info["email"]).get()
+    )
 
     if user_doc:
         user_data = user_doc[0].to_dict()
@@ -64,7 +71,11 @@ def get_current_user(
 
 def valid_user(current_user: Annotated[User, Depends(get_current_user)]):
     """Check if the user is a valid user"""
-    valid_users = [doc.to_dict()["email"] for doc in db.collection("users").stream()]
+    # Use environment-aware collection name
+    users_collection = "users"
+    valid_users = [
+        doc.to_dict()["email"] for doc in db.collection(users_collection).stream()
+    ]
 
     if current_user.email in valid_users:
         return current_user
