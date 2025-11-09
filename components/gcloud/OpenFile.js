@@ -3,10 +3,10 @@ import { Button } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useContext, useState } from 'react'
-import { API_URL, conf } from '../../configuration'
+import { API_URL } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { StatsContext } from '../../context/StatsContext'
-import { TownContext } from '../../context/TownContext'
+import { useTownContext } from '../../context/TownContext'
 import { WeightContext } from '../../context/WeightContext'
 import CustomAlert from '../CustomAlert'
 import { BUCKET_NAME } from './google'
@@ -15,12 +15,12 @@ function OpenFile(props) {
   const router = useRouter()
   const { setPdr } = useContext(PdrContext)
   const { setStats } = useContext(StatsContext)
-  const { town } = useContext(TownContext)
+  const { town, townConfig } = useTownContext()
   const { setWeight } = useContext(WeightContext)
   const [isOpening, setIsOpening] = useState(false)
   const [alertMessage, setAlertMessage] = useState(null)
 
-  const file = conf[town].file
+  const file = townConfig?.file
 
   const bucket = town === 'sample' ? 'reciclaplus-public' : BUCKET_NAME
 

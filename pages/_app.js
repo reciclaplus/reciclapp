@@ -8,10 +8,9 @@ import {
 } from '@tanstack/react-query'
 import Head from 'next/head'
 import { useState } from 'react'
-import { TOWN } from '../configuration'
 import { PdrContext } from '../context/PdrContext'
 import { StatsContext } from '../context/StatsContext'
-import { TownContext } from '../context/TownContext'
+import { TownProvider } from '../context/TownContext'
 import { UserProvider } from '../context/UserContext'
 import { WeightContext } from '../context/WeightContext'
 import '../styles/globals.css'
@@ -51,15 +50,12 @@ function MyApp({ Component, pageProps }) {
   const [stats, setStats] = useState([])
   const statsContextValue = { stats, setStats }
 
-  // Town is now a constant from environment/deployment configuration
-  const townContextValue = { town: TOWN }
-
   return (
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId="744932747687-7v0siduke54vc60617ibt1m3gpmp207a.apps.googleusercontent.com">
         <ThemeProvider theme={theme}>
           <UserProvider>
-            <TownContext.Provider value={townContextValue}>
+            <TownProvider>
               <PdrContext.Provider value={contextValue}>
                 <WeightContext.Provider value={weightContextValue}>
                   <StatsContext.Provider value={statsContextValue}>
@@ -76,7 +72,7 @@ function MyApp({ Component, pageProps }) {
                   </StatsContext.Provider>
                 </WeightContext.Provider>
               </PdrContext.Provider>
-            </TownContext.Provider>
+            </TownProvider>
           </UserProvider>
         </ThemeProvider>
       </GoogleOAuthProvider>

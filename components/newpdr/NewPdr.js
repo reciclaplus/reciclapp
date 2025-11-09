@@ -8,9 +8,9 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import { useQueryClient } from '@tanstack/react-query'
 import moment from 'moment'
-import { useContext, useState } from 'react'
-import { API_URL, conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { useState } from 'react'
+import { API_URL } from '../../configuration'
+import { useTownContext } from '../../context/TownContext'
 import { usePdr } from '../../hooks/queries'
 import { pdrExists, setNewInternalId } from '../../utils/pdr-management'
 import CustomAlert from '../CustomAlert'
@@ -18,8 +18,8 @@ import { MapsWrapper } from '../map/MapsWrapper'
 import NewPdrMap from './NewPdrMap'
 
 export default function NewPdr(props) {
-  const { town } = useContext(TownContext)
-  const categories = conf[town].categories
+  const { townConfig } = useTownContext();
+  const categories = townConfig?.categories || [];
   const [state, setState] = useState({
     zafacon: false,
     barrio: '',
@@ -32,10 +32,7 @@ export default function NewPdr(props) {
 
   const [alertMessage, setAlertMessage] = useState(null)
   const [newMarker, setNewMarker] = useState('')
-  const barrios = []
-  conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
-  const comunidades = []
-  conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
+  const comunidades = townConfig?.comunidades?.map(c => c.nombre) || [];
   const queryClient = useQueryClient()
 
   const pdrQuery = usePdr()
@@ -174,8 +171,8 @@ export default function NewPdr(props) {
               <option value=""></option>
               {
                 state.comunidad != '' ?
-                  conf[town].comunidades.find(obj => { return obj.nombre === state.comunidad }).barrios.map(item => {
-                    return (<option value={item} key={item}>{item}</option>)
+                  townConfig.comunidades.find(obj => { return obj.nombre === state.comunidad })?.barrios?.map(item => {
+                    return (<option value={item.nombre} key={item.nombre}>{item.nombre}</option>)
                   })
                   : <></>
               }

@@ -7,9 +7,9 @@ import { DataGrid, GridActionsCellItem, GridToolbar, esES } from '@mui/x-data-gr
 import { useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import Link from 'next/link';
-import { useCallback, useContext, useState } from 'react';
-import { API_URL, conf } from '../../configuration';
-import { TownContext } from '../../context/TownContext';
+import { useCallback, useState } from 'react';
+import { API_URL } from '../../configuration';
+import { useTownContext } from '../../context/TownContext';
 import { useUser } from '../../context/UserContext';
 import { useLastN, usePdr } from '../../hooks/queries';
 import DeleteRowDialog from '../DeleteRowDialog';
@@ -17,15 +17,16 @@ import { GreenRadio, RedRadio, YellowRadio } from '../RadioButtons';
 
 export default function DataGridTable() {
 
-  const { town } = useContext(TownContext)
+  const { townConfig } = useTownContext();
   const { hasRole } = useUser();
   const [rowToDelete, setRowToDelete] = useState(null)
   const [error403, setError403] = useState(false)
-  const comunidades = []
-  conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
-  const barrios = []
-  conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
-  const categories = conf[town].categories
+
+  // Extract configuration from townConfig with fallback to empty arrays
+  const comunidades = townConfig?.comunidades?.map(c => c.nombre) || [];
+  const barrios = townConfig?.comunidades?.flatMap(c => c.barrios?.map(b => b.nombre) || []) || [];
+  const categories = townConfig?.categories || [];
+
   const queryClient = useQueryClient()
 
   const pdrQuery = usePdr()

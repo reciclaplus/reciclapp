@@ -25,6 +25,8 @@ const config = {
 // Environment-aware API URL
 const API_URL = config.apiUrl;
 
+const TOWN = process.env.NEXT_PUBLIC_TOWN || 'sabanayegua';
+
 // Keep the existing conf object for backward compatibility
 const conf = {
   sabanayegua: {
@@ -105,4 +107,5 @@ const conf = {
 module.exports = { config, API_URL, conf };
 module.exports.default = config;
 module.exports.API_URL = API_URL;
+module.exports.TOWN = TOWN;
 module.exports.conf = conf;

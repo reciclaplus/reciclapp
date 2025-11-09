@@ -135,5 +135,36 @@ const usePublicWeight = () => {
     })
 }
 
-export { useCurrentUser, useLastN, usePdr, usePublicPdr, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useWeeklyCollection, useWeight }
+const useTowns = () => {
+    return useQuery({
+        queryKey: ['towns'],
+        queryFn: () => fetch(`${API_URL}/towns`, {
+            method: 'GET',
+            credentials: 'include', // Include cookies
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            }
+        }).then((response) => response.json()),
+        staleTime: 300000 // Cache for 5 minutes
+    })
+}
+
+const useTown = (townId) => {
+    return useQuery({
+        queryKey: ['town', townId],
+        queryFn: () => fetch(`${API_URL}/towns/${townId}`, {
+            method: 'GET',
+            credentials: 'include', // Include cookies
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            }
+        }).then((response) => response.json()),
+        enabled: !!townId, // Only run query if townId is provided
+        staleTime: 300000 // Cache for 5 minutes
+    })
+}
+
+export { useCurrentUser, useLastN, usePdr, usePublicPdr, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useTown, useTowns, useWeeklyCollection, useWeight }
 

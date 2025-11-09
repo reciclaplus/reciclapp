@@ -1,21 +1,18 @@
 import Grid from '@mui/material/Grid'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { useTownContext } from '../../context/TownContext'
 import { useWeeklyCollection } from '../../hooks/queries'
 import CustomTooltip from './CustomTooltip'
 import Filter from './Filter'
 
 export default function TimeSeries(props) {
-  const { town } = useContext(TownContext)
+  const { townConfig } = useTownContext()
   const [categoria, setCategoria] = useState('all')
   const [nWeeks, setNWeeks] = useState(52)
   const [barrio, setBarrio] = useState('all')
-  const categories = conf[town].categories
-  const barriosList = []
-  const barrios = conf[town].barrios
-  barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
+  const categories = townConfig?.categories || []
+  const barrios = townConfig?.comunidades?.flatMap(c => c.barrios || []) || []
 
   const weeklyChartQuery = useWeeklyCollection(nWeeks, categoria, barrio)
   const barData = weeklyChartQuery.status == 'success' ? weeklyChartQuery.data : []

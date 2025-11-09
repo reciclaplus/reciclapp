@@ -1,16 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
-import { conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { useTownContext } from '../../context/TownContext'
 
 export default function MyPieChart(props) {
   const [data, setData] = useState([])
   const pdr = props.pdr
-  const { town } = useContext(TownContext)
+  const { townConfig } = useTownContext()
 
-  const barrios = conf[town].barrios
-  const barriosList = []
-  barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
+  // Extract all barrios from all comunidades
+  const barrios = townConfig?.comunidades?.flatMap(c => c.barrios || []) || []
+  const barriosList = barrios.map(b => b.nombre)
 
   const RADIAN = Math.PI / 180
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {

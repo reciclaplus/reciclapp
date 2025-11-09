@@ -1,24 +1,23 @@
 /* eslint-disable no-undef */
 import { Button } from '@mui/material'
 import { useContext, useState } from 'react'
-import { conf } from '../../configuration'
 import { PdrContext } from '../../context/PdrContext'
 import { StatsContext } from '../../context/StatsContext'
-import { TownContext } from '../../context/TownContext'
+import { useTownContext } from '../../context/TownContext'
 import { WeightContext } from '../../context/WeightContext'
 import CustomAlert from '../CustomAlert'
 import { BUCKET_NAME } from './google'
 
-function UploadFile (props) {
+function UploadFile(props) {
   const { pdr } = useContext(PdrContext)
-  const { town } = useContext(TownContext)
+  const { town, townConfig } = useTownContext()
   const { weight } = useContext(WeightContext)
   const { stats } = useContext(StatsContext)
   const [alertMessage, setAlertMessage] = useState(null)
 
   const bucket = town === 'sample' ? 'reciclaplus-public' : BUCKET_NAME
 
-  function upload () {
+  function upload() {
     if (pdr.length > 0) {
       uploadFunction()
     } else {
@@ -26,16 +25,16 @@ function UploadFile (props) {
         <CustomAlert
           message='No hay puntos en el archivo actual'
           setAlertMessage={setAlertMessage}
-          severity='error'/>
+          severity='error' />
       )
     }
   }
 
-  function uploadFunction () {
+  function uploadFunction() {
     const boundary = 'foo_bar_baz'
     const delimiter = '\r\n--' + boundary + '\r\n'
     const closeDelim = '\r\n--' + boundary + '--'
-    const fileName = conf[town].file
+    const fileName = townConfig?.file
     const fileData = JSON.stringify({ pdr, peso: weight, stats })
     const contentType = 'text/plain'
     const metadata = {
@@ -69,7 +68,7 @@ function UploadFile (props) {
           <CustomAlert
             message='Archivo guardado correctamente'
             setAlertMessage={setAlertMessage}
-            severity='success'/>
+            severity='success' />
         )
       } else {
         console.log(JSON.parse(rawResponse))
@@ -77,17 +76,17 @@ function UploadFile (props) {
           <CustomAlert
             message='No se pudo guardar el archivo'
             setAlertMessage={setAlertMessage}
-            severity='error'/>
+            severity='error' />
         )
       }
     })
   }
 
   return (
-      <div>
-        {alertMessage}
-        <Button id="upload-btn" component="a" variant="contained" color="primary" onClick={upload}>Guardar</Button>
-      </div>
+    <div>
+      {alertMessage}
+      <Button id="upload-btn" component="a" variant="contained" color="primary" onClick={upload}>Guardar</Button>
+    </div>
   )
 }
 

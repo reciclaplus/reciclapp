@@ -1,6 +1,5 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import { conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { useEffect, useRef, useState } from 'react'
+import { useTownContext } from '../../context/TownContext'
 import { addMarker } from '../map/BaseMap'
 
 function NewPdrMap(props) {
@@ -8,11 +7,11 @@ function NewPdrMap(props) {
   const [googleMap, setGoogleMap] = useState(null)
 
   const pdr = props.pdr
-  const { town } = useContext(TownContext)
+  const { townConfig } = useTownContext();
 
   useEffect(() => {
 
-    const center = conf[town].map_center
+    const center = townConfig?.map_center || { lat: 18.4606607, lng: -70.8405734 }
 
     const zoom = 14
     function initGoogleMap() {
@@ -22,14 +21,17 @@ function NewPdrMap(props) {
       })
     }
     setGoogleMap(initGoogleMap())
-  }, [googleMapRef])
+  }, [googleMapRef, townConfig])
 
   useEffect(() => {
-    if (props.comunidad != '' && googleMap !== null) {
-      const map_center = conf[town].comunidades.find(obj => { return obj.nombre === props.comunidad }).center
-      googleMap.setCenter({ lat: parseFloat(map_center.split(",")[0]), lng: parseFloat(map_center.split(",")[1]) })
+    if (props.comunidad != '' && googleMap !== null && townConfig) {
+      const comunidad = townConfig.comunidades?.find(obj => { return obj.nombre === props.comunidad })
+      if (comunidad?.center) {
+        const map_center = comunidad.center
+        googleMap.setCenter({ lat: parseFloat(map_center.split(",")[0]), lng: parseFloat(map_center.split(",")[1]) })
+      }
     }
-  }, [props.comunidad])
+  }, [props.comunidad, googleMap, townConfig])
 
   useEffect(() => {
     if (googleMap !== null) {

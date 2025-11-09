@@ -3,18 +3,16 @@ import { DataGrid, esES, GridToolbar } from '@mui/x-data-grid'
 
 import dayjs from 'dayjs'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
-import { useContext, useState } from 'react'
-import { conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { useState } from 'react'
+import { useTownContext } from '../../context/TownContext'
 import Filter from './Filter'
 dayjs.extend(CustomParseFormat)
 
 export default function RecentlyAdded(props) {
   const pdr = props.pdr
-  const { town } = useContext(TownContext)
-  const categories = conf[town].categories
-  const barrios = []
-  conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
+  const { townConfig } = useTownContext()
+  const categories = townConfig?.categories || []
+  const barrios = townConfig?.comunidades?.flatMap(c => c.barrios?.map(b => b.nombre) || []) || []
   const [nWeeks, setNWeeks] = useState(4)
 
   const recentlyAddedPdr = pdr.filter(ipdr => dayjs().diff(dayjs(ipdr.date_added, 'DD/MM/YYYY'), 'days') < 7 * nWeeks)
