@@ -70,26 +70,25 @@ async def get_successful_recogidas():
 
     for doc in docs:
         doc_dict = doc.to_dict()
-        # Skip metadata fields
-        if "week" in doc_dict or "date" in doc_dict:
-            doc_date_str = doc_dict.get("date")
-            if doc_date_str:
-                try:
-                    doc_date = datetime.strptime(doc_date_str, "%d/%m/%Y")
+        # Only process documents that have a date field
+        doc_date_str = doc_dict.get("date")
+        if doc_date_str:
+            try:
+                doc_date = datetime.strptime(doc_date_str, "%d/%m/%Y")
 
-                    # Count successful recogidas (value == 'si')
-                    successful_count = sum(
-                        1
-                        for key, value in doc_dict.items()
-                        if isinstance(value, dict) and value.get("value") == "si"
-                    )
+                # Count successful recogidas (value == 'si')
+                successful_count = sum(
+                    1
+                    for key, value in doc_dict.items()
+                    if isinstance(value, dict) and value.get("value") == "si"
+                )
 
-                    if doc_date >= one_month_ago:
-                        last_month_count += successful_count
-                    if doc_date >= one_year_ago:
-                        last_year_count += successful_count
-                except (ValueError, TypeError):
-                    continue
+                if doc_date >= one_month_ago:
+                    last_month_count += successful_count
+                if doc_date >= one_year_ago:
+                    last_year_count += successful_count
+            except (ValueError, TypeError):
+                continue
 
     return {"last_month": last_month_count, "last_year": last_year_count}
 
