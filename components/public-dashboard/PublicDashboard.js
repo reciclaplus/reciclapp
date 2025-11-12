@@ -6,12 +6,14 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
 import { useTownContext } from '../../context/TownContext'
-import { usePublicPdr } from '../../hooks/queries'
+import { usePublicPdr, usePublicSuccessfulRecogidas, usePublicWeightTotals } from '../../hooks/queries'
 import { GOOGLE_API_KEY } from '../gcloud/google'
 import MonthlyWeight from './MonthlyWeight'
+import PdrByCategoria from './PdrByCategoria'
 import PieChartDemo from './PieChartDemo'
 import SingleStat from './SingleStat'
 import WeeklyCollection from './WeeklyCollection'
+import WeightByType from './WeightByType'
 
 export const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -37,6 +39,12 @@ export default function PublicDashboard() {
     const pdrQuery = usePublicPdr()
     const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
 
+    const recogidaStatsQuery = usePublicSuccessfulRecogidas()
+    const recogidaStats = recogidaStatsQuery.status === 'success' ? recogidaStatsQuery.data : { last_month: 0, last_year: 0 }
+
+    const weightTotalsQuery = usePublicWeightTotals()
+    const weightTotals = weightTotalsQuery.status === 'success' ? weightTotalsQuery.data : { total: 0 }
+
     return (
         <Box sx={{ bgcolor: '#f4f4f6' }}>
             <AppBar position="static">
@@ -55,36 +63,81 @@ export default function PublicDashboard() {
                     </Typography>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                     <Item>
                         <SingleStat stat={comunidades.length} text='comunidades' subtext='En la provincia de Azua y San Juan' />
                     </Item>
                 </Grid>
 
-
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                     <Item>
                         <SingleStat stat={pdr.length} text='puntos de recogida' subtext='entre particulares, escuelas, negocios y otros' />
                     </Item>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                     <Item>
                         <SingleStat stat={pdr.filter((item) => item.categoria === 'escuela').length} text='centros educativos' subtext='incluyendo centros infantiles, escuelas, colegios y liceos' />
                     </Item>
                 </Grid>
 
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={3}>
                     <Item>
+                        <SingleStat 
+                            stat={weightTotals.total ? weightTotals.total.toFixed(0) : 0} 
+                            text='libras de plástico' 
+                            subtext='recogidas en total' 
+                        />
+                    </Item>
+                </Grid>
 
+                <Grid item xs={12} md={6}>
+                    <Item>
                         <PieChartDemo pdr={pdr} />
+                    </Item>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                    <Item>
+                        <PdrByCategoria />
                     </Item>
                 </Grid>
 
                 <Grid item xs={12} md={8}>
                     <Item>
+                        <img src={url} height='100%' width='100%' alt='Mapa de comunidades' />
+                    </Item>
+                </Grid>
 
-                        <img src={url} height='100%' width='100%' />
+                <Grid item xs={12} md={4}>
+                    <Item>
+                        <WeightByType />
+                    </Item>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Typography variant="h5" component="h2" color='primary' sx={{ mt: 2 }}>
+                        Recogidas exitosas
+                    </Typography>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                    <Item>
+                        <SingleStat 
+                            stat={recogidaStats.last_month} 
+                            text='recogidas exitosas' 
+                            subtext='en el último mes' 
+                        />
+                    </Item>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                    <Item>
+                        <SingleStat 
+                            stat={recogidaStats.last_year} 
+                            text='recogidas exitosas' 
+                            subtext='en el último año' 
+                        />
                     </Item>
                 </Grid>
 
