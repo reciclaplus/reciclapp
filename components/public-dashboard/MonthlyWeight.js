@@ -1,37 +1,25 @@
-import ReactECharts from 'echarts-for-react';
-import { usePublicWeight } from '../../hooks/queries';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { usePublicWeight } from '../../hooks/queries'
 
-export default function MonthlyWeight() {
+export default function MonthlyWeight () {
+  const weightQuery = usePublicWeight()
+  const weight = weightQuery.status === 'success' ? weightQuery.data : []
 
-    const weightQuery = usePublicWeight()
-    const weight = weightQuery.status == 'success' ? weightQuery.data : []
+  const data = weight.map((item) => ({
+    month_year: item.month_year,
+    'Libras mensuales': item.plasticoduro + item.pet + item.galones
+  }))
 
-    const options = {
-        textStyle: {
-            fontFamily: "Oswald"
-        },
-        legend: { show: true },
-        tooltip: {
-            trigger: 'item'
-        },
-        xAxis: {
-            type: 'category',
-            data: weight.map((item) => item["month_year"])
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [
-            {
-                data: weight.map((item) => item["plasticoduro"] + item["pet"] + item["galones"]),
-                type: 'bar',
-                name: 'Libras mensuales',
-                color: '#494791'
-            }
-        ]
-    };
-
-    return (
-        <ReactECharts option={options} />
-    );
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <BarChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="month_year" angle={-45} textAnchor="end" height={100} />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Bar dataKey="Libras mensuales" fill="#494791" />
+      </BarChart>
+    </ResponsiveContainer>
+  )
 }
