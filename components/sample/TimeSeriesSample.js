@@ -1,15 +1,12 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-import { conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { useTownContext } from '../../context/TownContext'
 
-export default function TimeSeriesSample (props) {
+export default function TimeSeriesSample(props) {
   const [barData, setBarData] = useState()
-  const { town } = useContext(TownContext)
-  const barriosList = []
-  const barrios = conf[town].barrios
-  barrios.forEach((barrio) => { barriosList.push(barrio.nombre) })
+  const { townConfig } = useTownContext()
+  const barrios = townConfig?.comunidades?.flatMap(c => c.barrios || []) || []
 
   useEffect(() => {
     fetch('./api/sample-data/time-series', {
@@ -28,21 +25,21 @@ export default function TimeSeriesSample (props) {
 
   return (
     <div>
-    <ResponsiveContainer width="100%" height={300} id="chart">
-      <BarChart
-        data={barData}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        {barrios.map(item => {
-          return (<Bar dataKey={item.nombre} stackId="a" fill={item.color} key={item.nombre}>{item.nombre}</Bar>)
-        })}
-      </BarChart>
+      <ResponsiveContainer width="100%" height={300} id="chart">
+        <BarChart
+          data={barData}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          {barrios.map(item => {
+            return (<Bar dataKey={item.nombre} stackId="a" fill={item.color} key={item.nombre}>{item.nombre}</Bar>)
+          })}
+        </BarChart>
 
-    </ResponsiveContainer>
+      </ResponsiveContainer>
 
     </div>
   )

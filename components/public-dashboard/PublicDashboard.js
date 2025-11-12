@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
-import { conf } from '../../configuration'
+import { useTownContext } from '../../context/TownContext'
 import { usePublicPdr } from '../../hooks/queries'
 import { GOOGLE_API_KEY } from '../gcloud/google'
 import MonthlyWeight from './MonthlyWeight'
@@ -25,7 +25,8 @@ export const Item = styled(Paper)(({ theme }) => ({
 
 export default function PublicDashboard() {
 
-    const comunidades = conf['sabanayegua']['comunidades']
+    const { townConfig } = useTownContext()
+    const comunidades = townConfig?.comunidades || []
 
     var url = 'https://maps.googleapis.com/maps/api/staticmap?center=18.4606607,-70.8405734&zoom=7&size=300x100&scale=2&maptype=roadmap'
     comunidades.forEach((marker) => {

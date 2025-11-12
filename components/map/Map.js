@@ -2,11 +2,10 @@
 
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import initPolygonsP4 from '../../config/P4/P4Polygons';
 import initPolygonsSY from '../../config/SY/SYPolygons';
-import { conf } from '../../configuration';
-import { TownContext } from '../../context/TownContext';
+import { useTownContext } from '../../context/TownContext';
 import { usePdr } from '../../hooks/queries';
 
 export const MapComponent = (props) => {
@@ -14,12 +13,12 @@ export const MapComponent = (props) => {
   const googleMapRef = useRef(null)
   const [googleMap, setGoogleMap] = useState(null)
 
-  const { town } = useContext(TownContext)
+  const { townConfig } = useTownContext();
 
   const router = useRouter()
   const { lat, lng, zoom, editable } = router.query
 
-  const center = (!isNaN(lat)) ? ({ lat: Number(lat), lng: Number(lng) }) : conf[town].map_center
+  const center = (!isNaN(lat)) ? ({ lat: Number(lat), lng: Number(lng) }) : (townConfig?.map_center || { lat: 18.4606607, lng: -70.8405734 })
   const zoomMap = (!isNaN(zoom)) ? Number(zoom) : 14
 
   const pdrQuery = usePdr()

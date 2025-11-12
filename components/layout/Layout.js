@@ -4,7 +4,7 @@ import { PermissionGuard } from '../common/PermissionGuard';
 /* global gapi */
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
-import { FormControl, InputLabel, ListItem, NativeSelect } from '@mui/material';
+import { ListItem } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -19,8 +19,8 @@ import dayjs from 'dayjs';
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat';
 import * as UTC from 'dayjs/plugin/utc';
 import Link from 'next/link';
-import { useContext, useEffect, useState } from 'react';
-import { TownContext } from '../../context/TownContext';
+import { useEffect, useState } from 'react';
+import { useTownContext } from '../../context/TownContext';
 import { useUser } from '../../context/UserContext';
 import { useCurrentUser } from '../../hooks/queries';
 import SignInButton from '../gcloud/SignInButton';
@@ -34,10 +34,10 @@ function Layout({ children, ...props }) {
 
   const { window } = props
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [town, setTown] = useContext(TownContext)
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
   const { setUser } = useUser()
+  const { townConfig, isLoading: townLoading, error: townError } = useTownContext()
 
   const currentUserQuery = useCurrentUser()
   const user = currentUserQuery.status == 'success' ? currentUserQuery.data['name'] : null
@@ -60,10 +60,6 @@ function Layout({ children, ...props }) {
     setOpen(!open)
   }
 
-  const handleTownChange = (event) => {
-    setTown(event.target.value)
-  }
-
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
@@ -78,24 +74,6 @@ function Layout({ children, ...props }) {
       <List>
         <ListItem>
           <SignInButton user={user} picture={picture} />
-        </ListItem>
-
-        <Divider />
-        <ListItem>
-          <FormControl variant="standard">
-            <InputLabel id="demo-simple-select-standard-label">Pueblo</InputLabel>
-            <NativeSelect
-              inputProps={{
-                name: 'town',
-                id: 'uncontrolled-native'
-              }}
-              value={town}
-              onChange={handleTownChange}
-            >
-              <option value={'sabanayegua'}>Sabana Yegua</option>
-              <option value={'sample'}>Ejemplo</option>
-            </NativeSelect>
-          </FormControl>
         </ListItem>
       </List>
     </div>
@@ -180,7 +158,17 @@ function Layout({ children, ...props }) {
         <Toolbar />
 
         <Box sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
-          {children}
+          {townLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', p: 2 }}>
+              <Typography>Cargando configuración del municipio...</Typography>
+            </Box>
+          ) : townError ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', p: 2 }}>
+              <Typography color="error">Error al cargar la configuración del municipio</Typography>
+            </Box>
+          ) : (
+            children
+          )}
         </Box>
       </Box>
     </Box>

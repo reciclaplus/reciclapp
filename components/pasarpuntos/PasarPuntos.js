@@ -9,9 +9,9 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
 import * as WeekOfYear from 'dayjs/plugin/weekOfYear'
-import { useContext, useEffect, useState } from 'react'
-import { API_URL, conf } from '../../configuration'
-import { TownContext } from '../../context/TownContext'
+import { useEffect, useState } from 'react'
+import { API_URL } from '../../configuration'
+import { useTownContext } from '../../context/TownContext'
 import { usePdr, useRecogidaGetWeek } from '../../hooks/queries'
 import CustomAlert from '../CustomAlert'
 import RadioButtonsGroup from '../RadioButtonsGroup'
@@ -21,7 +21,7 @@ dayjs.extend(WeekOfYear)
 export default function PasarPuntos() {
 
   const queryClient = useQueryClient()
-  const { town } = useContext(TownContext)
+  const { townConfig } = useTownContext();
   const [alertMessage, setAlertMessage] = useState(null)
   const currentDate = dayjs()
 
@@ -29,10 +29,7 @@ export default function PasarPuntos() {
   const [barrio, setBarrio] = useState('')
 
   const [fecha, setFecha] = useState(currentDate)
-  const comunidades = []
-  conf[town].comunidades.forEach((comunidad) => { comunidades.push(comunidad.nombre) })
-  const barrios = []
-  conf[town].barrios.forEach((barrio) => { barrios.push(barrio.nombre) })
+  const comunidades = townConfig?.comunidades?.map(c => c.nombre) || [];
   const [visiblePdr, setVisiblePdr] = useState([])
   const [payload, setPayload] = useState({})
 
@@ -132,8 +129,8 @@ export default function PasarPuntos() {
               <option value=""></option>
               {
                 comunidad != '' ?
-                  conf[town].comunidades.find(obj => { return obj.nombre === comunidad }).barrios.map(item => {
-                    return (<option value={item} key={item}>{item}</option>)
+                  townConfig.comunidades.find(obj => { return obj.nombre === comunidad })?.barrios?.map(item => {
+                    return (<option value={item.nombre} key={item.nombre}>{item.nombre}</option>)
                   })
                   : <></>
               }
