@@ -1,25 +1,23 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import dynamic from 'next/dynamic'
 import { usePublicWeight } from '../../hooks/queries'
+
+const BarChart = dynamic(
+  () => import('@mui/x-charts/BarChart').then((mod) => mod.BarChart),
+  { ssr: false }
+)
 
 export default function MonthlyWeight () {
   const weightQuery = usePublicWeight()
   const weight = weightQuery.status === 'success' ? weightQuery.data : []
 
-  const data = weight.map((item) => ({
-    month_year: item.month_year,
-    'Libras mensuales': item.plasticoduro + item.pet + item.galones
-  }))
+  const xLabels = weight.map((item) => item.month_year)
+  const seriesData = weight.map((item) => item.plasticoduro + item.pet + item.galones)
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month_year" angle={-45} textAnchor="end" height={100} />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="Libras mensuales" fill="#494791" />
-      </BarChart>
-    </ResponsiveContainer>
+    <BarChart
+      xAxis={[{ scaleType: 'band', data: xLabels }]}
+      series={[{ data: seriesData, label: 'Libras mensuales', color: '#494791' }]}
+      height={400}
+    />
   )
 }

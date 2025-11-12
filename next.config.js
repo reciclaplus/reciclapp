@@ -18,6 +18,17 @@ module.exports = {
     // Disable ESLint during builds to focus on environment setup functionality
     ignoreDuringBuilds: true,
   },
+  webpack: (config, { isServer }) => {
+    // Fix for @mui/x-charts ES module issues
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@mui/material/styles': path.resolve(__dirname, 'node_modules/@mui/material/styles/index.js'),
+        '@mui/material/utils': path.resolve(__dirname, 'node_modules/@mui/material/utils/index.js'),
+      };
+    }
+    return config;
+  },
   env: {
     // Remove NODE_ENV as it's automatically handled by Next.js
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
