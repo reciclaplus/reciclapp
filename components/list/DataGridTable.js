@@ -3,7 +3,8 @@ import QrCode2Icon from '@mui/icons-material/QrCode2';
 import { Alert, Button, FormControlLabel, Snackbar, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Radio from '@mui/material/Radio';
-import { DataGrid, GridActionsCellItem, GridToolbar, esES } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
+import { esES } from '@mui/x-data-grid/locales';
 import { useQueryClient } from '@tanstack/react-query';
 import moment from 'moment';
 import Link from 'next/link';
@@ -235,13 +236,11 @@ export default function DataGridTable() {
 
   const localeObj = {
     ...esES.components.MuiDataGrid.defaultProps.localeText,
-    ...{
-      filterValueAny: 'Cualquiera',
-      filterValueTrue: 'Sí',
-      filterValueFalse: 'No',
-      filterOperatorIsAnyOf: 'Es cualquiera de',
-      toolbarQuickFilterPlaceholder: 'Buscar...'
-    }
+    filterValueAny: 'Cualquiera',
+    filterValueTrue: 'Sí',
+    filterValueFalse: 'No',
+    filterOperatorIsAnyOf: 'Es cualquiera de',
+    toolbarQuickFilterPlaceholder: 'Buscar...'
   }
 
   return (

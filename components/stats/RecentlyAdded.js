@@ -1,5 +1,6 @@
 import Grid from '@mui/material/Grid'
-import { DataGrid, esES, GridToolbar } from '@mui/x-data-grid'
+import { DataGrid, GridToolbar } from '@mui/x-data-grid'
+import { esES } from '@mui/x-data-grid/locales'
 
 import dayjs from 'dayjs'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
@@ -45,13 +46,11 @@ export default function RecentlyAdded(props) {
 
   const localeObj = {
     ...esES.components.MuiDataGrid.defaultProps.localeText,
-    ...{
-      filterValueAny: 'Cualquiera',
-      filterValueTrue: 'Sí',
-      filterValueFalse: 'No',
-      filterOperatorIsAnyOf: 'Es cualquiera de',
-      toolbarQuickFilterPlaceholder: 'Buscar...'
-    }
+    filterValueAny: 'Cualquiera',
+    filterValueTrue: 'Sí',
+    filterValueFalse: 'No',
+    filterOperatorIsAnyOf: 'Es cualquiera de',
+    toolbarQuickFilterPlaceholder: 'Buscar...'
   }
 
   return (
