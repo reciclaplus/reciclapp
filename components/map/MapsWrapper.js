@@ -1,7 +1,12 @@
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Alert } from "@mui/material";
 
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+const ErrorComponent = () => (
+  <Alert severity="error">Error loading Google Maps</Alert>
+);
+
 const render = (status) => {
   if (status === Status.FAILURE) return <ErrorComponent />;
   return <CircularProgress size={130} thickness={6} sx={{ ml: 2 }} />;
