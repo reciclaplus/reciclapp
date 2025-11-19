@@ -35,8 +35,8 @@ export default function DataGridTable() {
   const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
   const last5 = last5Query.status == 'success' ? last5Query.data : []
 
-  function lastNweeks(params) {
-    const last5weeks = last5.map(date => ({ "value": params.row.internal_id in date ? date[params.row.internal_id]["value"] : "", "date": date["date"] }))
+  function lastNweeks(value, row) {
+    const last5weeks = last5.map(date => ({ "value": row.internal_id in date ? date[row.internal_id]["value"] : "", "date": date["date"] }))
     return last5weeks
   }
 
@@ -169,8 +169,8 @@ export default function DataGridTable() {
       editable: canEdit,
       type: 'singleSelect',
       valueOptions: categories.map((cat) => { return cat.value }),
-      valueFormatter: (params) => {
-        return categories.find(cat => cat.value === params.value).label
+      valueFormatter: (value) => {
+        return categories.find(cat => cat.value === value).label
       },
       width: 150
     },
@@ -221,8 +221,8 @@ export default function DataGridTable() {
       editable: canEdit,
       type: 'date',
       width: 150,
-      valueGetter: (params) => { return moment(params.value, 'DD/MM/YYYY') },
-      valueFormatter: (params) => { return params.value.format('DD/MM/YYYY') }
+      valueGetter: (value, row) => { return moment(value, 'DD/MM/YYYY') },
+      valueFormatter: (value) => { return value.format('DD/MM/YYYY') }
     },
     {
       field: 'recogida',
