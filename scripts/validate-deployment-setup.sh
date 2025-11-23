@@ -158,7 +158,7 @@ echo ""
 
 # Check if in git repository
 echo "📋 Checking git configuration..."
-if git rev-parse --git-dir > /dev/null 2>&1; then
+if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     echo "  ✅ Git repository detected"
     
     # Check if we're on a branch
