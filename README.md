@@ -46,6 +46,12 @@ This project uses automated deployment to Google App Engine. For deployment inst
 2. Enter version number and select component
 3. Deployment happens automatically
 
+### Validate Setup
+Before deploying, you can validate your setup:
+```bash
+./scripts/validate-deployment-setup.sh
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
