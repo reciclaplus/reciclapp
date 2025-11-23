@@ -1,0 +1,78 @@
+name: Deploy Frontend to GAE
+
+on:
+  push:
+    tags:
+      - 'v*-frontend'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - production
+          - development
+        default: production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "environment=${{ inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            # Default to production for tag-based deployments
+            echo "environment=production" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Switch to target environment
+        run: |
+          npm run switch-env ${{ steps.env.outputs.environment }}
+
+      - name: Build application
+        run: npm run build
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to App Engine
+        run: |
+          gcloud app deploy app.yaml \
+            --quiet \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --version="${GITHUB_SHA::7}" \
+            --promote
+
+      - name: Deployment summary
+        run: |
+          echo "### Frontend Deployment Successful! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ steps.env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${GITHUB_SHA::7}" >> $GITHUB_STEP_SUMMARY
+          echo "**Service:** default" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ github.event_name }}" == "push" ]; then
+            echo "**Tag:** ${GITHUB_REF#refs/tags/}" >> $GITHUB_STEP_SUMMARY
+          fi

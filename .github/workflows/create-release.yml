@@ -1,0 +1,116 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+      component:
+        description: 'Component to release'
+        required: true
+        type: choice
+        options:
+          - frontend
+          - api
+          - both
+      release_notes:
+        description: 'Release notes'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate version format
+        run: |
+          if [[ ! "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version must be in format X.Y.Z (e.g., 1.0.0)"
+            exit 1
+          fi
+
+      - name: Create frontend release
+        if: inputs.component == 'frontend' || inputs.component == 'both'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ inputs.version }}-frontend"
+          
+          # Check if tag already exists
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Error: Tag $TAG already exists"
+            exit 1
+          fi
+          
+          # Create and push tag
+          git tag -a "$TAG" -m "Frontend Release v${{ inputs.version }}"
+          git push origin "$TAG"
+          
+          # Create GitHub release
+          NOTES="${{ inputs.release_notes }}"
+          if [ -z "$NOTES" ]; then
+            NOTES="Frontend Release v${{ inputs.version }}"
+          fi
+          
+          gh release create "$TAG" \
+            --title "Frontend v${{ inputs.version }}" \
+            --notes "$NOTES" \
+            --target "${{ github.ref_name }}"
+
+      - name: Create API release
+        if: inputs.component == 'api' || inputs.component == 'both'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ inputs.version }}-api"
+          
+          # Check if tag already exists
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Error: Tag $TAG already exists"
+            exit 1
+          fi
+          
+          # Create and push tag
+          git tag -a "$TAG" -m "API Release v${{ inputs.version }}"
+          git push origin "$TAG"
+          
+          # Create GitHub release
+          NOTES="${{ inputs.release_notes }}"
+          if [ -z "$NOTES" ]; then
+            NOTES="API Release v${{ inputs.version }}"
+          fi
+          
+          gh release create "$TAG" \
+            --title "API v${{ inputs.version }}" \
+            --notes "$NOTES" \
+            --target "${{ github.ref_name }}"
+
+      - name: Summary
+        run: |
+          echo "### Release Created Successfully! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Component:** ${{ inputs.component }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ inputs.component }}" == "frontend" ] || [ "${{ inputs.component }}" == "both" ]; then
+            echo "- ✅ Frontend tag: v${{ inputs.version }}-frontend" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ inputs.component }}" == "api" ] || [ "${{ inputs.component }}" == "both" ]; then
+            echo "- ✅ API tag: v${{ inputs.version }}-api" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Deployment workflows will be triggered automatically." >> $GITHUB_STEP_SUMMARY
