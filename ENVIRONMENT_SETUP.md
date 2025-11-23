@@ -172,6 +172,10 @@ The stage environment allows you to test in a production-like environment before
 To deploy both the Next.js frontend and FastAPI backend to stage with a single command:
 
 ```bash
+# Make the script executable (only needed once)
+chmod +x deploy-stage.sh
+
+# Run the deployment
 ./deploy-stage.sh
 ```
 

@@ -3,7 +3,7 @@
 /**
  * Environment Switcher Script
  * 
- * This script allows easy switching between development and production environments
+ * This script allows easy switching between development, stage, and production environments
  * by updating the NODE_ENV variable in the .env file.
  */
 

@@ -3,7 +3,7 @@
 """
 Environment Switcher Script for FastAPI Backend
 
-This script allows easy switching between development and production environments
+This script allows easy switching between development, stage, and production environments
 for the FastAPI backend by updating the NODE_ENV variable in the .env file.
 """
 
