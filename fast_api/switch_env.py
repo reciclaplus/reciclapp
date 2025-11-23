@@ -11,8 +11,8 @@ import sys
 import os
 
 def switch_environment(environment):
-    if environment not in ['development', 'production']:
-        print('Usage: python switch_env.py <development|production>')
+    if environment not in ['development', 'production', 'stage']:
+        print('Usage: python switch_env.py <development|production|stage>')
         print('Example: python switch_env.py development')
         sys.exit(1)
 
@@ -32,6 +32,12 @@ def switch_environment(environment):
             print('   - Firebase Project: reciclapp-dev-23776')
             print('   - Collection prefix: dev_')
             print('   - Service Account: firestore-service-account-dev.json')
+        elif environment == 'stage':
+            print('🎭 Stage mode:')
+            print('   - API URL: https://api-dev-dot-norse-voice-343214.uc.r.appspot.com')
+            print('   - Firebase Project: norse-voice-343214 (production)')
+            print('   - Collection prefix: (none)')
+            print('   - Service Account: firestore-service-account.json')
         else:
             print('🚀 Production mode:')
             print('   - API URL: https://fastapi-dot-norse-voice-343214.uc.r.appspot.com')

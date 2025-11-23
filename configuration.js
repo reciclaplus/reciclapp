@@ -15,11 +15,14 @@ const config = {
   // API URLs
   apiUrl: process.env.NEXT_PUBLIC_API_URL || (NODE_ENV === 'production'
     ? 'https://fastapi-dot-norse-voice-343214.uc.r.appspot.com'
+    : NODE_ENV === 'stage'
+    ? 'https://api-dev-dot-norse-voice-343214.uc.r.appspot.com'
     : 'http://localhost:8000'),
 
   // Helper functions
   isDevelopment: () => NODE_ENV === 'development',
   isProduction: () => NODE_ENV === 'production',
+  isStage: () => NODE_ENV === 'stage',
 };
 
 // Environment-aware API URL

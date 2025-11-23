@@ -12,8 +12,8 @@ const path = require('path');
 
 const environment = process.argv[2];
 
-if (!environment || !['development', 'production'].includes(environment)) {
-  console.error('Usage: npm run switch-env <development|production>');
+if (!environment || !['development', 'production', 'stage'].includes(environment)) {
+  console.error('Usage: npm run switch-env <development|production|stage>');
   console.error('Example: npm run switch-env development');
   process.exit(1);
 }
@@ -30,6 +30,11 @@ try {
     console.log('🔧 Development mode:');
     console.log('   - API URL: http://localhost:8000');
     console.log('   - Firebase Project: reciclapp-dev-23776');
+  } else if (environment === 'stage') {
+    console.log('🎭 Stage mode:');
+    console.log('   - API URL: https://api-dev-dot-norse-voice-343214.uc.r.appspot.com');
+    console.log('   - App URL: https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com');
+    console.log('   - Firebase Project: norse-voice-343214 (production)');
   } else {
     console.log('🚀 Production mode:');
     console.log('   - API URL: https://fastapi-dot-norse-voice-343214.uc.r.appspot.com');
