@@ -3,12 +3,13 @@
 /**
  * Environment Switcher Script
  * 
- * This script allows easy switching between development, stage, and production environments
- * by updating the NODE_ENV variable in the .env file.
+ * This script switches the environment by updating NODE_ENV in .env file,
+ * then displays the configuration from .env.{environment}.
  */
 
 const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
 
 const environment = process.argv[2];
 
@@ -18,31 +19,58 @@ if (!environment || !['development', 'production', 'stage'].includes(environment
   process.exit(1);
 }
 
-const envPath = path.join(__dirname, '..', '.env');
-const envContent = `# Environment Configuration\nNODE_ENV=${environment}\n`;
+const rootDir = path.join(__dirname, '..');
+const envFilePath = path.join(rootDir, `.env.${environment}`);
+const mainEnvPath = path.join(rootDir, '.env');
 
 try {
-  fs.writeFileSync(envPath, envContent);
-  console.log(`✅ Environment switched to: ${environment}`);
-  console.log(`📁 Updated .env file with NODE_ENV=${environment}`);
-
-  if (environment === 'development') {
-    console.log('🔧 Development mode:');
-    console.log('   - API URL: http://localhost:8000');
-    console.log('   - Firebase Project: reciclapp-dev-23776');
-  } else if (environment === 'stage') {
-    console.log('🎭 Stage mode:');
-    console.log('   - API URL: https://api-dev-dot-norse-voice-343214.uc.r.appspot.com');
-    console.log('   - App URL: https://reciclapp-dev-dot-norse-voice-343214.uc.r.appspot.com');
-    console.log('   - Firebase Project: norse-voice-343214 (production)');
-  } else {
-    console.log('🚀 Production mode:');
-    console.log('   - API URL: https://fastapi-dot-norse-voice-343214.uc.r.appspot.com');
-    console.log('   - Firebase Project: norse-voice-343214');
+  // Check if environment-specific file exists
+  if (!fs.existsSync(envFilePath)) {
+    console.error(`❌ Environment file not found: .env.${environment}`);
+    process.exit(1);
   }
 
-  console.log('\nℹ️  Restart your development server to apply changes.');
+  // Update NODE_ENV in .env file
+  const envContent = `# Environment Configuration\nNODE_ENV=${environment}\n`;
+  fs.writeFileSync(mainEnvPath, envContent);
+
+  console.log(`✅ Environment switched to: ${environment}`);
+  console.log(`📁 Updated .env with NODE_ENV=${environment}`);
+
+  // Read and parse the environment-specific file using dotenv
+  const envConfig = dotenv.parse(fs.readFileSync(envFilePath));
+
+  // Display environment-specific configuration
+  const icons = {
+    'development': '🔧',
+    'stage': '🎭',
+    'production': '🚀'
+  };
+
+  console.log(`${icons[environment]} ${environment.charAt(0).toUpperCase() + environment.slice(1)} configuration:`);
+
+  if (envConfig.NEXT_PUBLIC_API_URL) {
+    console.log(`   - API URL: ${envConfig.NEXT_PUBLIC_API_URL}`);
+  }
+
+  if (envConfig.OAUTH_REDIRECT_URI) {
+    console.log(`   - App URL: ${envConfig.OAUTH_REDIRECT_URI}`);
+  }
+
+  if (envConfig.FIREBASE_PROJECT_ID) {
+    console.log(`   - Firebase Project: ${envConfig.FIREBASE_PROJECT_ID}`);
+  }
+
+  if (envConfig.FIRESTORE_DATABASE_ID) {
+    console.log(`   - Firestore Database: ${envConfig.FIRESTORE_DATABASE_ID}`);
+  }
+
+  if (envConfig.ALLOWED_ORIGINS) {
+    console.log(`   - CORS Origins: ${envConfig.ALLOWED_ORIGINS}`);
+  }
+
+  console.log(`\nℹ️  Set NODE_ENV=${environment} and restart your server to use this configuration.`);
 } catch (error) {
-  console.error('❌ Error updating environment:', error.message);
+  console.error('❌ Error reading environment:', error.message);
   process.exit(1);
 }
