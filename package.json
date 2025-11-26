@@ -6,6 +6,7 @@
     "build": "next build",
     "start": "next start -p 8080",
     "deploy": "npm run build && gcloud app deploy",
+    "deploy:stage": "npm run build:stage && gcloud app deploy app-stage.yaml",
     "export": "next export",
     "lint": "next lint",
     "test": "jest",
@@ -13,8 +14,10 @@
     "switch-env": "node scripts/switch-env.js",
     "dev:development": "npm run switch-env development && npm run dev",
     "dev:production": "npm run switch-env production && npm run dev",
+    "dev:stage": "npm run switch-env stage && npm run dev",
     "build:development": "npm run switch-env development && npm run build",
-    "build:production": "npm run switch-env production && npm run build"
+    "build:production": "npm run switch-env production && npm run build",
+    "build:stage": "npm run switch-env stage && npm run build"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
