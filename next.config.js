@@ -14,10 +14,6 @@ dotenv.config({ path: envFile, override: true });
 module.exports = {
   reactStrictMode: true,
   distDir: 'build',
-  eslint: {
-    // Disable ESLint during builds to focus on environment setup functionality
-    ignoreDuringBuilds: true,
-  },
   env: {
     // Remove NODE_ENV as it's automatically handled by Next.js
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

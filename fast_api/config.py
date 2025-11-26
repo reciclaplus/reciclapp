@@ -35,6 +35,10 @@ class Config:
     def is_production(self) -> bool:
         return self.environment == "production"
 
+    @property
+    def is_stage(self) -> bool:
+        return self.environment == "stage"
+
     # API Configuration
     @property
     def fast_api_url(self) -> str:

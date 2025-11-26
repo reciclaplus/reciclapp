@@ -2,6 +2,38 @@
 
 This is a [Next.js](https://nextjs.org/) project for the Recicla+ project by Nature Power Foundation.
 
+## Environments
+
+The application supports three environments:
+- **Development**: Local development with test Firebase project
+- **Stage**: Production-like environment for testing before deploying to production
+- **Production**: Live production environment
+
+For detailed information about environment configuration and deployment, see [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md).
+
+### Quick Start
+
+```bash
+# Development
+npm run dev:development
+
+# Stage (test before production)
+npm run dev:stage
+
+# Production
+npm run dev:production
+```
+
+### Deployment
+
+```bash
+# Deploy to stage
+./deploy-stage.sh
+
+# Deploy to production
+npm run deploy
+```
+
 ## Configuration
 
 The application can be configured for different towns/deployments using environment variables. Create a `.env.local` file based on `.env.example`:
