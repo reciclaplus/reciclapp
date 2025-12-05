@@ -18,12 +18,12 @@ class Config:
 
     def __init__(self):
         # First load the main .env file to get NODE_ENV
-        load_dotenv("../.env")
+        load_dotenv("./.env")
 
         self.environment = os.getenv("NODE_ENV", "development")
 
         # Load environment-specific .env file
-        env_file = f"../.env.{self.environment}"
+        env_file = f"./.env.{self.environment}"
         if os.path.exists(env_file):
             load_dotenv(env_file, override=True)
 

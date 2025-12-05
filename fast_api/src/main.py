@@ -11,7 +11,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 
 # Import environment configuration
-from .config import config
+from src.config import config
 
 # Create a google-cloud Firestore client so we can target a non-default database
 # Use the same service account file configured in `config`.
@@ -25,8 +25,9 @@ firestore_client = firestore.Client(
     database=config.firestore_database_id,
 )
 
-from .dependencies import User, get_current_user
-from .routers import pdr, public, recogida, towns, users
+from src.dependencies import User, get_current_user
+from src.routers import pdr, public, recogida, towns, users
+
 
 app = FastAPI()
 
@@ -71,49 +72,81 @@ async def root():
     return {"message": "Hello World"}
 
 
+def _set_auth_cookies(response: Response, credentials: Credentials, request: Request):
+    """Set cookies with attributes appropriate for HTTPS and cross-subdomain deployments.
+
+    - Secure: True on HTTPS or prod-like envs
+    - SameSite: None when COOKIE_DOMAIN is set (cross-site); else Lax for dev, Strict for prod
+    - Domain: Optional COOKIE_DOMAIN (e.g., .example.com) so cookies are shared across subdomains
+    - Path: '/'
+    """
+    node_env = os.getenv("NODE_ENV", "development")
+    env = os.getenv("ENV", node_env)
+    scheme = request.url.scheme
+    is_secure_channel = scheme == "https"
+    is_prod_like = env in ["production", "stage"]
+    cookie_domain = os.getenv("COOKIE_DOMAIN")
+
+    # For cross-site cookies across subdomains, SameSite must be 'None' and Secure must be True
+    same_site = (
+        "None"
+        if cookie_domain and is_secure_channel
+        else ("lax" if not is_prod_like else "strict")
+    )
+    secure_flag = True if is_secure_channel or is_prod_like else False
+
+    common_kwargs = {
+        "httponly": True,
+        "secure": secure_flag,
+        "samesite": same_site,
+        "path": "/",
+    }
+    if cookie_domain:
+        common_kwargs["domain"] = cookie_domain
+
+    response.set_cookie(
+        key="access_token",
+        value=credentials.token,
+        max_age=3600,
+        **common_kwargs,
+    )
+    response.set_cookie(
+        key="id_token",
+        value=credentials.id_token,
+        max_age=3600,
+        **common_kwargs,
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=credentials.refresh_token,
+        max_age=2592000,
+        **common_kwargs,
+    )
+
+
 @app.get("/auth")
 def authentication(
-    response: Response, authorization: Annotated[Union[str, None], Header()] = None
+    request: Request,
+    response: Response,
+    authorization: Annotated[Union[str, None], Header()] = None,
 ):
-    code = authorization.split(" ")[1]
+    if not authorization:
+        raise HTTPException(
+            status_code=400, detail="Missing Authorization header with code"
+        )
+    parts = authorization.split(" ")
+    if len(parts) < 2:
+        raise HTTPException(status_code=400, detail="Malformed Authorization header")
+    code = parts[1]
     flow.fetch_token(code=code)
     credentials = flow.credentials
-    user = id_token.verify_oauth2_token(
+    _ = id_token.verify_oauth2_token(
         str(credentials.id_token),
         requests.Request(),
         client_id,
     )
 
-    # Determine if we're in production (HTTPS) or development (HTTP)
-    is_production = os.environ.get("ENV") == "production"
-
-    # Set secure HTTP-only cookies
-    response.set_cookie(
-        key="access_token",
-        value=credentials.token,
-        httponly=True,
-        secure=is_production,  # Only secure in production (HTTPS)
-        samesite="lax"
-        if not is_production
-        else "strict",  # More lenient for development
-        max_age=3600,  # 1 hour
-    )
-    response.set_cookie(
-        key="id_token",
-        value=credentials.id_token,
-        httponly=True,
-        secure=is_production,
-        samesite="lax" if not is_production else "strict",
-        max_age=3600,  # 1 hour
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=credentials.refresh_token,
-        httponly=True,
-        secure=is_production,
-        samesite="lax" if not is_production else "strict",
-        max_age=2592000,  # 30 days
-    )
+    _set_auth_cookies(response, credentials, request)
 
     return {
         "token": credentials.token,
@@ -152,40 +185,13 @@ def refresh_token(
 
     credentials.refresh(requests.Request())
 
-    user = id_token.verify_oauth2_token(
+    _ = id_token.verify_oauth2_token(
         str(credentials.id_token),
         requests.Request(),
         client_id,
     )
 
-    # Determine if we're in production
-    is_production = os.environ.get("ENV") == "production"
-
-    # Set updated cookies
-    response.set_cookie(
-        key="access_token",
-        value=credentials.token,
-        httponly=True,
-        secure=is_production,
-        samesite="lax" if not is_production else "strict",
-        max_age=3600,  # 1 hour
-    )
-    response.set_cookie(
-        key="id_token",
-        value=credentials.id_token,
-        httponly=True,
-        secure=is_production,
-        samesite="lax" if not is_production else "strict",
-        max_age=3600,  # 1 hour
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=credentials.refresh_token,
-        httponly=True,
-        secure=is_production,
-        samesite="lax" if not is_production else "strict",
-        max_age=2592000,  # 30 days
-    )
+    _set_auth_cookies(response, credentials, request)
 
     return {
         "token": credentials.token,

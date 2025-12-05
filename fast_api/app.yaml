@@ -1,4 +1,15 @@
 env: standard
 runtime: python310
-entrypoint: gunicorn -k uvicorn.workers.UvicornWorker main:app
+entrypoint: fastapi run src/main.py
 service: fastapi
+
+env_variables:
+  NODE_ENV: "production"
+  FAST_API_URL: "https://api.reciclaplus.com"
+  FIREBASE_PROJECT_ID: "reciclapp-23776"
+  FIRESTORE_DATABASE_ID: "(default)"
+  OAUTH_REDIRECT_URI: "https://sabanayegua.reciclaplus.com"
+  ALLOWED_ORIGINS: "https://sabanayegua.reciclaplus.com"
+  FIRESTORE_SERVICE_ACCOUNT_FILE: "./src/routers/firestore-service-account.json"
+  CLIENT_SECRET_FILE: "./src/client_secret_.json"
+  COOKIE_DOMAIN: ".reciclaplus.com"

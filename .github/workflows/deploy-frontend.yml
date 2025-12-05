@@ -3,11 +3,11 @@ name: Deploy Frontend to GAE
 on:
   push:
     tags:
-      - 'v*-frontend'
+      - "v*-frontend"
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deployment environment'
+        description: "Deployment environment"
         required: true
         type: choice
         options:
@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,8 +29,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -62,7 +62,14 @@ jobs:
 
       - name: Deploy to App Engine
         run: |
-          gcloud app deploy app.yaml \
+          if [ "${{ steps.env.outputs.environment }}" == "production" ]; then
+            DEPLOY_FILE="deployment/frontend/app.yaml"
+          else
+            DEPLOY_FILE="deployment/frontend/app-stage.yaml"
+          fi
+
+          gcloud app deploy $DEPLOY_FILE \
+            --ignore-file=deployment/frontend/.gcloudignore \
             --quiet \
             --project=${{ secrets.GCP_PROJECT_ID }} \
             --version="${GITHUB_SHA::7}" \
@@ -75,7 +82,7 @@ jobs:
           echo "**Environment:** ${{ steps.env.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** ${GITHUB_SHA::7}" >> $GITHUB_STEP_SUMMARY
           echo "**Service:** default" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ github.event_name }}" == "push" ]; then
             echo "**Tag:** ${GITHUB_REF#refs/tags/}" >> $GITHUB_STEP_SUMMARY
           fi

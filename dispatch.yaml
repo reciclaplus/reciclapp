@@ -1,0 +1,14 @@
+dispatch:
+  # Route all traffic for api.example.com to the "api" service
+  - url: "api.reciclaplus.com/*"
+    service: fastapi
+
+  # (Optional) route root domain to default service
+  - url: "sabanayegua.reciclaplus.com/*"
+    service: default
+
+  - url: "api-dev.reciclaplus.com/*"
+    service: fastapi-dev
+
+  - url: "sabanayegua-dev.reciclaplus.com/*"
+    service: reciclapp-dev

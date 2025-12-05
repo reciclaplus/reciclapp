@@ -12,9 +12,23 @@
 # below:
 .git
 .gitignore
+
+# Don't upload source files - only the built .next directory
 /pages/
 /components/
 /scripts/
+__tests__/
 
 # Node.js dependencies:
 node_modules/
+
+# Environment files (already baked into build)
+.env*
+!.env.example
+
+# Backend files
+fast_api/
+
+# Documentation
+*.md
+!README.md
