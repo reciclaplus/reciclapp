@@ -1,0 +1,57 @@
+name: Tag Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Target branch to tag"
+        type: string
+        required: true
+        default: main
+      version:
+        description: "Version number (e.g., v1.0.0)"
+        type: string
+        required: true
+
+jobs:
+  tag:
+    name: Create Git Tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if [[ ! "$VERSION" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "Error: Version '$VERSION' does not match expected format (e.g., v1.0.0 or 1.0.0-beta.1)"
+            exit 1
+          fi
+
+      - name: Check if tag already exists
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Error: Tag '$VERSION' already exists"
+            exit 1
+          fi
+
+      - name: Create and push tag
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          BRANCH="${{ github.event.inputs.branch }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "$VERSION" -m "Release $VERSION from branch $BRANCH"
+          git push origin "$VERSION"
+
+          echo "✅ Successfully created tag '$VERSION' on branch '$BRANCH'"
