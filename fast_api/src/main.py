@@ -2,6 +2,7 @@ import json
 import os
 from typing import Annotated, Union
 
+import google.auth
 from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from google.auth.transport import requests
@@ -13,11 +14,16 @@ from google_auth_oauthlib.flow import Flow
 # Import environment configuration
 from src.config import config
 
-# Create a google-cloud Firestore client so we can target a non-default database
-# Use the same service account file configured in `config`.
-gcloud_creds = service_account.Credentials.from_service_account_file(
-    config.firestore_service_account_file
-)
+# Create a google-cloud Firestore client using Application Default Credentials (ADC)
+# In App Engine, ADC are provided by the runtime. If explicit credentials are provided
+# via env (GCLOUD_SA_JSON), we will use them; otherwise fall back to ADC.
+gcloud_sa_json = os.getenv("GCLOUD_SA_JSON")
+if gcloud_sa_json:
+    sa_info = json.loads(gcloud_sa_json)
+    gcloud_creds = service_account.Credentials.from_service_account_info(sa_info)
+else:
+    gcloud_creds, _ = google.auth.default()
+
 # Expose `firestore_client` for other modules to import from this package.
 firestore_client = firestore.Client(
     project=config.firebase_project_id,
@@ -27,7 +33,6 @@ firestore_client = firestore.Client(
 
 from src.dependencies import User, get_current_user
 from src.routers import pdr, public, recogida, towns, users
-
 
 app = FastAPI()
 
@@ -41,8 +46,18 @@ app.include_router(towns.router)
 
 # Environment-aware OAuth flow setup
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
-flow = Flow.from_client_secrets_file(
-    config.client_secret_file,
+# OAuth flow setup using environment variables (no local secret files)
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+flow = Flow.from_client_config(
+    {
+        "web": {
+            "client_id": GOOGLE_OAUTH_CLIENT_ID,
+            "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+        }
+    },
     scopes=[
         "https://www.googleapis.com/auth/userinfo.profile",
         "https://www.googleapis.com/auth/userinfo.email",
@@ -61,10 +76,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load client secrets with environment-aware path
-with open(config.client_secret_file) as f:
-    data = json.load(f)
-    client_id = data["web"]["client_id"]
+# Load client_id and client_secret from environment
+client_id = GOOGLE_OAUTH_CLIENT_ID
+client_secret = GOOGLE_OAUTH_CLIENT_SECRET
 
 
 @app.get("/")
@@ -176,7 +190,7 @@ def refresh_token(
         refresh_token=refresh_token_value,
         token_uri="https://oauth2.googleapis.com/token",
         client_id=client_id,
-        client_secret=data["web"]["client_secret"],
+        client_secret=client_secret,
         default_scopes=[
             "https://www.googleapis.com/auth/userinfo.profile",
             "https://www.googleapis.com/auth/userinfo.email",

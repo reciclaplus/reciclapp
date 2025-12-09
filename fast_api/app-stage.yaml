@@ -10,6 +10,4 @@ env_variables:
   FIRESTORE_DATABASE_ID: "development"
   OAUTH_REDIRECT_URI: "https://sabanayegua-dev.reciclaplus.com"
   ALLOWED_ORIGINS: "https://sabanayegua-dev.reciclaplus.com"
-  FIRESTORE_SERVICE_ACCOUNT_FILE: "./src/routers/firestore-service-account.json"
-  CLIENT_SECRET_FILE: "./src/client_secret_.json"
   COOKIE_DOMAIN: ".reciclaplus.com"
