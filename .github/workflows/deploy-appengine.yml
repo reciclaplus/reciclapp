@@ -46,7 +46,7 @@ jobs:
       - name: Deploy to App Engine (stage)
         if: ${{ github.event.inputs.environment == 'stage' }}
         run: |
-          gcloud app deploy fast_api/app-stage.yaml --project "${{ env.GCP_PROJECT_ID }}" --quiet
+          gcloud app deploy fast_api/app-stage.yaml --project "${{ env.GCP_PROJECT_ID }}"
 
       - name: Deploy to App Engine (prod)
         if: ${{ github.event.inputs.environment == 'prod' }}
