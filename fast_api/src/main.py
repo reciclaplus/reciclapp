@@ -49,6 +49,8 @@ os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "True"
 # OAuth flow setup using environment variables (no local secret files)
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+print("GOOGLE_OAUTH_CLIENT_ID:", GOOGLE_OAUTH_CLIENT_ID)
+print("GOOGLE_OAUTH_CLIENT_SECRET:", GOOGLE_OAUTH_CLIENT_SECRET)
 flow = Flow.from_client_config(
     {
         "web": {

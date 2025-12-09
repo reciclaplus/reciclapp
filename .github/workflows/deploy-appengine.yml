@@ -43,10 +43,18 @@ jobs:
           gcloud config list
           gcloud auth list
 
+      - name: Inject secrets into app.yaml
+        run: |
+          # Add OAuth secrets to the app.yaml files
+          echo '  GOOGLE_OAUTH_CLIENT_ID: "${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}"' >> fast_api/app-stage.yaml
+          echo '  GOOGLE_OAUTH_CLIENT_SECRET: "${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}"' >> fast_api/app-stage.yaml
+          echo '  GOOGLE_OAUTH_CLIENT_ID: "${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}"' >> fast_api/app.yaml
+          echo '  GOOGLE_OAUTH_CLIENT_SECRET: "${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}"' >> fast_api/app.yaml
+
       - name: Deploy to App Engine (stage)
         if: ${{ github.event.inputs.environment == 'stage' }}
         run: |
-          gcloud app deploy fast_api/app-stage.yaml --project "${{ env.GCP_PROJECT_ID }}"
+          gcloud app deploy fast_api/app-stage.yaml --project "${{ env.GCP_PROJECT_ID }}" --quiet
 
       - name: Deploy to App Engine (prod)
         if: ${{ github.event.inputs.environment == 'prod' }}
