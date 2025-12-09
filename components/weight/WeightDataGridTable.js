@@ -117,8 +117,8 @@ export default function WeightDataGridTable(props) {
       editable: true,
       type: 'date',
       width: 150,
-      valueGetter: (params) => { return dayjs(params.value, 'DD/MM/YYYY') },
-      valueFormatter: (params) => { return params.value.format('DD/MM/YYYY') }
+      valueGetter: (value) => { return dayjs(value, 'DD/MM/YYYY') },
+      valueFormatter: (value) => { return value.format('DD/MM/YYYY') }
     },
     { field: 'pet', headerName: 'Pet (lb)', editable: true, type: 'number', width: 100 },
     { field: 'galones', headerName: 'Galones (lb)', editable: true, type: 'number', width: 100 },

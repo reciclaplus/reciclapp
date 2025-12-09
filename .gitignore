@@ -32,8 +32,9 @@ yarn-error.log*
 # Environment-specific service accounts and secrets
 client_secret_.json
 client_secret_dev.json
-fast_api/routers/firestore-service-account.json
-fast_api/routers/firestore-service-account-dev.json
+fast_api/src/routers/firestore-service-account.json
+fast_api/src/routers/firestore-service-account-dev.json
+fast_api/gcp-sa-key.json
 
 # vercel
 .vercel
@@ -48,4 +49,4 @@ fast_api/routers/firestore-service-account-dev.json
 /fast_api/__pycache__/
 *.pyc
 
-fast_api/routers/firestore_playground.py
+fast_api/src/routers/firestore_playground.py

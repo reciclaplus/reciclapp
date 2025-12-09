@@ -1,7 +1,9 @@
 env: standard
-runtime: nodejs18
+runtime: nodejs20
 service: reciclapp-dev
 handlers:
   - url: /.*
     secure: always
     script: auto
+env_variables:
+  NEXT_PUBLIC_API_URL: https://api-dev.reciclaplus.com

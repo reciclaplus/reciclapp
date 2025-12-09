@@ -69,6 +69,21 @@ You can start editing the page by modifying `pages/index.js`. The page auto-upda
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
+## Deployment
+
+This project uses automated deployment to Google App Engine. For deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+### Quick Deployment
+1. Go to GitHub Actions → Create Release
+2. Enter version number and select component
+3. Deployment happens automatically
+
+### Validate Setup
+Before deploying, you can validate your setup:
+```bash
+./scripts/validate-deployment-setup.sh
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -78,11 +93,13 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Additional Documentation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Deployment Guide](./DEPLOYMENT.md) - Automated deployment to Google App Engine
+- [Environment Setup](./ENVIRONMENT_SETUP.md) - Development and production environment configuration
+- [Admin Panel](./ADMIN_PANEL.md) - Admin panel documentation
+- [Cookie Authentication](./COOKIE_AUTH_IMPLEMENTATION.md) - Authentication implementation details
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-=======
+---
+
 # reciclapp
-

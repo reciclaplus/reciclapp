@@ -1,6 +1,6 @@
 import json
 from typing import Annotated, Union
-
+import os
 from fastapi import Depends, Header, HTTPException, Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -11,12 +11,6 @@ from .config import config
 
 # Environment-aware Firestore client
 from .main import firestore_client as db
-
-# Load client secrets with environment-aware path
-with open(config.client_secret_file) as f:
-    data = json.load(f)
-    client_id = data["web"]["client_id"]
-
 
 class User(BaseModel):
     name: str
