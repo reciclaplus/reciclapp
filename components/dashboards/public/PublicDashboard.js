@@ -8,12 +8,13 @@ import {
     usePublicWeightByType
 } from '../../../hooks/queries'
 import ChartCard from '../common/ChartCard'
+import DashboardHeader from '../common/DashboardHeader'
 import SectionHeader from '../common/SectionHeader'
 import StatCard from '../common/StatCard'
 import { COLORS } from '../common/theme'
-import DashboardHeader from './DashboardHeader'
 import PdrCategoriesChart from './PdrCategoriesChart'
 import WeightByTypeChart from './WeightByTypeChart'
+
 
 /**
  * Main Public Dashboard Component

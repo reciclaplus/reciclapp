@@ -2,7 +2,7 @@ import RecyclingIcon from '@mui/icons-material/Recycling'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { COLORS } from '../common/theme'
+import { COLORS } from './theme'
 
 /**
  * Header component with app bar for public dashboard
