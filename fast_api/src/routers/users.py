@@ -9,7 +9,10 @@ from ..dependencies import User, require_role, valid_user
 # Environment-aware Firestore client
 from ..main import firestore_client as db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/users",
+    tags=["users"],
+)
 
 
 class UserUpdate(BaseModel):
@@ -23,7 +26,7 @@ class UserCreate(BaseModel):
     role: str = "read"
 
 
-@router.get("/users", tags=["users"])
+@router.get("")
 async def list_users(
     current_user: Annotated[User, Depends(require_role("admin"))],
 ):
@@ -34,7 +37,7 @@ async def list_users(
     return users
 
 
-@router.post("/users", tags=["users"])
+@router.post("")
 async def create_user(
     user_data: UserCreate,
     current_user: Annotated[User, Depends(require_role("admin"))],
@@ -59,7 +62,7 @@ async def create_user(
     return created_doc.to_dict()
 
 
-@router.put("/users/{user_email}", tags=["users"])
+@router.put("/{user_email}")
 async def update_user(
     user_email: str,
     user_update: UserUpdate,
@@ -86,7 +89,7 @@ async def update_user(
     return updated_doc.to_dict()
 
 
-@router.delete("/users/{user_email}", tags=["users"])
+@router.delete("/{user_email}")
 async def delete_user(
     user_email: str,
     current_user: Annotated[User, Depends(require_role("admin"))],
@@ -106,7 +109,7 @@ async def delete_user(
     return {"message": f"User {user_email} deleted successfully"}
 
 
-@router.get("/users/me", tags=["users"])
+@router.get("/me")
 async def get_current_user_info(current_user: Annotated[User, Depends(valid_user)]):
     """Get current user information"""
     return current_user.dict()

@@ -10,7 +10,10 @@ from ..dependencies import User, require_role
 # Environment-aware Firestore client
 from ..main import firestore_client as db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/pdr",
+    tags=["pdr"],
+)
 
 
 class Pdr(BaseModel):
@@ -38,7 +41,7 @@ def log_pdr_action(action: str, pdr: Pdr):
     db.collection(log_collection).document(log_id).set(log_entry)
 
 
-@router.get("/pdr/get_all", tags=["pdr"])
+@router.get("/get_all")
 async def get_pdrs(
     current_user: Annotated[User, Depends(require_role("read"))],
 ):
@@ -48,7 +51,7 @@ async def get_pdrs(
     return [doc.to_dict() for doc in docs]
 
 
-@router.get("/pdr/get/{internal_id}", tags=["pdr"])
+@router.get("/get/{internal_id}")
 async def get_pdr(
     internal_id: str,
     current_user: Annotated[User, Depends(require_role("read"))],
@@ -59,7 +62,7 @@ async def get_pdr(
     return doc.to_dict()
 
 
-@router.post("/pdr/update/{internal_id}", tags=["pdr"])
+@router.post("/update/{internal_id}")
 async def update_pdr(
     internal_id: str,
     new_data: Pdr,
@@ -73,7 +76,7 @@ async def update_pdr(
     return new_data
 
 
-@router.post("/pdr/add", tags=["pdr"])
+@router.post("/add")
 async def add_pdr(
     new_pdr: Pdr,
     current_user: Annotated[User, Depends(require_role("write"))],
@@ -86,7 +89,7 @@ async def add_pdr(
     return new_pdr
 
 
-@router.delete("/pdr/delete/{internal_id}", tags=["pdr"])
+@router.delete("/delete/{internal_id}")
 async def delete_pdr(
     internal_id: str,
     current_user: Annotated[User, Depends(require_role("write"))],

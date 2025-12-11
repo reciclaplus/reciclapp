@@ -5,10 +5,13 @@ from firebase_admin import firestore
 # Environment-aware Firestore client
 from ..main import firestore_client as db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/public",
+    tags=["public"],
+)
 
 
-@router.get("/public/recogida/get/last_n", tags=["public"])
+@router.get("/recogida/get/last_n")
 async def last_n(n: int = 5):
     collection_name = "recogida"
     collection = db.collection(collection_name)
@@ -21,7 +24,7 @@ async def last_n(n: int = 5):
     return docs_dict
 
 
-@router.get("/public/pdr/get_all", tags=["public"])
+@router.get("/pdr/get_all")
 async def get_pdrs():
     collection_name = "pdr"
     collection = db.collection(collection_name)
@@ -37,7 +40,7 @@ async def get_pdrs():
     return [{key: doc.to_dict().get(key, None) for key in keys} for doc in docs]
 
 
-@router.get("/public/recogida/weight/get", tags=["recogida"])
+@router.get("/recogida/weight/get")
 async def get_weight():
     collection_name = "weight"
     collection = db.collection(collection_name)

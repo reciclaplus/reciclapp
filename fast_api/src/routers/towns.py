@@ -7,7 +7,10 @@ from pydantic import BaseModel
 # Environment-aware Firestore client
 from ..main import firestore_client as db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/towns",
+    tags=["towns"],
+)
 
 
 class MapCenter(BaseModel):
@@ -41,7 +44,7 @@ class Town(BaseModel):
     comunidades: Optional[List[Comunidad]]
 
 
-@router.get("/towns", response_model=List[Town], tags=["towns"])
+@router.get("", response_model=List[Town])
 def get_towns():
     towns_ref = db.collection("towns")
     docs = towns_ref.stream()
@@ -53,7 +56,7 @@ def get_towns():
     return towns
 
 
-@router.get("/towns/{town_id}", response_model=Town, tags=["towns"])
+@router.get("/{town_id}", response_model=Town)
 def get_town(town_id: str):
     doc_ref = db.collection("towns").document(town_id)
     doc = doc_ref.get()
@@ -64,21 +67,21 @@ def get_town(town_id: str):
     return data
 
 
-@router.put("/towns/{town_id}", response_model=Town, tags=["towns"])
+@router.put("/{town_id}", response_model=Town)
 def update_town(town_id: str, town: Town):
     doc_ref = db.collection("towns").document(town_id)
     doc_ref.set(town.dict(exclude_unset=True))
     return town
 
 
-@router.post("/towns", response_model=Town, tags=["towns"])
+@router.post("", response_model=Town)
 def create_town(town: Town):
     doc_ref = db.collection("towns").document()
     doc_ref.set(town.dict(exclude_unset=True))
     return town
 
 
-@router.delete("/towns/{town_id}", tags=["towns"])
+@router.delete("/{town_id}")
 def delete_town(town_id: str):
     doc_ref = db.collection("towns").document(town_id)
     doc_ref.delete()
