@@ -84,9 +84,13 @@ async def get_successful_recogidas_count():
     one_month_ago = current_date - timedelta(days=30)
     one_year_ago = current_date - timedelta(days=365)
 
-    # Get week numbers for filtering
-    month_week = int(one_month_ago.strftime("%Y%W"))
-    year_week = int(one_year_ago.strftime("%Y%W"))
+    # Get ISO week numbers for filtering (consistent with existing code)
+    # Format: YYYYWW (e.g., 202453)
+    month_iso = one_month_ago.isocalendar()
+    month_week = int(f"{month_iso.year}{month_iso.week:02d}")
+
+    year_iso = one_year_ago.isocalendar()
+    year_week = int(f"{year_iso.year}{year_iso.week:02d}")
 
     # Get all recogidas
     collection = db.collection("recogida")

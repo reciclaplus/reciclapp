@@ -62,7 +62,7 @@ export default function PublicDashboard() {
                 </Typography>
                 
                 <Grid container spacing={3} sx={{ mb: 4 }}>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <SingleStat 
@@ -74,7 +74,7 @@ export default function PublicDashboard() {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <SingleStat 
@@ -86,7 +86,7 @@ export default function PublicDashboard() {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <SingleStat 
@@ -98,7 +98,7 @@ export default function PublicDashboard() {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <SingleStat 
@@ -118,7 +118,7 @@ export default function PublicDashboard() {
 
                 <Grid container spacing={3}>
                     {/* PDR by Category Pie Chart */}
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant="h6" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
@@ -136,8 +136,8 @@ export default function PublicDashboard() {
                                         height={350}
                                         slotProps={{
                                             legend: {
-                                                direction: 'column',
-                                                position: { vertical: 'middle', horizontal: 'right' },
+                                                direction: 'row',
+                                                position: { vertical: 'bottom', horizontal: 'middle' },
                                                 padding: 0,
                                             },
                                         }}
@@ -148,7 +148,7 @@ export default function PublicDashboard() {
                     </Grid>
 
                     {/* Weight by Plastic Type Bar Chart */}
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Typography variant="h6" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
@@ -175,7 +175,7 @@ export default function PublicDashboard() {
                     </Grid>
 
                     {/* Total Weight Summary */}
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" component="h3" sx={{ mb: 2, fontWeight: 600, textAlign: 'center' }}>
