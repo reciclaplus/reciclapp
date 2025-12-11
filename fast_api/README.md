@@ -134,7 +134,7 @@ This project has been migrated from using `requirements.txt` to UV with `pyproje
 - **Modern Python packaging**: Uses standard `pyproject.toml` format
 - **Virtual environment management**: Automatic `.venv` handling
 
-The old `requirements.txt` file is maintained for reference but is no longer used for dependency management.
+The `requirements.txt` file is now auto-generated from `pyproject.toml` and is used specifically for Google App Engine deployment (which doesn't support UV natively). For local development, always use UV commands to manage dependencies.
 
 ## Environment Variables
 
