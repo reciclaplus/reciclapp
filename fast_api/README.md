@@ -59,6 +59,9 @@ uv add package-name
 uv add --dev package-name
 
 # This will update both pyproject.toml and uv.lock
+
+# After adding dependencies, update requirements.txt for deployment
+./update-requirements.sh
 ```
 
 ### Updating Dependencies
@@ -75,6 +78,9 @@ uv add package-name@latest
 
 ```bash
 uv remove package-name
+
+# After removing dependencies, update requirements.txt for deployment
+./update-requirements.sh
 ```
 
 ## Project Structure

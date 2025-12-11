@@ -53,6 +53,8 @@ Each town has different deployments to different subdomains, so this value shoul
 
 ## Getting Started
 
+### Frontend Development
+
 First, run the development server:
 
 ```bash
@@ -62,6 +64,17 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Backend Development
+
+The FastAPI backend uses UV for Python package management. See [fast_api/README.md](./fast_api/README.md) for detailed setup instructions.
+
+Quick start:
+```bash
+cd fast_api
+uv sync  # Install dependencies
+uv run fastapi dev src/main.py  # Run development server
+```
 
 You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
