@@ -38,6 +38,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Set environment-specific variables
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "stage" ]; then
+            echo "NEXT_PUBLIC_API_URL=https://api-dev.reciclaplus.com" >> $GITHUB_ENV
+          else
+            echo "NEXT_PUBLIC_API_URL=https://api.reciclaplus.com" >> $GITHUB_ENV
+          fi
+
       - name: Build
         run: npm run build
 
