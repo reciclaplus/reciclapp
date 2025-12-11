@@ -108,11 +108,12 @@ fast_api/
 
 ## Deployment
 
-The application is deployed to Google App Engine. For deployment, Google App Engine will automatically:
-1. Detect the `pyproject.toml` file
-2. Install UV if needed
-3. Install dependencies using UV
-4. Run the application using the entrypoint specified in `app.yaml`
+The application is deployed to Google App Engine. For deployment, Google App Engine will:
+1. Use the `requirements.txt` file to install dependencies (GAE's Python runtime doesn't support UV natively)
+2. Install all packages using pip
+3. Run the application using the entrypoint specified in `app.yaml`
+
+**Note**: While we use UV for local development, Google App Engine uses the auto-generated `requirements.txt` file. Always run `./update-requirements.sh` after modifying dependencies to keep `requirements.txt` in sync with `pyproject.toml`.
 
 ### Manual Deployment
 

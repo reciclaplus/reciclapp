@@ -7,7 +7,7 @@ set -e
 echo "Updating requirements.txt from pyproject.toml..."
 
 # Export requirements from UV
-uv export --no-hashes --format requirements-txt | grep -v '^#' | grep -v '^    #' | grep -v '^-e .' > requirements.txt.tmp
+uv export --no-hashes --format requirements-txt | grep -v -E '^(#|    #|-e \.)' > requirements.txt.tmp
 
 # Add header
 cat > requirements.txt << 'EOF'
