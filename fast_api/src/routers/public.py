@@ -63,11 +63,16 @@ async def get_total_weight_by_type():
     docs_dict = [doc.to_dict() for doc in collection.stream()]
 
     df = pd.DataFrame(docs_dict)
+    df[["plasticoduro", "pet", "galones"]] = (
+        df[["plasticoduro", "pet", "galones"]].replace("", 0).astype(float).fillna(0)
+    )
 
     # Sum all weights by type
-    total_plasticoduro = df["plasticoduro"].sum() if "plasticoduro" in df.columns else 0
-    total_pet = df["pet"].sum() if "pet" in df.columns else 0
-    total_galones = df["galones"].sum() if "galones" in df.columns else 0
+    total_plasticoduro = (
+        df["plasticoduro"].astype(float).sum() if "plasticoduro" in df.columns else 0
+    )
+    total_pet = df["pet"].astype(float).sum() if "pet" in df.columns else 0
+    total_galones = df["galones"].astype(float).sum() if "galones" in df.columns else 0
 
     return {
         "plasticoduro": float(total_plasticoduro),
@@ -79,7 +84,7 @@ async def get_total_weight_by_type():
 
 @router.get("/public/recogida/successful_count", tags=["public"])
 async def get_successful_recogidas_count():
-    """Get count of successful recogidas for last month and last year"""
+    """Get count of successful recogidas for last month, last year, and all time"""
     current_date = date.today()
     one_month_ago = current_date - timedelta(days=30)
     one_year_ago = current_date - timedelta(days=365)
@@ -98,6 +103,7 @@ async def get_successful_recogidas_count():
 
     month_count = 0
     year_count = 0
+    total_count = 0
 
     for doc in docs:
         doc_dict = doc.to_dict()
@@ -110,12 +116,13 @@ async def get_successful_recogidas_count():
             if isinstance(value, dict) and value.get("value") == "si"
         )
 
+        total_count += successful_in_week
         if week >= month_week:
             month_count += successful_in_week
         if week >= year_week:
             year_count += successful_in_week
 
-    return {"last_month": month_count, "last_year": year_count}
+    return {"last_month": month_count, "last_year": year_count, "total": total_count}
 
 
 @router.get("/public/towns/count", tags=["public"])

@@ -2,7 +2,7 @@ import {
     createTheme, ThemeProvider
 } from '@mui/material/styles'
 import Head from 'next/head'
-import PublicDashboard from '../components/public-dashboard/PublicDashboard'
+import PublicDashboard from '../components/dashboards/public/PublicDashboard'
 import styles from '../styles/Home.module.css'
 
 const theme = createTheme({
