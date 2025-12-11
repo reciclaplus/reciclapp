@@ -10,10 +10,13 @@ from ..dependencies import User, require_role
 # Environment-aware Firestore client
 from ..main import firestore_client as db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/recogida",
+    tags=["recogida"],
+)
 
 
-@router.get("/recogida/get/last_n", tags=["recogida"])
+@router.get("/get/last_n")
 async def last_n(
     current_user: Annotated[User, Depends(require_role("read"))],
     n: int = 5,
@@ -29,7 +32,7 @@ async def last_n(
     return docs_dict
 
 
-@router.get("/recogida/get/{year}/{week}/{id}", tags=["recogida"])
+@router.get("/get/{year}/{week}/{id}")
 async def get_individual_id_week(
     current_user: Annotated[User, Depends(require_role("read"))],
     year: int,
@@ -44,7 +47,7 @@ async def get_individual_id_week(
     return doc.to_dict()[id]
 
 
-@router.get("/recogida/get/{year}/{week}", tags=["recogida"])
+@router.get("/get/{year}/{week}")
 async def get_week(
     current_user: Annotated[User, Depends(require_role("read"))],
     year: int,
@@ -58,7 +61,7 @@ async def get_week(
     return doc.to_dict()
 
 
-@router.post("/recogida/set/{year}/{week}", tags=["recogida"])
+@router.post("/set/{year}/{week}")
 async def set_week(
     current_user: Annotated[User, Depends(require_role("write"))],
     year: int,
@@ -79,7 +82,7 @@ async def set_week(
     return recogida
 
 
-@router.get("/recogida/get/last_n_by_barrio", tags=["recogida"])
+@router.get("/get/last_n_by_barrio")
 async def last_n_by_barrio(
     current_user: Annotated[User, Depends(require_role("read"))],
     n: int = 5,
@@ -165,7 +168,7 @@ async def last_n_by_barrio(
     return result.to_dict(orient="records")
 
 
-@router.get("/recogida/weight/get", tags=["recogida"])
+@router.get("/weight/get")
 async def get_weight(
     current_user: Annotated[User, Depends(require_role("read"))],
 ):
@@ -174,7 +177,7 @@ async def get_weight(
     return docs_dict
 
 
-@router.post("/recogida/weight/set/{id}", tags=["recogida"])
+@router.post("/weight/set/{id}")
 async def set_weight(
     current_user: Annotated[User, Depends(require_role("write"))],
     id: int,
@@ -184,7 +187,7 @@ async def set_weight(
     return new_weight
 
 
-@router.post("/recogida/weight/update/{id}", tags=["recogida"])
+@router.post("/weight/update/{id}")
 async def update_weight(
     current_user: Annotated[User, Depends(require_role("write"))],
     id: int,
@@ -194,7 +197,7 @@ async def update_weight(
     return new_weight
 
 
-@router.delete("/recogida/weight/delete/{id}", tags=["recogida"])
+@router.delete("/weight/delete/{id}")
 async def delete_weight(
     current_user: Annotated[User, Depends(require_role("write"))],
     id: int,
