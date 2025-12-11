@@ -49,4 +49,10 @@ fast_api/gcp-sa-key.json
 /fast_api/__pycache__/
 *.pyc
 
+# Python virtual environments (UV and others)
+/fast_api/.venv/
+.venv/
+venv/
+env/
+
 fast_api/src/routers/firestore_playground.py
