@@ -1,61 +1,49 @@
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
-import { styled } from '@mui/material/styles'
 import { usePdr } from '../../../hooks/queries'
+import { COLORS } from '../common/theme'
 import ByBarrioPieChart from './ByBarrioPieChart'
 import RecentlyAdded from './RecentlyAdded'
 import TimeSeries from './TimeSeries'
 import WastePctg from './WastePctg'
 import WeeklyWeight from './WeeklyWeight'
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    elevation: 0
-}))
-
 export default function Dashboard() {
     const pdrQuery = usePdr()
-    const pdr = pdrQuery.status == 'success' ? pdrQuery.data : []
+    const pdr = pdrQuery.status === 'success' ? pdrQuery.data : []
+    const pdrLoading = pdrQuery.status === 'pending'
 
     return (
-        <Box sx={{ flexGrow: 1, p: 2 }}>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <Item>
-                        <h2>Recogida semanal</h2>
+        <Box sx={{ backgroundColor: COLORS.background, minHeight: '100vh' }}>
+
+            <Container maxWidth="xl" sx={{ py: 4 }}>
+
+                <Grid container spacing={3}>
+                    {/* Time Series Chart - Full Width */}
+                    <Grid size={12}>
                         <TimeSeries />
-                    </Item>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Item>
-                        <h2>Distribución de barrios</h2>
-                        <ByBarrioPieChart pdr={pdr} />
-                    </Item>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Item>
-                        <h2>Libras recogidas por semana</h2>
+                    </Grid>
+
+                    {/* Pie Chart and Weekly Weight - Side by Side */}
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <ByBarrioPieChart pdr={pdr} loading={pdrLoading} />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <WeeklyWeight />
-                    </Item>
-                </Grid>
-                <Grid item xs={12} md={12}>
-                    <Item>
-                        <h2>Puntos Nuevos</h2>
-                        <RecentlyAdded pdr={pdr} />
-                    </Item>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Item>
-                        <h2>Porcentaje de basura</h2>
+                    </Grid>
+
+                    {/* Recently Added - Full Width */}
+                    <Grid size={12}>
+                        <RecentlyAdded pdr={pdr} loading={pdrLoading} />
+                    </Grid>
+
+                    {/* Waste Percentage - Half Width */}
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <WastePctg />
-                    </Item>
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Container>
         </Box>
     )
 }

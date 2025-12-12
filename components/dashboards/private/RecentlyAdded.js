@@ -1,15 +1,19 @@
-import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { esES } from '@mui/x-data-grid/locales'
 import dayjs from 'dayjs'
 import * as CustomParseFormat from 'dayjs/plugin/customParseFormat'
 import { useState } from 'react'
 import { useTownContext } from '../../../context/TownContext'
+import ChartCard from '../common/ChartCard'
 import Filter from '../common/Filter'
 dayjs.extend(CustomParseFormat)
 
 export default function RecentlyAdded(props) {
     const pdr = props.pdr
+    const loading = props.loading
     const { townConfig } = useTownContext()
     const categories = townConfig?.categories || []
     const barrios = townConfig?.comunidades?.flatMap(c => c.barrios?.map(b => b.nombre) || []) || []
@@ -52,31 +56,51 @@ export default function RecentlyAdded(props) {
         toolbarQuickFilterPlaceholder: 'Buscar...'
     }
 
+    const toolbar = (
+        <Filter
+            currentValue={nWeeks}
+            setCurrentValue={setNWeeks}
+            filterName="Plazo"
+            values={[
+                { value: 1, label: 'Última semana' },
+                { value: 4, label: 'Último mes' },
+                { value: 12, label: 'Últimos 3 meses' },
+                { value: 52, label: 'Último año' },
+                { value: 78, label: 'Último año y medio' }
+            ]}
+        />
+    )
+
     return (
-        <div>
-            <Grid container justifyContent="flex-end" sx={{ mb: 1 }}>
-                <Filter
-                    currentValue={nWeeks}
-                    setCurrentValue={setNWeeks}
-                    filterName='Plazo'
-                    values={[{ value: 1, label: 'Última semana' }, { value: 4, label: 'Último mes' }, { value: 12, label: 'Últimos 3 meses' }, { value: 52, label: 'Último año' }, { value: 78, label: 'Último año y medio' }]}></Filter>
-            </Grid>
-            <div style={{ display: 'flex', height: 500 }}>
-                <div style={{ flexGrow: 1 }}>
-                    <DataGrid
-                        initialState={{
-                            sorting: {
-                                sortModel: [{ field: 'dateAdded', sort: 'desc' }]
-                            }
-                        }}
-                        getRowId={(row) => row.internal_id}
-                        rows={recentlyAddedPdr}
-                        columns={columns}
-                        components={{ Toolbar: GridToolbar }}
-                        localeText={localeObj}
-                        experimentalFeatures={{ newEditingApi: true }} />
-                </div>
-            </div>
-        </div>
+        <ChartCard title="Puntos de Reciclaje Nuevos" toolbar={toolbar}>
+            {loading
+                ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
+                        <CircularProgress />
+                    </Box>
+                )
+                : recentlyAddedPdr.length === 0
+                    ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+                            <Typography color="text.secondary">No hay puntos nuevos en este período</Typography>
+                        </Box>
+                    )
+                    : (
+                        <Box sx={{ height: 400, width: '100%' }}>
+                            <DataGrid
+                                initialState={{
+                                    sorting: {
+                                        sortModel: [{ field: 'date_added', sort: 'desc' }]
+                                    }
+                                }}
+                                getRowId={(row) => row.internal_id}
+                                rows={recentlyAddedPdr}
+                                columns={columns}
+                                slots={{ toolbar: GridToolbar }}
+                                localeText={localeObj}
+                            />
+                        </Box>
+                    )}
+        </ChartCard>
     )
 }

@@ -44,7 +44,7 @@ export default function PublicDashboard() {
 
     return (
         <Box sx={{ bgcolor: COLORS.background, minHeight: '100vh' }}>
-            <DashboardHeader />
+            <DashboardHeader title="Dashboard Público" />
 
             <Container maxWidth="xl" sx={{ py: 4 }}>
                 {/* Statistics Section */}

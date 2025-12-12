@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import { BarChart } from '@mui/x-charts/BarChart'
@@ -23,16 +24,17 @@ export default function WeightByTypeChart({ data, loading }) {
         )
     }
 
+    const xLabels = ['Plástico Duro', 'PET', 'Galones']
+
     return (
-        <BarChart
-            xAxis={[{ data: ['Peso Recolectado'] }]}
-            series={[
-                { data: [plasticoduro], label: 'Plástico Duro', color: COLORS.primary },
-                { data: [pet], label: 'PET', color: COLORS.accent },
-                { data: [galones], label: 'Galones', color: COLORS.success }
-            ]}
-            width={500}
-            height={300}
-        />
+        <Box sx={{ width: '100%', height: 350 }}>
+            <BarChart
+                series={[
+                    { data: [plasticoduro, pet, galones], label: 'Peso (lbs)', id: 'weight', color: COLORS.primary }
+                ]}
+                xAxis={[{ data: xLabels, scaleType: 'band' }]}
+                yAxis={[{ label: 'Peso (lbs)' }]}
+            />
+        </Box>
     )
 }

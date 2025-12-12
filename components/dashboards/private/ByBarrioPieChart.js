@@ -1,62 +1,71 @@
-import { useEffect, useState } from 'react'
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
+import { PieChart } from '@mui/x-charts/PieChart'
+import { useEffect, useMemo, useState } from 'react'
 import { useTownContext } from '../../../context/TownContext'
+import ChartCard from '../common/ChartCard'
 
 export default function ByBarrioPieChart(props) {
     const [data, setData] = useState([])
     const pdr = props.pdr
+    const loading = props.loading
     const { townConfig } = useTownContext()
 
-    // Extract all barrios from all comunidades
-    const barrios = townConfig?.comunidades?.flatMap(c => c.barrios || []) || []
-    const barriosList = barrios.map(b => b.nombre)
-
-    const RADIAN = Math.PI / 180
-    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.7
-        const x = cx + radius * Math.cos(-midAngle * RADIAN)
-        const y = cy + radius * Math.sin(-midAngle * RADIAN)
-
-        return (
-            <text x={x} y={y} fill="black" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-                {`${barriosList[index]} ${(percent * 100).toFixed(0)}%`}
-            </text>
-        )
-    }
+    const barrios = useMemo(() =>
+        townConfig?.comunidades?.flatMap(c => c.barrios || []) || []
+        , [townConfig])
 
     useEffect(() => {
-        const result = []
-
-        for (const barrio in barrios) {
-            const data = barrios[barrio]
-            result[data.nombre] = { barrio: data.nombre, value: 0, color: data.color }
+        if (!pdr || pdr.length === 0 || barrios.length === 0) {
+            setData([])
+            return
         }
 
-        pdr.forEach(data => {
-            result[data.barrio].value += 1
+        const result = {}
+        barrios.forEach(barrio => {
+            result[barrio.nombre] = { label: barrio.nombre, value: 0, color: barrio.color }
         })
-        const res = Object.values(result)
 
-        setData(res)
-    }, [pdr])
+        pdr.forEach(item => {
+            if (result[item.barrio]) {
+                result[item.barrio].value += 1
+            }
+        })
+
+        const chartData = Object.values(result)
+            .filter(item => item.value > 0)
+            .map((item, index) => ({ ...item, id: index }))
+
+        setData(chartData)
+    }, [pdr, barrios])
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-                <Pie
-                    data={data}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={renderCustomizedLabel}
-                    fill="#8884d8"
-                    dataKey="value"
-                >
-                    {barrios.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                </Pie>
-            </PieChart>
-        </ResponsiveContainer>
+        <ChartCard title="Puntos de Reciclaje por Barrio">
+            {loading
+                ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+                        <CircularProgress />
+                    </Box>
+                )
+                : data.length === 0
+                    ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300 }}>
+                            <Typography color="text.secondary">No hay datos disponibles</Typography>
+                        </Box>
+                    )
+                    : (
+                        <PieChart
+                            series={[{
+                                data,
+                                highlightScope: { fade: 'global', highlight: 'item' },
+                                // arcLabel: (item) => `${item.label}: ${item.value}`,
+                                arcLabelMinAngle: 20
+                            }]}
+                            height={300}
+                        // hideLegend={true}
+                        />
+                    )}
+        </ChartCard>
     )
 }
