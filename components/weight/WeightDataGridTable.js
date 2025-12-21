@@ -133,9 +133,8 @@ export default function WeightDataGridTable(props) {
         columns={columns}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         processRowUpdate={processRowUpdate}
-        experimentalFeatures={{ newEditingApi: true }}
-        components={{ Toolbar: EditToolbar }}
-        componentsProps={{
+        slots={{ toolbar: EditToolbar }}
+        slotProps={{
           toolbar: { weight },
           footer: { "data-testid": "footer" }
         }}
