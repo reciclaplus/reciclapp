@@ -216,7 +216,7 @@ export default function TownDetails() {
                     </Typography>
 
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Box display="flex" alignItems="center" mb={2}>
                                 <MapIcon sx={{ mr: 1, color: 'primary.main' }} />
                                 <Typography variant="h6">Centro del Mapa</Typography>
@@ -229,7 +229,7 @@ export default function TownDetails() {
                             </Typography>
                         </Grid>
 
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="h6" gutterBottom>
                                 Categorías
                             </Typography>
@@ -273,7 +273,7 @@ export default function TownDetails() {
             {town.comunidades && town.comunidades.length > 0 ? (
                 <Grid container spacing={3}>
                     {town.comunidades.map((comunidad, idx) => (
-                        <Grid item xs={12} md={6} lg={4} key={idx}>
+                        <Grid size={{ xs: 12, md: 6, lg: 4 }} key={idx}>
                             <Card sx={{ height: '100%' }}>
                                 <CardContent>
                                     <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
