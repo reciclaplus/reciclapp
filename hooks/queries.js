@@ -117,19 +117,20 @@ const useRefreshToken = () => {
     })
 }
 
-const usePublicWeeklyCollection = (nWeeks) => {
+
+const usePublicWeightByType = () => {
     return useQuery({
-        queryKey: ['publicWeeklyCollection', nWeeks],
-        queryFn: () => fetch(`${API_URL}/public/recogida/get/last_n?n=${nWeeks}`, {
+        queryKey: ['publicWeightByType'],
+        queryFn: () => fetch(`${API_URL}/public/recogida/weight/total_by_type`, {
             method: 'GET',
         }).then((response) => response.json())
     })
 }
 
-const usePublicWeight = () => {
+const usePublicSuccessfulRecogidas = () => {
     return useQuery({
-        queryKey: ['publicWeight'],
-        queryFn: () => fetch(`${API_URL}/public/recogida/weight/get`, {
+        queryKey: ['publicSuccessfulRecogidas'],
+        queryFn: () => fetch(`${API_URL}/public/recogida/successful_count`, {
             method: 'GET',
         }).then((response) => response.json())
     })
@@ -166,5 +167,5 @@ const useTown = (townId) => {
     })
 }
 
-export { useCurrentUser, useLastN, usePdr, usePublicPdr, usePublicWeeklyCollection, usePublicWeight, useRecogidaGetWeek, useRefreshToken, useTown, useTowns, useWeeklyCollection, useWeight }
+export { useCurrentUser, useLastN, usePdr, usePublicPdr, usePublicSuccessfulRecogidas, usePublicWeightByType, useRecogidaGetWeek, useRefreshToken, useTown, useTowns, useWeeklyCollection, useWeight }
 
