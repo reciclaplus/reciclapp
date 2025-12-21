@@ -111,13 +111,21 @@ export default function WeightDataGridTable(props) {
         />]
 
     },
+    { field: 'id', headerName: 'ID', width: 80, editable: false, hideable: false },
     {
       field: 'date',
       headerName: 'Date',
       editable: true,
       type: 'date',
       width: 150,
-      valueGetter: (value) => { return dayjs(value, 'DD/MM/YYYY') },
+      valueGetter: (value) => {
+        // Handle DD/MM/YYYY format
+        if (typeof value === 'string' && value.includes('/')) {
+          return dayjs(value, 'DD/MM/YYYY')
+        }
+        // Handle ISO format (2025-09-29T04:00:00.000Z) and other formats
+        return dayjs(value)
+      },
       valueFormatter: (value) => { return value.format('DD/MM/YYYY') }
     },
     { field: 'pet', headerName: 'Pet (lb)', editable: true, type: 'number', width: 100 },
@@ -140,7 +148,10 @@ export default function WeightDataGridTable(props) {
         }}
         initialState={{
           sorting: {
-            sortModel: [{ field: 'date', sort: 'desc' }],
+            sortModel: [{ field: 'id', sort: 'desc' }],
+          },
+          pagination: {
+            paginationModel: { pageSize: 20, page: 0 },
           },
         }} />
       <DeleteRowDialog rowToDelete={rowToDelete} setRowToDelete={setRowToDelete} deleteRow={deleteRow} />
