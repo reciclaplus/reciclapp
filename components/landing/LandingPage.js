@@ -25,15 +25,15 @@ export default function LandingPage() {
                 Accept: 'application/json',
             }
         })
-        .then(response => {
-            if (response.ok) {
-                // User is authenticated, redirect to list page
-                router.push('/list')
-            }
-        })
-        .catch(() => {
-            // User is not authenticated, stay on landing page
-        })
+            .then(response => {
+                if (response.ok) {
+                    // User is authenticated, redirect to list page
+                    router.push('/list')
+                }
+            })
+            .catch(() => {
+                // User is not authenticated, stay on landing page
+            })
     }, [router])
 
     const login = useGoogleLogin({
@@ -68,8 +68,8 @@ export default function LandingPage() {
         <div style={{ backgroundImage: `url(/landing.jpg)`, height: '100vh', width: '100%', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
             <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 
-                <Grid container justify="center" alignItems="center" direction="column">
-                    <Grid item xs={12}>
+                <Grid container justifyContent="center" alignItems="center" direction="column">
+                    <Grid>
                         <Card variant='outlined' sx={{ borderWidth: 3, borderColor: 'secondary.main', borderRadius: 4, backgroundColor: '#F5F5F5' }}>
                             <CardContent>
                                 <Typography variant="h5" component="div">
@@ -81,7 +81,7 @@ export default function LandingPage() {
                                     de Nature Power Foundation.
                                 </Typography>
                                 <Grid container spacing={2} alignItems="center">
-                                    <Grid item>
+                                    <Grid>
                                         <CardMedia
                                             component="img"
                                             height="40"
@@ -89,7 +89,7 @@ export default function LandingPage() {
                                             sx={{ objectFit: "contain" }}
                                         />
                                     </Grid>
-                                    <Grid item>
+                                    <Grid>
                                         <CardMedia
                                             component="img"
                                             height="60"
