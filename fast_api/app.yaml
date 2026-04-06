@@ -1,5 +1,5 @@
 env: standard
-runtime: python310
+runtime: python312
 entrypoint: fastapi run src/main.py
 service: fastapi
 

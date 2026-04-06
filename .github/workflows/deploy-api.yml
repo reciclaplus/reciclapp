@@ -29,6 +29,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+
+      - name: Generate requirements.txt from lockfile
+        run: |
+          cd fast_api
+          uv export --no-hashes --no-dev --output-file requirements.txt
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
