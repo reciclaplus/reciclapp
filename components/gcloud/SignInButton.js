@@ -11,17 +11,16 @@ function SignInButton(props) {
   const queryClient = useQueryClient()
 
   function logout() {
-    // Call the backend logout endpoint to clear cookies
+    // Call the backend logout endpoint
     fetch(`${API_URL}/logout`, {
       method: 'POST',
-      credentials: 'include', // Include cookies
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       }
     })
     .then(() => {
-      // Clear any remaining localStorage items (for backward compatibility)
+      // Clear tokens from localStorage
       localStorage.removeItem("token");
       localStorage.removeItem("id_token");
       localStorage.removeItem("refresh_token");
@@ -47,17 +46,20 @@ function SignInButton(props) {
 
       fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
         method: 'GET',
-        credentials: 'include', // Include cookies
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          'Authorization': 'Bearer ' + codeResponse.code
+          'Authorization': `Bearer ${codeResponse.code}`
         }
       })
         .then((response) => response.json())
         .then((data) => {
           console.log('Authentication successful:', data.message)
-          // No need to manually store tokens - they are in HTTP-only cookies
+          // Store tokens in localStorage
+          localStorage.setItem('token', data.token)
+          localStorage.setItem('id_token', data.id_token)
+          localStorage.setItem('refresh_token', data.refresh_token)
+          localStorage.setItem('expiry', data.expiry)
         })
         .then(() => queryClient.invalidateQueries())
         .catch((error) => {

@@ -16,13 +16,16 @@ export default function LandingPage() {
     const queryClient = useQueryClient()
 
     useEffect(() => {
-        // Check if user is already authenticated by trying to get current user
+        // Check if user is already authenticated by checking stored token
+        const token = localStorage.getItem('token')
+        if (!token) return
+
         fetch(`${API_URL}/get-current-user`, {
             method: 'GET',
-            credentials: 'include', // Include cookies in the request
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
+                'Authorization': `Bearer ${token}`,
             }
         })
             .then(response => {
@@ -40,18 +43,20 @@ export default function LandingPage() {
         onSuccess: codeResponse => {
             fetch(`${API_URL}/auth?code=${codeResponse.code}`, {
                 method: 'GET',
-                credentials: 'include', // Include cookies in the request
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    'Authorization': 'Bearer ' + codeResponse.code,
+                    'Authorization': `Bearer ${codeResponse.code}`,
                 }
             })
                 .then((response) => response.json())
                 .then((data) => {
                     console.log('Authentication successful:', data.message)
-                    // No need to manually store tokens in localStorage anymore
-                    // Tokens are now stored as HTTP-only cookies
+                    // Store tokens in localStorage
+                    localStorage.setItem('token', data.token)
+                    localStorage.setItem('id_token', data.id_token)
+                    localStorage.setItem('refresh_token', data.refresh_token)
+                    localStorage.setItem('expiry', data.expiry)
                 })
                 .then(() => queryClient.invalidateQueries())
                 .then(() => {

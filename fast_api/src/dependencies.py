@@ -1,13 +1,8 @@
-import json
 from typing import Annotated, Union
-import os
-from fastapi import Depends, Header, HTTPException, Request
+from fastapi import Depends, Header, HTTPException
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from pydantic import BaseModel
-
-# Import environment configuration
-from .config import config
 
 # Environment-aware Firestore client
 from .main import firestore_client as db
@@ -20,15 +15,22 @@ class User(BaseModel):
 
 
 def get_current_user(
-    request: Request, authorization: Annotated[Union[str, None], Header()] = None
+    authorization: Annotated[Union[str, None], Header()] = None
 ):
-    # Try to get token from cookie first, then fallback to header for backward compatibility
-    token = request.cookies.get("access_token")
+    if not authorization or "undefined" in authorization:
+        raise HTTPException(
+            status_code=403, detail="You are not authorized to access this resource"
+        )
 
-    if not token and authorization and "undefined" not in authorization:
-        token = authorization.split(" ")[1]
+    parts = authorization.split(" ")
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        raise HTTPException(
+            status_code=403, detail="You are not authorized to access this resource"
+        )
 
-    if not token or "undefined" in str(token):
+    token = parts[1]
+
+    if not token or "undefined" in token:
         raise HTTPException(
             status_code=403, detail="You are not authorized to access this resource"
         )
