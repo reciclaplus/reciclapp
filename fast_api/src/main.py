@@ -3,7 +3,7 @@ import os
 from typing import Annotated, Union
 
 import google.auth
-from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google.auth.transport import requests
 from google.cloud import firestore
@@ -73,7 +73,7 @@ origins = config.allowed_origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -88,62 +88,8 @@ async def root():
     return {"message": "Hello World"}
 
 
-def _set_auth_cookies(response: Response, credentials: Credentials, request: Request):
-    """Set cookies with attributes appropriate for HTTPS and cross-subdomain deployments.
-
-    - Secure: True on HTTPS or prod-like envs
-    - SameSite: None when COOKIE_DOMAIN is set (cross-site); else Lax for dev, Strict for prod
-    - Domain: Optional COOKIE_DOMAIN (e.g., .example.com) so cookies are shared across subdomains
-    - Path: '/'
-    """
-    node_env = os.getenv("NODE_ENV", "development")
-    env = os.getenv("ENV", node_env)
-    scheme = request.url.scheme
-    is_secure_channel = scheme == "https"
-    is_prod_like = env in ["production", "stage"]
-    cookie_domain = os.getenv("COOKIE_DOMAIN")
-
-    # For cross-site cookies across subdomains, SameSite must be 'None' and Secure must be True
-    same_site = (
-        "None"
-        if cookie_domain and is_secure_channel
-        else ("lax" if not is_prod_like else "strict")
-    )
-    secure_flag = True if is_secure_channel or is_prod_like else False
-
-    common_kwargs = {
-        "httponly": True,
-        "secure": secure_flag,
-        "samesite": same_site,
-        "path": "/",
-    }
-    if cookie_domain:
-        common_kwargs["domain"] = cookie_domain
-
-    response.set_cookie(
-        key="access_token",
-        value=credentials.token,
-        max_age=3600,
-        **common_kwargs,
-    )
-    response.set_cookie(
-        key="id_token",
-        value=credentials.id_token,
-        max_age=3600,
-        **common_kwargs,
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=credentials.refresh_token,
-        max_age=2592000,
-        **common_kwargs,
-    )
-
-
 @app.get("/auth")
 def authentication(
-    request: Request,
-    response: Response,
     authorization: Annotated[Union[str, None], Header()] = None,
 ):
     if not authorization:
@@ -162,30 +108,26 @@ def authentication(
         client_id,
     )
 
-    _set_auth_cookies(response, credentials, request)
-
     return {
         "token": credentials.token,
         "id_token": credentials.id_token,
         "refresh_token": credentials.refresh_token,
         "expiry": credentials.expiry.strftime("%Y-%m-%d %H:%M:%S"),
-        "message": "Authentication successful, tokens set in cookies",
+        "message": "Authentication successful",
     }
 
 
 @app.get("/refresh-token")
 def refresh_token(
-    request: Request,
-    response: Response,
     authorization: Annotated[Union[str, None], Header()] = None,
 ):
-    # Try to get refresh token from cookie first, then fallback to header
-    refresh_token_value = request.cookies.get("refresh_token")
-    if not refresh_token_value and authorization:
-        refresh_token_value = authorization.split(" ")[1]
-
-    if not refresh_token_value:
+    if not authorization:
         raise HTTPException(status_code=401, detail="No refresh token provided")
+
+    parts = authorization.split(" ")
+    if len(parts) < 2:
+        raise HTTPException(status_code=400, detail="Malformed Authorization header")
+    refresh_token_value = parts[1]
 
     credentials = Credentials(
         token=None,
@@ -207,14 +149,12 @@ def refresh_token(
         client_id,
     )
 
-    _set_auth_cookies(response, credentials, request)
-
     return {
         "token": credentials.token,
         "id_token": credentials.id_token,
         "refresh_token": credentials.refresh_token,
         "expiry": credentials.expiry.strftime("%Y-%m-%d %H:%M:%S"),
-        "message": "Tokens refreshed and updated in cookies",
+        "message": "Tokens refreshed",
     }
 
 
@@ -224,9 +164,6 @@ def get_active_user(current_user: Annotated[User, Depends(get_current_user)]):
 
 
 @app.post("/logout")
-def logout(response: Response):
-    """Clear authentication cookies"""
-    response.delete_cookie(key="access_token")
-    response.delete_cookie(key="id_token")
-    response.delete_cookie(key="refresh_token")
+def logout():
+    """Client-side clears tokens from localStorage"""
     return {"message": "Logged out successfully"}

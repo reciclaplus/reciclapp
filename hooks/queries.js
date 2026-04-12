@@ -1,16 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
 import { API_URL } from '../configuration'
 
+const getStorageItem = (key) => typeof window !== 'undefined' ? localStorage.getItem(key) : null
+
+const getAuthHeaders = () => {
+    const token = getStorageItem('token')
+    return {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    }
+}
+
 const usePdr = () => {
     return useQuery({
         queryKey: ['pdr'],
         queryFn: () => fetch(`${API_URL}/pdr/get_all`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
+            headers: getAuthHeaders(),
         }).then((response) => (response.json()))
     })
 }
@@ -33,11 +40,7 @@ const useLastN = (n) => {
         queryKey: ['lastN', n],
         queryFn: () => fetch(`${API_URL}/recogida/get/last_n?n=${n}`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
+            headers: getAuthHeaders(),
         }).then((response) => (response.json()))
     })
 }
@@ -47,11 +50,7 @@ const useRecogidaGetWeek = (year, week) => {
         queryKey: ['recogidaGet', { 'year': year, 'week': week }],
         queryFn: () => fetch(`${API_URL}/recogida/get/${year}/${week}`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
+            headers: getAuthHeaders(),
         }).then((response) => (response.json()))
     })
 }
@@ -61,11 +60,7 @@ const useWeeklyCollection = (nWeeks, categoria, barrio) => {
         queryKey: ['weeklyCollection', { 'n': nWeeks, 'category': categoria, 'barrio': barrio }],
         queryFn: () => fetch(`${API_URL}/recogida/get/last_n_by_barrio?n=${nWeeks}&category=${categoria}&barrio=${barrio}`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
+            headers: getAuthHeaders(),
         }).then((response) => (response.json())), staleTime: 300000
     })
 }
@@ -75,11 +70,7 @@ const useWeight = () => {
         queryKey: ['weight'],
         queryFn: () => fetch(`${API_URL}/recogida/weight/get`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
+            headers: getAuthHeaders(),
         }).then((response) => (response.json()))
     })
 }
@@ -89,11 +80,7 @@ const useCurrentUser = () => {
         queryKey: ['currentUser'],
         queryFn: () => fetch(`${API_URL}/get-current-user`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
+            headers: getAuthHeaders(),
         }).then((response) => (response.json()))
     })
 }
@@ -101,19 +88,28 @@ const useCurrentUser = () => {
 const useRefreshToken = () => {
     return useQuery({
         queryKey: ['refreshToken'],
-        queryFn: () => fetch(`${API_URL}/refresh-token`, {
-            method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
-        }).then(function (response) { return response.json() }
-        ).then((data) => {
-            console.log('Token refreshed:', data.message)
-            // No need to manually update localStorage since tokens are in cookies
-            return data
-        })
+        queryFn: () => {
+            const refreshToken = getStorageItem('refresh_token')
+            return fetch(`${API_URL}/refresh-token`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    ...(refreshToken ? { 'Authorization': `Bearer ${refreshToken}` } : {}),
+                }
+            }).then(function (response) { return response.json() }
+            ).then((data) => {
+                console.log('Token refreshed:', data.message)
+                // Update tokens in localStorage
+                if (data.token) {
+                    localStorage.setItem('token', data.token)
+                    localStorage.setItem('id_token', data.id_token)
+                    localStorage.setItem('refresh_token', data.refresh_token)
+                    localStorage.setItem('expiry', data.expiry)
+                }
+                return data
+            })
+        }
     })
 }
 
@@ -141,11 +137,7 @@ const useTowns = () => {
         queryKey: ['towns'],
         queryFn: () => fetch(`${API_URL}/towns`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
+            headers: getAuthHeaders(),
         }).then((response) => response.json()),
         staleTime: 300000 // Cache for 5 minutes
     })
@@ -156,11 +148,7 @@ const useTown = (townId) => {
         queryKey: ['town', townId],
         queryFn: () => fetch(`${API_URL}/towns/${townId}`, {
             method: 'GET',
-            credentials: 'include', // Include cookies
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            }
+            headers: getAuthHeaders(),
         }).then((response) => response.json()),
         enabled: !!townId, // Only run query if townId is provided
         staleTime: 300000 // Cache for 5 minutes
